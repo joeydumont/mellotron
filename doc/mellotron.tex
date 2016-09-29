@@ -1,0 +1,246 @@
+% --------------------------------------------------------------------------- %
+% Author:          Joey Dumont                <joey.dumont@gmail.com>         %
+% Date created:    2016-09-29                                                 %
+% Description:     Document detailing MELLOTRON.                              %
+% License:         CC0 1.0 Universal                                          %
+%                  <https://creativecommons.org/publicdomain/zero/1.0/>       %
+% --------------------------------------------------------------------------- %
+
+\documentclass[10pt,letterpaper,extrafontsizes, onecolumn, openany]{memoir}
+
+% ----------------------------------------------------------------- %
+% --                          Packages                           -- %
+% ----------------------------------------------------------------- %
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{physics}
+\usepackage{amsmath,amssymb,mathtools,esint} % Math
+\usepackage[charter]{mathdesign}
+\usepackage{multicol}
+\usepackage[per-mode=symbol,inter-unit-product = {}\cdot{}]{siunitx}
+\usepackage[square,
+      numbers,
+      sort&compress,
+      merge,
+      elide]
+  {natbib}                    % Bibliographie
+
+% ----------------------------------------------------------------- %
+% --                         Page Layout                         -- %
+% ----------------------------------------------------------------- %
+
+\setlrmarginsandblock{0.2\paperwidth}{*}{1} % Left and right margin
+\setulmarginsandblock{0.2\paperwidth}{*}{1} % Upper and lower margin
+\checkandfixthelayout
+
+% ----------------------------------------------------------------- %
+% --                     Sectional Divisions                     -- %
+% ----------------------------------------------------------------- %
+
+\maxsecnumdepth{subsection} % Subsections (and higher) are numbered
+\setsecnumdepth{subsection}
+
+\makeatletter %
+\makechapterstyle{standard}{
+  \setlength{\beforechapskip}{0\baselineskip}
+  \setlength{\midchapskip}{1\baselineskip}
+  \setlength{\afterchapskip}{8\baselineskip}
+  \renewcommand{\chapterheadstart}{\vspace*{\beforechapskip}}
+  \renewcommand{\chapnamefont}{\centering\normalfont\Large}
+  \renewcommand{\printchaptername}{\chapnamefont \@chapapp}
+  \renewcommand{\chapternamenum}{\space}
+  \renewcommand{\chapnumfont}{\normalfont\Large}
+  \renewcommand{\printchapternum}{\chapnumfont \thechapter}
+  \renewcommand{\afterchapternum}{\par\nobreak\vskip \midchapskip}
+  \renewcommand{\printchapternonum}{\vspace*{\midchapskip}\vspace*{5mm}}
+  \renewcommand{\chaptitlefont}{\centering\bfseries\LARGE}
+  \renewcommand{\printchaptertitle}[1]{\chaptitlefont ##1}
+  \renewcommand{\afterchaptertitle}{\par\nobreak\vskip \afterchapskip}
+}
+\makeatother
+
+\chapterstyle{standard}
+
+\setsecheadstyle{\normalfont\large\bfseries}
+\setsubsecheadstyle{\normalfont\normalsize\bfseries}
+\setparaheadstyle{\normalfont\normalsize\bfseries}
+\setparaindent{0pt}\setafterparaskip{0pt}
+
+% ----------------------------------------------------------------- %
+% --                     Floats and Captions                     -- %
+% ----------------------------------------------------------------- %
+
+\makeatletter                        % You do not need to write [htpb] all the time
+\renewcommand\fps@figure{htbp}       %
+\renewcommand\fps@table{htbp}        %
+\makeatother                         %
+
+
+\captiondelim{\space }               % A space between caption name and text
+\captionnamefont{\small\bfseries}    % Font of the caption name
+\captiontitlefont{\small\normalfont} % Font of the caption text
+
+%\changecaptionwidth                 % Change the width of the caption
+%\captionwidth{1.0\textwidth}        %
+
+% ----------------------------------------------------------------- %
+% --                          Abstract                           -- %
+% ----------------------------------------------------------------- %
+
+\renewcommand{\abstractnamefont}{\normalfont\small\bfseries} % Font of abstract title
+\setlength{\absleftindent}{0.1\textwidth} % Width of abstract
+\setlength{\absrightindent}{\absleftindent}
+
+% ----------------------------------------------------------------- %
+% --                      Header and Footer                      -- %
+% ----------------------------------------------------------------- %
+
+\makepagestyle{standard}      % Make standard pagestyle
+
+\makeatletter                 % Define standard pagestyle
+\makeevenfoot{standard}{}{}{} %
+\makeoddfoot{standard}{}{}{}  %
+\makeevenhead{standard}{\bfseries\thepage\normalfont\qquad\small\leftmark}{}{}
+\makeoddhead{standard}{}{}{\small\rightmark\qquad\bfseries\thepage}
+% \makeheadrule{standard}{\textwidth}{\normalrulethickness}
+\makeatother                  %
+
+\makeatletter
+\makepsmarks{standard}{
+\createmark{chapter}{both}{shownumber}{\@chapapp\ }{ \quad }
+\createmark{section}{right}{shownumber}{}{ \quad }
+\createplainmark{toc}{both}{\contentsname}
+\createplainmark{lof}{both}{\listfigurename}
+\createplainmark{lot}{both}{\listtablename}
+\createplainmark{bib}{both}{\bibname}
+\createplainmark{index}{both}{\indexname}
+\createplainmark{glossary}{both}{\glossaryname}
+}
+\makeatother
+
+\makepagestyle{chap}          % Make new chapter pagestyle
+
+\makeatletter
+\makeevenfoot{chap}{}{\small\bfseries\thepage}{} % Define new chapter pagestyle
+\makeoddfoot{chap}{}{\small\bfseries\thepage}{}  %
+\makeevenhead{chap}{}{}{}
+\makeoddhead{chap}{}{}{}
+% \makeheadrule{chap}{\textwidth}{\normalrulethickness}
+\makeatother
+
+\nouppercaseheads
+\pagestyle{standard}               % Choosing pagestyle and chapter pagestyle
+\aliaspagestyle{chapter}{chap} %
+
+% ----------------------------------------------------------------- %
+% --                        New Commands                         -- %
+% ----------------------------------------------------------------- %
+
+\newcommand{\p}{\ensuremath{\partial}}
+\newcommand{\bo}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\bou}[1]{\ensuremath{\hat{\boldsymbol{#1}}}}
+\renewcommand{\Re}[1]{\ensuremath{\text{Re}\left\{#1\right\}}}
+
+% -- Tag text in equations.
+\makeatletter
+\providecommand\add@text{}
+\newcommand\tagaddtext[1]{%
+  \gdef\add@text{#1\gdef\add@text{}}}%
+\renewcommand\tagform@[1]{%
+  \maketag@@@{\llap{\add@text\quad}(\ignorespaces#1\unskip\@@italiccorr)}%
+}
+\makeatother
+
+% ----------------------------------------------------------------- %
+% --                      Table of Contents                      -- %
+% ----------------------------------------------------------------- %
+
+\maxtocdepth{subsection} % Only parts, chapters and sections in the table of contents
+\settocdepth{subsection}
+
+\AtEndDocument{\addtocontents{toc}{\par}} % Add a \par to the end of the TOC
+
+% ----------------------------------------------------------------- %
+% --                     Internal Hyperlinks                     -- %
+% ----------------------------------------------------------------- %
+
+\usepackage{hyperref}   % Internal hyperlinks
+\hypersetup{
+pdfborder={0 0 0},       % No borders around internal hyperlinks
+pdfauthor={Joey Dumont}, % author
+pdftitle={MELLOTRON}
+}
+
+% ----------------------------------------------------------------- %
+% --                          Document                           -- %
+% ----------------------------------------------------------------- %
+
+\begin{document}
+
+\frontmatter
+\pagestyle{empty}
+%\maketitle
+
+% title page
+%\vspace*{\fill}
+\begin{vplace}
+\begin{center}
+\LARGE\textsf{C++ Library for the Classical Dynamics  \\ of Charged Particles}\par
+\end{center}
+\begin{center}
+\HUGE\textsf{\textsc{mellotron}}\par
+\end{center}
+%\begin{center}
+%\LARGE\textsf{is a}\par
+%\end{center}
+
+
+\begin{center}
+\Huge\textsf{User Guide}\par
+\end{center}
+\begin{center}
+\LARGE\textsf{Joey Dumont}\par
+\bigskip
+\normalsize\textsf{Version 0.0.0}\par
+\end{center}
+\end{vplace}
+%\vspace*{\fill}
+%\def\THP{T\kern-0.2em H\kern-0.4em P}%   OK for CMR
+%\def\THP{T\kern-0.15em H\kern-0.3em P}%   OK for Palatino
+%\newcommand*{\THPress}{The Herries Press}%
+%\begin{center}
+%\settowidth{\droptitle}{\textsf{\THPress}}%
+%\textrm{\normalsize \THP} \\
+%\textsf{\THPress} \\[0.2\baselineskip]
+%\includegraphics[width=\droptitle]{anvil2.mps}
+%\setlength{\droptitle}{0pt}%
+%\end{center}
+\clearpage
+
+\input{abstract.tex}
+\clearpage
+
+\tableofcontents*
+\clearpage
+
+\mainmatter
+\pagestyle{standard}
+
+% -- Introduction chapter.
+\input{intro.tex}
+
+% -- Installation instructions.
+\input{installation.tex}
+
+% -- Mathematical background of the diffraction formulae.
+\input{physical_model.tex}
+
+\appendix
+
+\bibliographystyle{osajnl}
+\bibliography{mellotron_ref.bib}
+
+
+\end{document}
+%
+% ****** End of file template.aps ******
