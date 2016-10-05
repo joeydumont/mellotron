@@ -1,5 +1,7 @@
 #ifndef MELLOTRON_H
 #define MELLOTRON_H
 
+#include <mellotron_bits/Particle_bones.hpp>
+#include <mellotron_bits/Particle_meat.hpp>
 
 #endif // MELLOTRON_H

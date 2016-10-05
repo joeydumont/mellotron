@@ -34,7 +34,7 @@ include_directories(${HDF5_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
 # -- Required dependency: Boost.
-find_package(Boost 1.48.0 REQUIRED) 
+find_package(Boost 1.48.0 REQUIRED)
 include_directories(${BOOST_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 

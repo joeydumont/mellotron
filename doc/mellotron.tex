@@ -233,7 +233,91 @@ pdftitle={MELLOTRON}
 \input{installation.tex}
 
 % -- Mathematical background of the diffraction formulae.
-\input{physical_model.tex}
+\chapter{Physical Model}
+
+\section{Classical Physics}
+
+Charged particles experience a force when plunged into an electromagnetic field.
+Classically, this is simply the Lorentz force, which reads, in SI units,
+  \begin{equation}
+    \dv{p^\mu}{s} = \frac{q}{m}F^{\mu\nu}p_\nu
+  \end{equation}
+where $p^\mu$ is the 4-momentum, $s$ the proper time, $q$ the charge of the
+particle, $m$ its mass and $F^{\mu\nu}$ is the electromagnetic field tensor, i.e.
+  \begin{align}
+    F^{\mu\nu} &= \partial^\mu A^\nu - \partial^\nu A^\mu, \\
+               &= \begin{bmatrix}
+                    0      & -E_1/c     & -E_2/c     & -E_3/c \\
+                    E_1/c  & 0          & -B_3       & B_2     \\
+                    E_2/c  & B_3        & 0          & -B_1    \\
+                    E_3/c  & -B_2       & B_1        & 0
+                  \end{bmatrix}.
+  \end{align}
+We use the mostly minus sign convention $(+---)$.
+
+\section{Radiation Reaction}
+
+To model radiation reaction, we employ the Landau-Lifshitz equation, which
+reads, in SI units,
+  \begin{equation}
+    \dv{p^\mu}{s} = \frac{q}{m}F^{\mu\nu}p_\nu
+                   +\frac{q^2}{6\pi\epsilon_0m^3c^3}
+                      \left[
+                        q\left(\partial_\alpha F^{\mu\nu}\right)p^\alpha p_\nu
+                      - q^2 F^{\mu\nu}F_{\alpha\nu}p^\alpha
+                      + \frac{q^2}{m^2c^2} F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu
+                      \right].
+  \end{equation}
+
+In the implementation, we assume QED units. The equation thus reads
+  \begin{equation}
+    \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+                   +\frac{2\alpha}{3}\left(\frac{fm_e}{m}\right)^3
+                      \left[
+                        \left(\partial_\alpha F^{\mu\nu}\right)p^\alpha p_\nu
+                      - fF^{\mu\nu}F_{\alpha\nu}p^\alpha
+                      + f\left(\frac{m_e}{m}\right)^2 F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu
+                      \right]
+\end{equation}
+where $f$ is the fractional charge of the particle $q=fe$.
+
+It can be shown \cite{} that the third term is dominant. We thus neglect the other
+two in the implementation. We thus solve the following differential equation
+  \begin{equation}
+    \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+                   +\frac{2\alpha f^4}{3}\left(\frac{m_e}{m}\right)^5
+                   F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
+  \end{equation}
+
+It is more useful to work with the laboratory frame time where $\gamma ds = dt$.
+We have
+  \begin{equation}
+    \dv{p^\mu}{t}=\frac{1}{\gamma}\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+                   +\frac{2\alpha f^4}{3\gamma}\left(\frac{m_e}{m}\right)^5
+                   F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
+  \end{equation}
+
+\section{Explicit Expressions}
+We provide explicit expressions of the differential equations. We proceed term
+by term. The first term is the Lorentz force and can easily be written as
+  \begin{align*}
+    g_1^\mu &= F^{\mu\nu}p_\nu                  &  \\
+    g_1^0   &= F^{0\nu}p_\nu                    & g_1^i   &= F^{i\nu}p_\nu    \\
+            &= F^{0i}p_i                       &         &= F^{i0}p_0+F^{ij}p_j        \\
+            &= \left(\vb{p}\cdot\vb{E}\right)   &         &= \frac{\epsilon E_i}{c}-\epsilon^{ijk}p_jB_k \\
+            &                                   &         &= \frac{\epsilon E_i}{c}+\left(\vb{p}\times\vb{B}\right)_i
+  \end{align*}
+
+The second term yields
+  \begin{align*}
+    g_2^\mu &= \left(\partial_\alpha F^{\mu\nu}\right)p^\alpha p_\nu & \\
+    g_2^0   &= \left(\partial_\alpha F^{0\nu}\right)p^\alpha p_\nu   &
+  \end{align*}
+
+The fourth is simply the squared magnitude of the Lorentz force vector, i.e.
+  \begin{equation}
+    g_4^\mu = \left\lVert \frac{\epsilon\vb{E}}{c}+\left(\vb{p}\times\vb{B}\right)\right\rVert^2 p^\mu
+  \end{equation}
 
 \appendix
 
