@@ -6,7 +6,7 @@
 %                  <https://creativecommons.org/publicdomain/zero/1.0/>       %
 % --------------------------------------------------------------------------- %
 
-\documentclass[10pt,letterpaper,extrafontsizes, onecolumn, openany]{memoir}
+\documentclass[10pt,letterpaper,extrafontsizes, onecolumn,openright]{memoir}
 
 % ----------------------------------------------------------------- %
 % --                          Packages                           -- %
@@ -14,16 +14,11 @@
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{physics}
-\usepackage{amsmath,amssymb,mathtools,esint} % Math
+\usepackage{amsmath,amssymb,mathtools,esint}
 \usepackage[charter]{mathdesign}
 \usepackage{multicol}
 \usepackage[per-mode=symbol,inter-unit-product = {}\cdot{}]{siunitx}
-\usepackage[square,
-      numbers,
-      sort&compress,
-      merge,
-      elide]
-  {natbib}                    % Bibliographie
+\usepackage[square,numbers,sort&compress,merge,elide]{natbib}
 
 % ----------------------------------------------------------------- %
 % --                         Page Layout                         -- %
@@ -166,9 +161,9 @@
 
 \usepackage{hyperref}   % Internal hyperlinks
 \hypersetup{
-pdfborder={0 0 0},       % No borders around internal hyperlinks
-pdfauthor={Joey Dumont}, % author
-pdftitle={MELLOTRON}
+  pdfborder={0 0 0},       % No borders around internal hyperlinks
+  pdfauthor={Joey Dumont}, % author
+  pdftitle={MELLOTRON}
 }
 
 % ----------------------------------------------------------------- %
@@ -215,10 +210,13 @@ pdftitle={MELLOTRON}
 %\includegraphics[width=\droptitle]{anvil2.mps}
 %\setlength{\droptitle}{0pt}%
 %\end{center}
-\clearpage
+\cleardoublepage
 
-\input{abstract.tex}
-\clearpage
+\begin{abstract}
+
+\end{abstract}
+
+\cleardoublepage
 
 \tableofcontents*
 \clearpage
@@ -227,10 +225,10 @@ pdftitle={MELLOTRON}
 \pagestyle{standard}
 
 % -- Introduction chapter.
-\input{intro.tex}
+\chapter{Introduction}
 
 % -- Installation instructions.
-\input{installation.tex}
+\chapter{Installation}
 
 % -- Mathematical background of the diffraction formulae.
 \chapter{Physical Model}

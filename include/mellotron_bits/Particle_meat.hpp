@@ -53,8 +53,8 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Compute the force.
   double pdotE         = arma::dot(momentum,electric_field);
   arma::colvec lorentz = x[4]*electric_field + arma::cross(momentum,magnetic_field);
-  double chi_sq        = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
-  double chi           = std::sqrt(chi_sq);
+  chi_sq               = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
+  chi                  = std::sqrt(chi_sq);
 
   // Set the momentum differentials.
   dxdt(4)              = charge_to_rel_mass*arma::dot(momentum,electric_field);

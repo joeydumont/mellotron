@@ -26,6 +26,13 @@ public:
   /// Computation of the field tensor at a given point in spacetime.
   void ComputeFieldTensor(const double t, const double x, const double y, const double z);
 
+  // Accessor functions of the electromagnetic fields.
+  arma::colvec::fixed<3> GetElectricField(){return electric_field;}
+  arma::colvec::fixed<3> GetMagneticField(){return magnetic_field;}
+
+  // Accessor functions of the particle parameters.
+  double GetChi(){return chi;}
+
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
 
@@ -42,6 +49,9 @@ protected:
   const std::string                 radiation_reaction;    ///< Determines the model of radiation reaction we employ, if at all.
 
   const double                      alpha;                 ///< Fine-structure constant.
+
+        double                      chi_sq;                ///< Lorentz invariant along the trajectory, squared.
+        double                      chi;                   ///< Lorentz invariant along the trajectory.
 };
 
 #endif // PARTICLE_H
