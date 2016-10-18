@@ -3,7 +3,7 @@
 
 #include <mellotron_bits/Particle_bones.hpp>
 #include <mellotron_bits/Particle_meat.hpp>
-#include <mellotron_bits/Particle_bones.hpp>
-#include <mellotron_bits/Particle_meat.hpp>
+#include <mellotron_bits/ParticleObserver_bones.hpp>
+#include <mellotron_bits/ParticleObserver_meat.hpp>
 
 #endif // MELLOTRON_H
