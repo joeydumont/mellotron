@@ -1,5 +1,5 @@
-#ifndef PARTICLE_OBSERVER_H
-#define PARTICLE_OBSERVER_H
+#ifndef PARTICLE_OBSERVER_BONES_HPP
+#define PARTICLE_OBSERVER_BONES_HPP
 
 #include <armadillo>
 #include <boost/functional/hash.hpp>
@@ -50,4 +50,4 @@ protected:
         arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
 };
 
-#endif // PARTICLE_OBSERVER_H
+#endif // PARTICLE_OBSERVER_BONES_H

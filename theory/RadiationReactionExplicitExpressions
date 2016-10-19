@@ -1,0 +1,149 @@
+{
+	"cells" : 
+	[
+		{
+			"cell_origin" : "client",
+			"cell_type" : "latex",
+			"cells" : 
+			[
+				{
+					"cell_origin" : "client",
+					"cell_type" : "latex_view",
+					"source" : "We define the properties of the electromagnetic field tensor."
+				}
+			],
+			"source" : "We define the properties of the electromagnetic field tensor."
+		},
+		{
+			"cell_origin" : "client",
+			"cell_type" : "input",
+			"cells" : 
+			[
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Coordinate to~}\\left(t, \\linebreak[0] x, \\linebreak[0] y, \\linebreak[0] z\\right).\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Indices(position=fixed) to~}\\left(\\mu, \\linebreak[0] \\nu, \\linebreak[0] \\alpha\\right).\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property PartialDerivative to~}\\partial{\\#}.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Metric to~}g_{\\mu \\nu}.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property AntiSymmetric to~}F^{\\mu \\nu}.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}F^{\\mu \\nu}.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}p_{\\mu}.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}Ex.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}Ey.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}Ez.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}Bx.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}By.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}Bz.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}px.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}py.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\text{Attached property Depends to~}pz.\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\left(g_{t t} = 1, \\linebreak[0] g_{x x} = -1, \\linebreak[0] g_{y y} = -1, \\linebreak[0] g_{z z} = -1\\right)\\end{dmath*}"
+				}
+			],
+			"source" : "{t,x,y,z}::Coordinate;\n{\\mu,\\nu,\\alpha}::Indices(values={t,x,y,z},position=fixed);\n\\partial{#}::PartialDerivative;\n\ng_{\\mu\\nu}::Metric(signature=1);\n\nF^{\\mu\\nu}::AntiSymmetric;\nF^{\\mu\\nu}::Depends(t,x,y,z,\\partial{#});\np_{\\mu}::Depends(t,x,y,z,\\partial{#});\nEx::Depends(t,x,y,z);\nEy::Depends(t,x,y,z);\nEz::Depends(t,x,y,z);\nBx::Depends(t,x,y,z);\nBy::Depends(t,x,y,z);\nBz::Depends(t,x,y,z);\npx::Depends(t,x,y,z);\npy::Depends(t,x,y,z);\npz::Depends(t,x,y,z);\n\nss:= { g_{t t} = 1, g_{x x} = -1, g_{y y} = -1, g_{z z} = -1}.\ncomplete(ss, $g^{\\mu\\nu}$);"
+		},
+		{
+			"cell_origin" : "client",
+			"cell_type" : "input",
+			"cells" : 
+			[
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}\\left(F^{t x} = -Ex, \\linebreak[0] F^{t y} = -Ey, \\linebreak[0] F^{t z} = -Ez, \\linebreak[0] F^{x y} = -Bz, \\linebreak[0] F^{x z} = By, \\linebreak[0] F^{y z} = -Bx, \\linebreak[0] p^{t} = \\gamma m c, \\linebreak[0] p^{x} = px, \\linebreak[0] p^{y} = py, \\linebreak[0] p^{z} = pz, \\linebreak[0] p_{t} = \\gamma m c, \\linebreak[0] p_{x} = -px, \\linebreak[0] p_{y} = -py, \\linebreak[0] p_{z} = -pz\\right)\\end{dmath*}"
+				}
+			],
+			"source" : "fieldtensor:= {F^{t x} = -Ex, F^{t y} = -Ey,F^{t z} = -Ez, F^{x y} = -Bz,F^{x z} = By,F^{y z} = -Bx,p^{t} = \\gamma*m*c,p^{x} = px,p^{y} = py,p^{z} = pz,p_{t} = \\gamma*m*c,p_{x} = -px,p_{y} = -py,p_{z} = -pz};\n                "
+		},
+		{
+			"cell_origin" : "client",
+			"cell_type" : "input",
+			"cells" : 
+			[
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}f^{\\mu} = p^{\\alpha} \\partial_{\\alpha}{F^{\\mu \\nu}} p_{\\nu}\\end{dmath*}"
+				},
+				{
+					"cell_origin" : "server",
+					"cell_type" : "latex_view",
+					"source" : "\\begin{dmath*}{}f^{\\mu} = \\left\\{\\begin{aligned}\\square{}^{t}= & c \\gamma m px \\partial_{t}\\left(Ex\\right)+c \\gamma m py \\partial_{t}\\left(Ey\\right)+c \\gamma m pz \\partial_{t}\\left(Ez\\right)+px^{2} \\partial_{x}\\left(Ex\\right)+px py \\partial_{y}\\left(Ex\\right)+px py \\partial_{x}\\left(Ey\\right)+px pz \\partial_{z}\\left(Ex\\right)+px pz \\partial_{x}\\left(Ez\\right)+py^{2} \\partial_{y}\\left(Ey\\right)+py pz \\partial_{z}\\left(Ey\\right)+py pz \\partial_{y}\\left(Ez\\right)+pz^{2} \\partial_{z}\\left(Ez\\right)\\\\\n\\square{}^{x}= & c \\gamma m py \\partial_{t}\\left(Bz\\right)-c \\gamma m pz \\partial_{t}\\left(By\\right)+px py \\partial_{x}\\left(Bz\\right)-px pz \\partial_{x}\\left(By\\right)+py^{2} \\partial_{y}\\left(Bz\\right)-py pz \\partial_{y}\\left(By\\right)+py pz \\partial_{z}\\left(Bz\\right)-pz^{2} \\partial_{z}\\left(By\\right)\\\\\n\\square{}^{y}= & \\left(c \\gamma m \\partial_{t}\\left(Bx\\right)+px \\partial_{x}\\left(Bx\\right)+py \\partial_{y}\\left(Bx\\right)+pz \\partial_{z}\\left(Bx\\right)\\right) pz\\\\\n\\end{aligned}\\right.\n\\end{dmath*}"
+				}
+			],
+			"source" : "firstTerm:= f^{\\mu} = p^{\\alpha} \\partial_{\\alpha}{F^{\\mu\\nu}} p_{\\nu};\nevaluate(firstTerm, fieldtensor);\n"
+		},
+		{
+			"cell_origin" : "client",
+			"cell_type" : "input",
+			"source" : ""
+		}
+	],
+	"description" : "Cadabra JSON notebook format",
+	"version" : 1
+}

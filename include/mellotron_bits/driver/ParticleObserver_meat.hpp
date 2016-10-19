@@ -1,3 +1,6 @@
+#ifndef PARTICLE_OBSERVER_MEAT_HPP
+#define PARTICLE_OBSERVER_MEAT_HPP
+
 template <class FieldModel>
 inline
 ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle)
@@ -20,11 +23,11 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
   momentum.col(n_cols) = x.subvec(5,7);
-  gamma.push_back(x(4));
+  gamma.push_back(x[4]);
   times.push_back(x[0]);
 
   // Compute the electromagnetic field and store it.
-  particle.ComputeFieldTensor(x(0),x(1),x(2),x(3));
+  particle.ComputeFieldTensor(x[0],x[1],x[2],x[3]);
   electric_field.col(n_cols) = particle.GetElectricField();
   magnetic_field.col(n_cols) = particle.GetMagneticField();
 
@@ -221,3 +224,5 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   H5Gclose(group_id);
   H5Fclose(file_id);
 }
+
+#endif // PARTICLE_OBSERVER_MEAT_HPP

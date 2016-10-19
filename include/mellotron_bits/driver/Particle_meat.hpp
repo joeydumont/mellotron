@@ -1,3 +1,6 @@
+#ifndef PARTICLE_MEAT_HPP
+#define PARTICLE_MEAT_HPP
+
 template <class FieldModel>
 inline
 Particle<FieldModel>::Particle(const double         my_charge,
@@ -55,7 +58,6 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   arma::colvec lorentz = x[4]*electric_field + arma::cross(momentum,magnetic_field);
   chi_sq               = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
   chi                  = std::sqrt(chi_sq);
-  std::cout << chi << std::endl;
 
   // Set the momentum differentials.
   dxdt(4)              = charge_to_rel_mass*arma::dot(momentum,electric_field);
@@ -73,3 +75,5 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
     dxdt.subvec(4,7) -= quantum_factor*2.0*alpha*std::pow(charge,4)/(3.0*gamma*std::pow(mass,5))*chi_sq*x.subvec(4,7);
   }
 }
+
+#endif // PARTICLE_MEAT_HPP

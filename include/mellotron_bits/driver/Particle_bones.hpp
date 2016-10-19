@@ -1,5 +1,5 @@
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#ifndef PARTICLE_BONES_HPP
+#define PARTICLE_BONES_HPP
 
 #include <armadillo>
 #include <cmath>
@@ -27,11 +27,11 @@ public:
   void ComputeFieldTensor(const double t, const double x, const double y, const double z);
 
   // Accessor functions of the electromagnetic fields.
-  arma::colvec::fixed<3> GetElectricField(){return electric_field;}
-  arma::colvec::fixed<3> GetMagneticField(){return magnetic_field;}
+  arma::colvec::fixed<3> GetElectricField(){return electric_field;} ///< Returns the stored electric field.
+  arma::colvec::fixed<3> GetMagneticField(){return magnetic_field;} ///< Returns the stored magnetic field.
 
   // Accessor functions of the particle parameters.
-  double GetChi(){return chi;}
+  double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
 
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
@@ -54,4 +54,4 @@ protected:
         double                      chi;                   ///< Lorentz invariant along the trajectory.
 };
 
-#endif // PARTICLE_H
+#endif // PARTICLE_BONES_HPP

@@ -23,11 +23,6 @@ endif()
 LIST (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 MESSAGE( STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
-# -- Required dependency: StrattoCalculator.
-find_package(StrattoCalculator REQUIRED)
-include_directories(${StrattoCalculator_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${StrattoCalculator_LIBRARIES})
-
 # -- Required dependency: HDF5.
 find_package(HDF5 REQUIRED)
 include_directories(${HDF5_INCLUDE_DIRS})
@@ -42,13 +37,13 @@ SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   MESSAGE( STATUS "We use the GNU compiler settings.")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wall -march=native -std=c++11")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wall -march=native -std=c++14")
   set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3 -Wall -march=native")
 endif()
 
 # Configuration for the Intel compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++14")
   set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -O3")
 endif()
 
@@ -56,13 +51,13 @@ endif()
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   MESSAGE( STATUS "We use the GNU compiler settings.")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -O0 -pg -g -Wall -march=native -std=c++11")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -O0 -pg -g -Wall -march=native -std=c++14")
   set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -fPIC -O0 -pg -g -Wall -march=native")
 endif()
 
 # Configuration for the Intel compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -debug all -std=c++11")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -debug all -std=c++14")
   set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -O0 -g -debug all")
 endif()
 
@@ -76,22 +71,22 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR}/src SRC_LIST)
 
 # -- Build a shared library
-add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
+#add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
 
 # Define the properties of the library to
 # be built (version and other stuff).
-set_target_properties (
-  ${PROJECT_NAME}
-  PROPERTIES
-    VERSION   ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-    SOVERSION ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-)
+#set_target_properties (
+#  ${PROJECT_NAME}
+#  PROPERTIES
+#    VERSION   ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
+#    SOVERSION ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
+#)
 
 # Link dependencies
-target_link_libraries (${PROJECT_NAME} ${LIBS})
+#target_link_libraries (${PROJECT_NAME} ${LIBS})
 
 # Install directories
-install (TARGETS ${PROJECT_NAME} DESTINATION lib)
+#install (TARGETS ${PROJECT_NAME} DESTINATION lib)
 install (DIRECTORY include/ DESTINATION include)
 
 # ----------------------------------------------------------------- #
