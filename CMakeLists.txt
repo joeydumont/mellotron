@@ -33,6 +33,11 @@ find_package(Boost 1.48.0 REQUIRED)
 include_directories(${BOOST_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 
+# -- Required dependency: Cubature.
+find_package(Cubature REQUIRED)
+include_directories(${CUBATURE_INCLUDE_DIRS})
+SET (LIBS ${LIBS} ${CUBATURE_LIBRARIES})
+
 # -- Compiler config for RELEASE build.
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
