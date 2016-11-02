@@ -4,15 +4,14 @@
 #include <Cubature>
 #include <boost/math/constants/constants.hpp>
 #include <complex>
-#include <functional>
 
 namespace cst = boost::math::constants;
 using namespace std::complex_literals;
 
 
 /// Forward declaration of the interface to Cubature.
-int interface_to_cubature(unsigned int ndim, const double * x,    void *fdata,
-                          unsigned int fdim,       double * fval);
+int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
+                                  unsigned int fdim,       double * fval);
 
 /*!
  *  \class  SalaminTightlyFocusedLinear
@@ -31,7 +30,7 @@ public:
 
   /// The model depends on the following parameters, the wavelength lambda,
   /// the waist waist and the axial length L.
-  SalaminTightlyFocusedLinear(double my_lambda, double my_waist,double my_L,double my_energy)
+  SalaminTightlyFocusedLinear(double my_lambda,double my_waist,double my_L,double my_energy)
   : lambda(my_lambda)
   , waist(my_waist)
   , L(my_L)
@@ -127,7 +126,7 @@ public:
     double xmax[3] = {10.0*lambda,10.0*lambda,10.0*L};
     double val[1], err[1];
 
-    int error_flag = hcubature(fdim, interface_to_cubature, this, ndim, xmin, xmax,
+    int error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
                                0,0,1.0e-5, ERROR_INDIVIDUAL, val, err);
 
     std::cout << error_flag << std::endl;
@@ -141,8 +140,8 @@ public:
 };
 
 /// Interface to Cubature.
-int interface_to_cubature(unsigned int ndim, const double * x,    void *fdata,
-                          unsigned int fdim,       double * fval)
+int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
+                                  unsigned int fdim,       double * fval)
 {
 
   // We compute the electromagnetic field.

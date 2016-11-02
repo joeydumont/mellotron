@@ -6,6 +6,7 @@
 #include <mellotron_bits/driver/ParticleObserver_bones.hpp>
 #include <mellotron_bits/driver/ParticleObserver_meat.hpp>
 #include <mellotron_bits/fields/SalaminTightlyFocused.hpp>
+#include <mellotron_bits/fields/eDipoles.hpp>
 #include <mellotron_bits/simulations/Simulation.hpp>
 
 #endif // MELLOTRON_H
