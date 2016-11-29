@@ -38,13 +38,14 @@ public:
 
 protected:
 
+  const double                      charge;                ///< Charge of the particle, in QED units.
+  const double                      mass;                  ///< Mass of the particle, in QED units.
+
         FieldModel               &  field_model;           ///< Object that contains a ComputeFieldComponents routine.
 
         arma::colvec::fixed<3>      electric_field;        ///< Electric field at a given point in spacetime.
         arma::colvec::fixed<3>      magnetic_field;        ///< Magnetic field at a given point in spacetime.
 
-  const double                      charge;                ///< Charge of the particle, in QED units.
-  const double                      mass;                  ///< Mass of the particle, in QED units.
 
   const std::string                 radiation_reaction;    ///< Determines the model of radiation reaction we employ, if at all.
 

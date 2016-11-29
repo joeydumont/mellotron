@@ -36,9 +36,6 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   arma::colvec lorentz = x[4]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
   double chi_sq        = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
   chi.push_back(std::sqrt(chi_sq));
-  std::cout << "Lorentz norm: " << std::pow(arma::norm(lorentz,2),2) << std:: endl;
-  std::cout << "p dot E: " << pdotE << std::endl;
-  std::cout << "chi_sq: " << chi_sq << std::endl;
 }
 
 template <class FieldModel>

@@ -19,7 +19,7 @@ public:
   , UNIT_ENERGY(9.1093829140e-31*299792458.0*299792458.0)
   , lambda(800e-9/UNIT_LENGTH)
   , w0(0.7*lambda)
-  , L(0.8*lambda)
+  , L(13.5*lambda)
   , xmax(1.5*lambda)
   , energy(15.0/UNIT_ENERGY)
   , field(lambda,w0,L,energy)
@@ -57,10 +57,6 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
       field_values(i,j) = field.ComputeFieldComponents(lambda/4.0,x_field[i],y_field[j],lambda/2.0)[0];
     }
   }
-
-  field.ComputeNormalizationFactor();
-  std::cout << field.norm_factor << std::endl;
-
 
   // Output the data.
   x_field *= UNIT_LENGTH;

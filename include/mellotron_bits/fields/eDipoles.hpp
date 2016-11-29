@@ -97,9 +97,6 @@ public:
     int error_flag = hcubature(fdim, interface_to_cubature_e_dipoles, this, ndim, xmin, xmax,
                                0,0,1.0e-6, ERROR_INDIVIDUAL, val, err);
 
-    std::cout << error_flag << std::endl;
-    std::cout << val[0] << "\t" << err[0] << std::endl;
-
     return error_flag;
   }
 

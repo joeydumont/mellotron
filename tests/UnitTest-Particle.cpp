@@ -29,8 +29,7 @@ class ParticleTest : public testing::Test
 {
 public:
   ParticleTest()
-  : field(0.005,0.1,0.1)
-  , electron(1.0,1.0,field)
+  : electron(1.0,1.0,field)
   , electron_obs(electron)
   {}
 

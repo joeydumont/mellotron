@@ -72,26 +72,6 @@ endif()
 # -- Included files
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
-# -- Source files
-aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR}/src SRC_LIST)
-
-# -- Build a shared library
-#add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
-
-# Define the properties of the library to
-# be built (version and other stuff).
-#set_target_properties (
-#  ${PROJECT_NAME}
-#  PROPERTIES
-#    VERSION   ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-#    SOVERSION ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-#)
-
-# Link dependencies
-#target_link_libraries (${PROJECT_NAME} ${LIBS})
-
-# Install directories
-#install (TARGETS ${PROJECT_NAME} DESTINATION lib)
 install (DIRECTORY include/ DESTINATION include)
 
 # ----------------------------------------------------------------- #

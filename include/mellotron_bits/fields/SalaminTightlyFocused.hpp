@@ -117,6 +117,7 @@ public:
   double energy;
   double norm_factor;
 
+protected:
   /// Compute the energy contained in the field and rescale the components.
   int ComputeNormalizationFactor()
   {
@@ -128,9 +129,6 @@ public:
 
     int error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
                                0,0,1.0e-5, ERROR_INDIVIDUAL, val, err);
-
-    std::cout << error_flag << std::endl;
-    std::cout << val[0] << "\t" << err[0] << std::endl;
 
     norm_factor = std::sqrt(val[0]/energy);
 
