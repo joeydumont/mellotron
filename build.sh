@@ -16,7 +16,7 @@
 # Check the number of arguments.
 if [ $# -gt 2 ]; then
   printf "Usage is\n"
-  printf "\tbash build.sh [cluster] [release OR debug]\n"
+  printf "\tbash build.sh (release OR debug) [cluster]\n"
   exit 1
 fi
 

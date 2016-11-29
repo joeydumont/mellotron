@@ -1,11 +1,17 @@
 #ifndef SALAMIN_TIGHTLY_FOCUSED_HPP
 #define SALAMIN_TIGHTLY_FOCUSED_HPP
 
+#include <Cubature>
 #include <boost/math/constants/constants.hpp>
 #include <complex>
 
 namespace cst = boost::math::constants;
 using namespace std::complex_literals;
+
+
+/// Forward declaration of the interface to Cubature.
+int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
+                                  unsigned int fdim,       double * fval);
 
 /*!
  *  \class  SalaminTightlyFocusedLinear
@@ -18,17 +24,21 @@ using namespace std::complex_literals;
  *
  * Ref: Y. I. Salamin, Phys. Rev. A. 92, 063818 (2015).
  */
-struct SalaminTightlyFocusedLinear
+class SalaminTightlyFocusedLinear
 {
 public:
 
   /// The model depends on the following parameters, the wavelength lambda,
   /// the waist waist and the axial length L.
-  SalaminTightlyFocusedLinear(double my_lambda, double my_waist,double my_L)
+  SalaminTightlyFocusedLinear(double my_lambda,double my_waist,double my_L,double my_energy)
   : lambda(my_lambda)
   , waist(my_waist)
   , L(my_L)
-  {}
+  , energy(my_energy)
+  {
+    norm_factor = 1.0;
+    ComputeNormalizationFactor();
+  }
 
   /// Computes the field components.
   std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
@@ -91,12 +101,61 @@ public:
     Bz = 0.0;
    }
 
-   return std::array<double,6>{Ex,Ey,Ez,Bx,By,Bz};
+   std::array<double,6> field = {Ex,Ey,Ez,Bx,By,Bz};
+   for (uint i=0; i<6; i++)
+   {
+    field[i] /= norm_factor;
+   }
+
+
+   return field;
   }
 
   double lambda;
   double waist;
   double L;
+  double energy;
+  double norm_factor;
+
+protected:
+  /// Compute the energy contained in the field and rescale the components.
+  int ComputeNormalizationFactor()
+  {
+    const uint ndim = 3;
+    const uint fdim = 1;
+    double xmin[3] = {-10.0*lambda,-10.0*lambda,-10.0*L};
+    double xmax[3] = {10.0*lambda,10.0*lambda,10.0*L};
+    double val[1], err[1];
+
+    int error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
+                               0,0,1.0e-5, ERROR_INDIVIDUAL, val, err);
+
+    norm_factor = std::sqrt(val[0]/energy);
+
+    return error_flag;
+  }
+
 };
+
+/// Interface to Cubature.
+int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
+                                  unsigned int fdim,       double * fval)
+{
+
+  // We compute the electromagnetic field.
+  auto obj = (SalaminTightlyFocusedLinear * )fdata;
+  auto field = obj->ComputeFieldComponents(0.2*obj->lambda, x[0], x[1], x[2]);
+
+  // We compute the electromagnetic energy.
+  fval[0] = 0.0;
+  for (uint i=0; i<6; i++)
+  {
+    fval[0] += field[i]*field[i];
+  }
+
+  fval[0] *= 0.5;
+
+  return 0;
+}
 
 #endif // SALAMIN_TIGHTLY_FOCUSED_HPP
