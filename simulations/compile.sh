@@ -32,6 +32,6 @@ g++ ${CXX_FLAGS}                          \
       -I ../include                       \
       -o ${filenameNoExt}                 \
       ${filename}                         \
-      -lhdf5 -lgtest -lCubature -larmadillo
+      -lhdf5 -lboost_program_options -lgtest -larmadillo
       
 exit 0
