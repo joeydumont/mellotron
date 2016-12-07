@@ -3,10 +3,10 @@
 
 template <class FieldModel>
 inline
-Particle<FieldModel>::Particle(const double         my_charge,
-                               const double         my_mass,
-                               FieldModel  &  my_field_model,
-                               const std::string    my_radiation_reaction)
+Particle<FieldModel>::Particle(const double          my_charge,
+                               const double          my_mass,
+                               FieldModel         &  my_field_model,
+                               const std::string     my_radiation_reaction)
 : charge(my_charge)
 , mass(my_mass)
 , field_model(my_field_model)

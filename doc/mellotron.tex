@@ -20,6 +20,9 @@
 \usepackage[per-mode=symbol,inter-unit-product = {}\cdot{}]{siunitx}
 \usepackage[square,numbers,sort&compress,merge,elide]{natbib}
 
+\DeclareMathOperator{\sign}{sgn}
+\newcommand{\sgn}[1]{\sign\left(#1\right)}
+
 % ----------------------------------------------------------------- %
 % --                         Page Layout                         -- %
 % ----------------------------------------------------------------- %
@@ -237,11 +240,15 @@
 
 Charged particles experience a force when plunged into an electromagnetic field.
 Classically, this is simply the Lorentz force, which reads, in SI units,
-  \begin{equation}
-    \dv{p^\mu}{s} = \frac{q}{m}F^{\mu\nu}p_\nu
-  \end{equation}
+  \begin{subequations}
+  \begin{align}
+    \dv{x^\mu}{s} &= \frac{1}{m}p^\mu \\
+    \dv{p^\mu}{s} &= \frac{q}{m}F^{\mu\nu}p_\nu
+  \end{align}
+  \end{subequations}
 where $p^\mu$ is the 4-momentum, $s$ the proper time, $q$ the charge of the
 particle, $m$ its mass and $F^{\mu\nu}$ is the electromagnetic field tensor, i.e.
+  \begin{subequations}
   \begin{align}
     F^{\mu\nu} &= \partial^\mu A^\nu - \partial^\nu A^\mu, \\
                &= \begin{bmatrix}
@@ -251,6 +258,7 @@ particle, $m$ its mass and $F^{\mu\nu}$ is the electromagnetic field tensor, i.e
                     E_3/c  & -B_2       & B_1        & 0
                   \end{bmatrix}.
   \end{align}
+  \end{subequations}
 We use the mostly minus sign convention $(+---)$.
 
 \section{Radiation Reaction}
@@ -267,33 +275,65 @@ reads, in SI units,
                       \right].
   \end{equation}
 
-In the implementation, we assume QED units. The equation thus reads
+It can be shown \cite{} that the third term dominates over the two other terms.
+The equation thus reads
   \begin{equation}
-    \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
-                   +\frac{2\alpha}{3}\left(\frac{fm_e}{m}\right)^3
-                      \left[
-                        \left(\partial_\alpha F^{\mu\nu}\right)p^\alpha p_\nu
-                      - fF^{\mu\nu}F_{\alpha\nu}p^\alpha
-                      + f\left(\frac{m_e}{m}\right)^2 F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu
-                      \right]
-\end{equation}
-where $f$ is the fractional charge of the particle $q=fe$.
-
-It can be shown \cite{} that the third term is dominant. We thus neglect the other
-two in the implementation. We thus solve the following differential equation
-  \begin{equation}
-    \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
-                   +\frac{2\alpha f^4}{3}\left(\frac{m_e}{m}\right)^5
-                   F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
+    \dv{p^\mu}{s} = \frac{q}{m}F^{\mu\nu}p_\nu
+                   +\frac{q^4}{6\pi\epsilon_0m^5c^5}F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
   \end{equation}
 
-It is more useful to work with the laboratory frame time where $\gamma ds = dt$.
-We have
-  \begin{equation}
-    \dv{p^\mu}{t}=\frac{1}{\gamma}\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
-                   +\frac{2\alpha f^4}{3\gamma}\left(\frac{m_e}{m}\right)^5
-                   F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
-  \end{equation}
+It will be useful to work in a system of units where the fields are normalized with
+respect to its characteristic wavelength and with respect to the charge and mass
+of the elctron. Given that $\omega_0$ is a characteristic frequency of the field,
+we take
+  \begin{subequations}
+  \begin{align}
+    \vb{E}' &= \frac{|e|}{m_e\omega_0 c} \vb{E} & \vb{B}' &= \frac{|e|}{m_e\omega_0}\vb{B} \\
+    \vb{p}' &= \frac{\vb{p}}{m_ec}              & \vb{x}' &= \frac{\omega_0}{c}\vb{x}    \\
+    t'      &= \omega_0 t.
+  \end{align}
+  \end{subequations}
+Substituting this into the Landau-Lifshitz equation yields
+  \begin{align}
+    \dv{p^0}{t'}     &= \frac{q_\text{el}}{\gamma m_\text{el}}\vb{p}'\cdot\vb{E}'
+                       ++\frac{2\alpha}{3\gamma}\frac{q_\text{el}^4}{m_\text{el}^5}\frac{\hbar\omega_0}{m_ec^2}
+                      \left[(\vb{p}'\cdot\vb{E}')^2-(\gamma\vb{E}'+\vb{p}'\times\vb{B}')^2\right]p^0 \\
+    \dv{\vb{p}'}{t'} &= q_\text{el}\vb{E}' +\frac{q_\text{el}}{\gamma m_\text{el}}\vb{p}'\times\vb{B}'
+                      +\frac{2\alpha}{3\gamma}\frac{q_\text{el}^4}{m_\text{el}^5}\frac{\hbar\omega_0}{m_ec^2}
+                      \left[(\vb{p}'\cdot\vb{E}')^2-(\gamma\vb{E}'+\vb{p}'\times\vb{B}')^2\right]\vb{p}'
+  \end{align}
+where $q_\text{el}$ is the charge of the particle in units of the electron charge.
+
+\paragraph{Normalization of the electromagnetic field}
+
+
+% In the implementation, we assume QED units. The equation thus reads
+%   \begin{equation}
+%     \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+%                    +\frac{2\alpha}{3}\left(\frac{fm_e}{m}\right)^3
+%                       \left[
+%                         \left(\partial_\alpha F^{\mu\nu}\right)p^\alpha p_\nu
+%                       - fF^{\mu\nu}F_{\alpha\nu}p^\alpha
+%                       + f\left(\frac{m_e}{m}\right)^2 F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu
+%                       \right]
+% \end{equation}
+% where $f$ is the fractional charge of the particle $q=fe$.
+
+% It can be shown \cite{} that the third term is dominant. We thus neglect the other
+% two in the implementation. We thus solve the following differential equation
+%   \begin{equation}
+%     \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+%                    +\frac{2\alpha f^4}{3}\left(\frac{m_e}{m}\right)^5
+%                    F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
+%   \end{equation}
+
+% It is more useful to work with the laboratory frame time where $\gamma ds = dt$.
+% We have
+%   \begin{equation}
+%     \dv{p^\mu}{t}=\frac{1}{\gamma}\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
+%                    +\frac{2\alpha f^4}{3\gamma}\left(\frac{m_e}{m}\right)^5
+%                    F^{\alpha\nu}p_\nu F_{\alpha\lambda}p^\lambda p^\mu.
+%   \end{equation}
 
 \section{Explicit Expressions}
 We provide explicit expressions of the differential equations. We proceed term
@@ -314,7 +354,7 @@ The second term yields
 
 The fourth is simply the squared magnitude of the Lorentz force vector, i.e.
   \begin{equation}
-    g_4^\mu = \left\lVert \frac{\epsilon\vb{E}}{c}+\left(\vb{p}\times\vb{B}\right)-(\vb{p}\cdot\vb{E})\right\rVert^2 p^\mu
+    g_4^\mu = \left[\left(\frac{\epsilon\vb{E}}{c}+\left(\vb{p}\times\vb{B}\right)\right)^2-(\vb{p}\cdot\vb{E})^2\right] p^\mu.
   \end{equation}
 
 \appendix
