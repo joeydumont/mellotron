@@ -5,10 +5,10 @@
 #include <boost/math/constants/constants.hpp>
 #include <complex>
 
-namespace cst = boost::math::constants;
 using namespace std::complex_literals;
 
 namespace mellotron {
+namespace cst = boost::math::constants;
 
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,

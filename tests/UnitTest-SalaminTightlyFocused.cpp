@@ -11,34 +11,38 @@
 #include <armadillo>
 #include <mellotron>
 
+using namespace mellotron;
+
 class SalaminTightlyFocusedTest : public testing::Test
 {
 public:
   SalaminTightlyFocusedTest()
-  : UNIT_LENGTH(3.86159e-13)
-  , UNIT_ENERGY(9.1093829140e-31*299792458.0*299792458.0)
-  , lambda(800e-9/UNIT_LENGTH)
-  , w0(0.7*lambda)
-  , L(13.5*lambda)
-  , xmax(1.5*lambda)
-  , energy(15.0/UNIT_ENERGY)
-  , field(lambda,w0,L,energy)
-  {}
+  : lambda(800e-9)
+  , omega_0(2.0*constants::math::pi*constants::physics::c/lambda)
+  , electron_units(omega_0)
+  , w0(0.7*lambda/electron_units.UNIT_LENGTH)
+  , L(0.8*lambda/electron_units.UNIT_LENGTH)
+  , xmax(1.5*lambda/electron_units.UNIT_LENGTH)
+  , energy(15.0/electron_units.UNIT_ENERGY)
+  , field(lambda/electron_units.UNIT_LENGTH,w0,L,energy)
+  {
+    lambda /= electron_units.UNIT_LENGTH;
+  }
 
 protected:
 
   virtual void SetUp()
   {}
 
-  const double UNIT_LENGTH;
-  const double UNIT_ENERGY;
-  const double lambda;
+  double lambda;
+  const double omega_0;
+  MellotronUnits                  electron_units;
   const double w0;
   const double L;
   const double xmax;
   const double energy;
 
-  SalaminTightlyFocusedLinear field;
+  SalaminTightlyFocusedLinear     field;
 };
 
 TEST_F(SalaminTightlyFocusedTest, Linear)
@@ -59,8 +63,8 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   }
 
   // Output the data.
-  x_field *= UNIT_LENGTH;
-  y_field *= UNIT_LENGTH;
+  x_field *= electron_units.UNIT_LENGTH;
+  y_field *= electron_units.UNIT_LENGTH;
 
   x_field.save("x_field_salamin.txt", arma::raw_ascii);
   y_field.save("y_field_salamin.txt", arma::raw_ascii);

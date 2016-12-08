@@ -9,7 +9,7 @@
 
 
 namespace mellotron {
-namespace cst = constants::physics;
+
 /*!
  *  \class  MellotronUnits
  *  \author Joey Dumont      <joey.dumont@gmail.com>
@@ -33,18 +33,18 @@ public:
   MellotronUnits(double my_omega_0, unit_system units = si)
   {
     // We compute omega_0 in SI units.
-    switch (units):
+    switch (units)
     {
       case (si) : {omega_0_SI = my_omega_0;break;}
-      case (qed): {omega_0_SI = my_omega_0/UNIT_TIME_QED;break;}
-      case (ev) : {omega_0_SI = my_omega_0/UNIT_TIME_EV;break;}
+      case (qed): {omega_0_SI = my_omega_0/constants::physics::UNIT_TIME_QED;break;}
+      case (ev) : {omega_0_SI = my_omega_0/constants::physics::UNIT_TIME_EV;break;}
       default:    {std::cout << "Unknown units." << std::endl;throw;break;}
     }
 
-    UNIT_LENGTH   = cst::c/omega_0_SI;
-    UNIT_MOMENTUM = cst::electron_mass*cst::c;
+    UNIT_LENGTH   = constants::physics::c/omega_0_SI;
+    UNIT_MOMENTUM = constants::physics::electron_mass*constants::physics::c;
     UNIT_TIME     = 1.0/omega_0_SI;
-    UNIT_ENERGY   = cst::epsilon_0*std::pow(cst::electron_mass,2)*std::pow(c,5)/(std::pow(cst::electron_charge,2)*omega_0_SI);
+    UNIT_ENERGY   = constants::physics::epsilon_0*std::pow(constants::physics::electron_mass,2)*std::pow(constants::physics::c,5)/(std::pow(constants::physics::electron_charge,2)*omega_0_SI);
 
   }
 
@@ -57,3 +57,5 @@ public:
 };
 
 } // namespace mellotron
+
+#endif // MELLOTRON_UNITS_HPP

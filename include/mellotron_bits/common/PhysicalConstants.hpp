@@ -25,7 +25,7 @@ namespace math {
 
 namespace physics {
 
-  const double electron_mass      = boost::units::si::constants::codata::m_e / boost::units::si::kilogram         /// Electron rest mass in kg.
+  const double electron_mass      = boost::units::si::constants::codata::m_e / boost::units::si::kilogram;         /// Electron rest mass in kg.
   const double electron_charge    = boost::units::si::constants::codata::e / boost::units::si::coulomb;
   const double c                  = boost::units::si::constants::codata::c / boost::units::si::meter * boost::units::si::second;              /// Speed of light in m/s.
   const double epsilon_0          = boost::units::si::constants::codata::epsilon_0 / boost::units::si::farad * boost::units::si::meter;
@@ -37,3 +37,5 @@ namespace physics {
 } // namespace constants
 
 } // namespace mellotron
+
+#endif // PHYSICAL_CONSTANTS_HPP
