@@ -4,6 +4,8 @@
 #include <armadillo>
 #include <cmath>
 
+namespace mellotron {
+
 /*!
  *  \class  Particle
  *  \author Joey Dumont      <joey.dumont@gmail.com>
@@ -38,8 +40,8 @@ public:
 
 protected:
 
-  const double                      charge;                ///< Charge of the particle, in QED units.
-  const double                      mass;                  ///< Mass of the particle, in QED units.
+  const double                      charge;                ///< Charge of the particle, multiple of the elementary charge.
+  const double                      mass;                  ///< Mass of the particle, multiple of the electron mass.
 
         FieldModel               &  field_model;           ///< Object that contains a ComputeFieldComponents routine.
 
@@ -54,5 +56,9 @@ protected:
         double                      chi_sq;                ///< Lorentz invariant along the trajectory, squared.
         double                      chi;                   ///< Lorentz invariant along the trajectory.
 };
+
+}
+
+// namespace mellotron
 
 #endif // PARTICLE_BONES_HPP

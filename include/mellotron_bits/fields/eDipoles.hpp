@@ -5,6 +5,8 @@
 
 namespace cst = boost::math::constants;
 
+namespace mellotron {
+
 int interface_to_cubature_e_dipoles(unsigned int ndim, const double * x,    void *fdata,
                                     unsigned int fdim,       double * fval);
 
@@ -191,5 +193,7 @@ int interface_to_cubature_e_dipoles(unsigned int ndim, const double * x,    void
 
   return 0;
 }
+
+} // namespace mellotron
 
 #endif // E_DIPOLES_HPP

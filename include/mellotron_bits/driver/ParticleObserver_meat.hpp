@@ -1,6 +1,8 @@
 #ifndef PARTICLE_OBSERVER_MEAT_HPP
 #define PARTICLE_OBSERVER_MEAT_HPP
 
+namespace mellotron {
+
 template <class FieldModel>
 inline
 ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle)
@@ -221,5 +223,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   H5Gclose(group_id);
   H5Fclose(file_id);
 }
+
+} // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_MEAT_HPP

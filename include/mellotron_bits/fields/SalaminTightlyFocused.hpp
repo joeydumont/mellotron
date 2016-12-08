@@ -8,6 +8,7 @@
 namespace cst = boost::math::constants;
 using namespace std::complex_literals;
 
+namespace mellotron {
 
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
@@ -157,5 +158,7 @@ int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *
 
   return 0;
 }
+
+} // namespace mellotron
 
 #endif // SALAMIN_TIGHTLY_FOCUSED_HPP

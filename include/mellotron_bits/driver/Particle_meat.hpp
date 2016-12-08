@@ -1,6 +1,8 @@
 #ifndef PARTICLE_MEAT_HPP
 #define PARTICLE_MEAT_HPP
 
+namespace mellotron {
+
 template <class FieldModel>
 inline
 Particle<FieldModel>::Particle(const double          my_charge,
@@ -61,9 +63,9 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
 
   // Set the momentum differentials.
   dxdt(4)              = charge_to_rel_mass*arma::dot(momentum,electric_field);
-  dxdt.subvec(5,7)     = charge_to_rel_mass*lorentz;
+  dxdt.subvec(5,7)     = charge*electric_field+charge_to_rel_mass*arma::cross(momentum,magnetic_field);
 
-  // Radiation reaction effects.
+  // Radiation reaction effects. TODO: CORRECT CHI VALUE.
   if (radiation_reaction == std::string("ll_first_term"))
   {
     dxdt.subvec(4,7) -= 2.0*alpha*std::pow(charge,4)/(3.0*gamma*std::pow(mass,5))*chi_sq*x.subvec(4,7);
@@ -75,5 +77,7 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
     dxdt.subvec(4,7) -= quantum_factor*2.0*alpha*std::pow(charge,4)/(3.0*gamma*std::pow(mass,5))*chi_sq*x.subvec(4,7);
   }
 }
+
+} // namespace mellotron
 
 #endif // PARTICLE_MEAT_HPP
