@@ -112,13 +112,13 @@ public:
    return field;
   }
 
-  double lambda;
-  double waist;
-  double L;
-  double energy;
-  double norm_factor;
+  double lambda;           ///< Central wavelength of the pulse.
+  double waist;            ///< Beam waist size (radius).
+  double L;                ///< Axial length of the pulse, related to FWHM duration.
+  double energy;           ///< Total energy contained in the pulse.
+  double norm_factor;      ///< Normalization factor for the field to contain the proper energy.
 
-protected:
+//protected:
   /// Compute the energy contained in the field and rescale the components.
   int ComputeNormalizationFactor()
   {

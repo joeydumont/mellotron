@@ -30,6 +30,7 @@ typedef enum {si,qed,ev} unit_system;
 class MellotronUnits
 {
 public:
+  /// Defines the unit system.
   MellotronUnits(double my_omega_0, unit_system units = si)
   {
     // We compute omega_0 in SI units.
@@ -45,15 +46,14 @@ public:
     UNIT_MOMENTUM = constants::physics::electron_mass*constants::physics::c;
     UNIT_TIME     = 1.0/omega_0_SI;
     UNIT_ENERGY   = constants::physics::epsilon_0*std::pow(constants::physics::electron_mass,2)*std::pow(constants::physics::c,5)/(std::pow(constants::physics::electron_charge,2)*omega_0_SI);
-
   }
 
   // Variable data.
-  double omega_0_SI;
-  double UNIT_LENGTH;
-  double UNIT_MOMENTUM;
-  double UNIT_TIME;
-  double UNIT_ENERGY;
+  double omega_0_SI;       ///< Characteristic frequency of the beam, in SI units.
+  double UNIT_LENGTH;      ///< Unit length in Mellotron units.
+  double UNIT_MOMENTUM;    ///< Unit momentum in Mellotron units.
+  double UNIT_TIME;        ///< Unit time in Mellotron units.
+  double UNIT_ENERGY;      ///< Unit energy in Mellotron units.
 };
 
 } // namespace mellotron

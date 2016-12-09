@@ -32,6 +32,7 @@ x_qgauss = np.loadtxt("x_field_qgauss.txt")/1e-6
 y_qgauss = np.loadtxt("y_field_qgauss.txt")/1e-6
 X_qgauss, Y_qgauss = np.meshgrid(x_qgauss, y_qgauss)
 field = np.loadtxt("QuasiGaussianField.txt")
+fieldQED=np.loadtxt("QuasiGaussianField_qed.txt")
 
 # -- Plot the field.
 fig = plt.figure()
@@ -39,10 +40,17 @@ plt.pcolormesh(X_qgauss,Y_qgauss,field)
 plt.gca().set_aspect('equal')
 plt.colorbar()
 
+fig = plt.figure()
+plt.pcolormesh(X_qgauss,Y_qgauss,(field-fieldQED)/field)
+plt.gca().set_aspect('equal')
+plt.colorbar()
+
 t_data = np.loadtxt("t_data_qgauss.txt")
 t_field = np.loadtxt("t_field_qgauss.txt")
+t_field_qed= np.loadtxt("t_field_qgauss_qed.txt")
 
 fig = plt.figure()
 plt.plot(t_data,t_field)
+plt.plot(t_data,t_field_qed)
 
 plt.show()
