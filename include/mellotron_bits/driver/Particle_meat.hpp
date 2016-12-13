@@ -48,7 +48,7 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   ComputeFieldTensor(x[0],x[1],x[2],x[3]);
 
   // We compute the Lorentz gamma factor.
-  double gamma              = std::sqrt(1.0+arma::norm(momentum,2)/(mass*mass));
+  double gamma              = std::sqrt(1.0+std::pow(arma::norm(momentum,2)/mass,2));
   double rel_mass           = gamma*mass;
   double charge_to_rel_mass = charge/rel_mass;
 

@@ -8,9 +8,15 @@
 
 #include <gtest/gtest.h>
 
+#include <iostream>
+#include <iomanip>
+#include <limits>
+#include <cmath>
+
 #include <armadillo>
 #include <mellotron>
 #include <boost/numeric/odeint.hpp>
+
 
 using namespace boost::numeric::odeint;
 
@@ -70,7 +76,18 @@ TEST_F(ParticleTest, TestIntegration)
   std::cout << "Times \t p_th \t p_exp " << std::endl;
   for (uint i=0; i<50; i++)
   {
-    std::cout << electron_obs.times[i] << "\t" << 0.1*electron_obs.times[i] << "\t" << electron_obs.momentum(2,i) << std::endl;
+    std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1) << electron_obs.times[i] << "\t" << 0.1*electron_obs.times[i] << "\t" << electron_obs.momentum(2,i) << "\t" << 0.1*electron_obs.times[i]-electron_obs.momentum(2,i) << std::endl;
+  }
+
+  std::cout << std::endl;
+  std::cout << "Times \t x_th \t x_exp " << std::endl;
+  for (uint i=0; i<50; i++)
+  {
+    std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1)
+              << electron_obs.times[i] << "\t"
+              << 10.0*std::sqrt(1.0+0.01*std::pow(electron_obs.times[i],2))-10 << "\t"
+              << electron_obs.position(2,i) << "\t"
+              << 10.0*std::sqrt(1.0+0.01*std::pow(electron_obs.times[i],2))-10-electron_obs.position(2,i) << std::endl;
   }
 
   electron_obs.OutputData();
