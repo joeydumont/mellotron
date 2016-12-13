@@ -14,11 +14,13 @@
 
 using namespace boost::numeric::odeint;
 
+using namespace mellotron;
+
 struct ConstantField
 {
   std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
   {
-    std::array<double,6> constant = {0.0,0.0,1.0e-1,0.0,0.0,1.0e-1};
+    std::array<double,6> constant = {0.0,0.0,1.0e-1,0.0,0.0,0.0};
     return constant;
   }
 };
@@ -56,13 +58,19 @@ TEST_F(ParticleTest, TestIntegration)
                                  x,
                                  boost::begin(times),
                                  boost::end(times),
-                                 0.1,
+                                 0.01,
                                  std::ref(electron_obs));
   std::cout << steps << std::endl;
 
   for (uint i=0; i<8; i++)
   {
     std::cout << x[i] << std::endl;
+  }
+
+  std::cout << "Times \t p_th \t p_exp " << std::endl;
+  for (uint i=0; i<50; i++)
+  {
+    std::cout << electron_obs.times[i] << "\t" << 0.1*electron_obs.times[i] << "\t" << electron_obs.momentum(2,i) << std::endl;
   }
 
   electron_obs.OutputData();

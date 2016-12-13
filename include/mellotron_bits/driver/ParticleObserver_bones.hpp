@@ -32,8 +32,6 @@ public:
   /// Outputs in a pair of HDF5 and XDMF files.
   void OutputData();
 
-protected:
-
   /// Creates the HDF5 and outputs the data.
   void  GenerateHDF5();
 
