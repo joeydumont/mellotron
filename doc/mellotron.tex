@@ -295,6 +295,7 @@ we take
   \end{subequations}
 Substituting this into the Landau-Lifshitz equation yields
   \begin{align}
+  	\dv{x^\mu}{t'}   &= \frac{p^\mu}{\gamma m_\text{el}} \\
     \dv{p^0}{t'}     &= \frac{q_\text{el}}{\gamma m_\text{el}}\vb{p}'\cdot\vb{E}'
                        +\frac{2\alpha}{3\gamma}\frac{q_\text{el}^4}{m_\text{el}^5}\frac{\hbar\omega_0}{m_ec^2}
                       \left[(\vb{p}'\cdot\vb{E}')^2-(\gamma\vb{E}'+\vb{p}'\times\vb{B}')^2\right]p^0 \\
@@ -304,7 +305,7 @@ Substituting this into the Landau-Lifshitz equation yields
   \end{align}
 where $q_\text{el}$ is the charge of the particle in units of the electron charge.
 
-\paragraph{Normalization of the electromagnetic field}
+
 
 
 % In the implementation, we assume QED units. The equation thus reads
@@ -356,6 +357,63 @@ The fourth is simply the squared magnitude of the Lorentz force vector, i.e.
   \begin{equation}
     g_4^\mu = \left[\left(\frac{\epsilon\vb{E}}{c}+\left(\vb{p}\times\vb{B}\right)\right)^2-(\vb{p}\cdot\vb{E})^2\right] p^\mu.
   \end{equation}
+
+\section{Analytical Solutions}
+
+To test the implementation, we use an analytical solution in a uniform electrostatic field,
+neglecting radiation reaction.
+The vector part of the momentum equation reads
+	\begin{equation}
+		\dv{\vb{p}}{t} = q_\text{el}\vb{E}
+	\end{equation}
+and can readily be integrated to yield
+	\begin{equation}
+		p(t) = q_\text{el}\vb{E}t+\vb{p}_0.
+	\end{equation}
+The time component, $p^0=m_\text{el}\gamma$ reads
+	\begin{align}
+		\dv{\gamma}{t} &= \frac{q_\text{el}}{\gamma m_\text{el}^2}\vb{p}\cdot\vb{E} \\
+		               &= \frac{q_\text{el}}{\gamma m_\text{el}^2}\left(q_\text{el}\vb{E}^2 t + \vb{p}_0\cdot\vb{E}\right)
+	\end{align}
+Which yields
+	\begin{equation}
+		\gamma(t) = \sqrt{\frac{q_\text{el}^2\vb{E}^2}{ m_\text{el}^2}t^2+2\frac{q_\text{el}}{m_\text{el}^2}\vb{p}_0\cdot\vb{E}t+k_1}
+	\end{equation}
+We can fix the constant by asking that $\gamma(0)=\sqrt{1+\vb{p}_0^2/m_\text{el}^2}$.
+	\begin{align}
+		\gamma(t) &= \sqrt{\frac{q_\text{el}^2\vb{E}^2}{ m_\text{el}}t^2+2\frac{q_\text{el}}{ m_\text{el}}\vb{p}_0\cdot\vb{E}t+1+\vb{p}_0^2/m_\text{el}^2}\\
+		          &= \sqrt{1+\frac{1}{m_\text{el}^2}\left({p_0}^2+2q_\text{el}\vb{p}_0\cdot\vb{E}t+q_\text{el}^2\vb{E}^2t^2\right)} \\
+		          &= \sqrt{1+\vb{p}(t)^2/m_\text{el}^2},
+	\end{align}
+as it should be.
+
+We can now solve for the position as a function of time. We have
+	\begin{align}
+		\dv{\vb{x}}{t} &= \frac{1}{\gamma m_\text{el}}\left(q_\text{el}\vb{E}t+\vb{p}_0\right) \\
+		               &= \frac{1}{m_\text{el}}\frac{q_\text{el}\vb{E}t+\vb{p}_0}{\sqrt{1+\frac{1}{m_\text{el}^2}\left({p_0}^2+2q_\text{el}\vb{p}_0\cdot\vb{E}t+q_\text{el}^2\vb{E}^2t^2\right)}}
+	\end{align}
+which has the solution
+	\begin{align}
+		\dv{\vb{x}}{t} &= \frac{\gamma\vb{E}}{\vb{E}^2}\frac{m_\text{el}}{q_\text{el}}+c_1 \\
+		               &= \frac{\gamma\vb{E}}{\vb{E}^2}\frac{m_\text{el}}{q_\text{el}}
+		                 +\vb{x}_0-\frac{\gamma(0)\vb{E}}{\vb{E}^2}\frac{m_\text{el}}{q_\text{el}}.
+  \end{align}
+
+We repeat the process for a magnetic field in the $z$ direction, i.e.
+$\vb{B}=(0,0,B_z)$. In this case, the $\gamma$ factor is constant in time,
+and it equal to its initial value. We can write the solution
+	\begin{align}
+		p_x(t) &= p_\perp \sin(\Omega t + \theta_0) \\
+		p_y(t) &= p_\perp \cos(\Omega t + \theta_0) \\
+		p_z(t) &= p_z(0)
+	\end{align}
+where $p_\perp=\sqrt{p_x(0)^2+p_y(0)^2}$, $\Omega=q_\text{el}Bz/(\gamma m_\text{el})$
+and $\theta_0=\arctan(p_x(0)/p_y(0))$. The position as a function of time
+	\begin{align}
+		x(t)  &= -\frac{p_\perp}{\gamma m_\text{el}\Omega}\left(\cos(\Omega t+\theta_0)-\cos(\theta_0)\right)+x_0 \\
+		y(t)  &=  \frac{p_\perp}{\gamma m_\text{el}\Omega}\left(\sin(\Omega t+\theta_0)-\sin(\theta_0)\right)+y_0 \\
+		z(t)  &= \frac{p_z(0)}{\gamma m_\text{el}}t+z_0.
+	\end{align}
 
 \appendix
 

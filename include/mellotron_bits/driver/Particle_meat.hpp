@@ -1,4 +1,4 @@
-#ifndef PARTICLE_MEAT_HPP
+#ifndef PARTICLE_MEAT_HP
 #define PARTICLE_MEAT_HPP
 
 namespace mellotron {
@@ -36,6 +36,33 @@ Particle<FieldModel>::ComputeFieldTensor(const double t,
 template <class FieldModel>
 inline
 void
+Particle<FieldModel>::SetInitConditions(arma::colvec::fixed<8>  &x,
+                                        const double            x_init,
+                                        const double            y_init,
+                                        const double            z_init,
+                                        const double            px_init,
+                                        const double            py_init,
+                                        const double            pz_init,
+                                        const double            t_init)
+{
+  // We compute the initial gamma factor.
+  double p_init_sq = std::pow(px_init,2)+std::pow(py_init,2)+std::pow(pz_init,2);
+  double gamma     = std::sqrt(1.0+p_init_sq/std::pow(mass,2));
+
+  // We set the values in the vector.
+  x[0] = t_init;
+  x[1] = x_init;
+  x[2] = y_init;
+  x[3] = z_init;
+  x[4] = mass*gamma;
+  x[5] = px_init;
+  x[6] = py_init;
+  x[7] = pz_init;
+}
+
+template <class FieldModel>
+inline
+void
 Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
                                         arma::colvec::fixed<8> &dxdt,
                                   const double t)
@@ -57,7 +84,7 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
 
   // Compute the force.
   double pdotE         = arma::dot(momentum,electric_field);
-  arma::colvec lorentz = x[4]*electric_field + arma::cross(momentum,magnetic_field);
+  arma::colvec lorentz = gamma*electric_field + arma::cross(momentum,magnetic_field);
   chi_sq               = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
   chi                  = std::sqrt(chi_sq);
 

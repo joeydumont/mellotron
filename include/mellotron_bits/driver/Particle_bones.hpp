@@ -34,6 +34,10 @@ public:
 
   // Accessor functions of the particle parameters.
   double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
+  double GetMass(){return mass;}                                    ///< Returns the mass of the particle.
+
+  // Utility function to set the initial conditions.
+  void SetInitConditions(arma::colvec::fixed<8>& x, double x_init, double y_init, double z_init, double px_init, double py_init, double pz_init, double t_init);
 
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
