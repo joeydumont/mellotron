@@ -4,6 +4,8 @@
 #include <armadillo>
 #include <cmath>
 
+namespace mellotron {
+
 /*!
  *  \class  Particle
  *  \author Joey Dumont      <joey.dumont@gmail.com>
@@ -32,14 +34,18 @@ public:
 
   // Accessor functions of the particle parameters.
   double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
+  double GetMass(){return mass;}                                    ///< Returns the mass of the particle.
+
+  // Utility function to set the initial conditions.
+  void SetInitConditions(arma::colvec::fixed<8>& x, double x_init, double y_init, double z_init, double px_init, double py_init, double pz_init, double t_init);
 
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
 
 protected:
 
-  const double                      charge;                ///< Charge of the particle, in QED units.
-  const double                      mass;                  ///< Mass of the particle, in QED units.
+  const double                      charge;                ///< Charge of the particle, multiple of the elementary charge.
+  const double                      mass;                  ///< Mass of the particle, multiple of the electron mass.
 
         FieldModel               &  field_model;           ///< Object that contains a ComputeFieldComponents routine.
 
@@ -54,5 +60,9 @@ protected:
         double                      chi_sq;                ///< Lorentz invariant along the trajectory, squared.
         double                      chi;                   ///< Lorentz invariant along the trajectory.
 };
+
+}
+
+// namespace mellotron
 
 #endif // PARTICLE_BONES_HPP

@@ -5,9 +5,10 @@
 #include <boost/math/constants/constants.hpp>
 #include <complex>
 
-namespace cst = boost::math::constants;
 using namespace std::complex_literals;
 
+namespace mellotron {
+namespace cst = boost::math::constants;
 
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
@@ -111,13 +112,13 @@ public:
    return field;
   }
 
-  double lambda;
-  double waist;
-  double L;
-  double energy;
-  double norm_factor;
+  double lambda;           ///< Central wavelength of the pulse.
+  double waist;            ///< Beam waist size (radius).
+  double L;                ///< Axial length of the pulse, related to FWHM duration.
+  double energy;           ///< Total energy contained in the pulse.
+  double norm_factor;      ///< Normalization factor for the field to contain the proper energy.
 
-protected:
+//protected:
   /// Compute the energy contained in the field and rescale the components.
   int ComputeNormalizationFactor()
   {
@@ -157,5 +158,7 @@ int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *
 
   return 0;
 }
+
+} // namespace mellotron
 
 #endif // SALAMIN_TIGHTLY_FOCUSED_HPP

@@ -3,7 +3,8 @@
 
 #include <boost/math/constants/constants.hpp>
 
-namespace cst = boost::math::constants;
+
+namespace mellotron {
 
 int interface_to_cubature_e_dipoles(unsigned int ndim, const double * x,    void *fdata,
                                     unsigned int fdim,       double * fval);
@@ -27,7 +28,7 @@ public:
   /// the pulse duration a and the laser energy energy.
   DipoleQuasiGaussian(double my_omega,double my_pulse_duration,double my_energy)
   : omega(my_omega)
-  , lambda(2.0*cst::pi<double>()/omega)
+  , lambda(2.0*constants::math::pi/omega)
   , a(my_pulse_duration)
   , energy(my_energy)
   {
@@ -41,9 +42,9 @@ public:
     std::array<double,6> field = {0.0,0.0,0.0,0.0,0.0,0.0};
 
     // Auxiliary variables.
-    double R = std::sqrt(x*x+y*y+z*z);
+    double R = std::sqrt(x*x + y*y + z*z);
 
-    if (R < 1e-2*lambda)
+    if (R < 1.0e-3*lambda)
     {
       field[2] = 4.0*d*g3(t)/3.0;
       return field;
@@ -84,23 +85,29 @@ public:
     return field;
   }
 
-
-    /// Compute the energy contained in the field.
+  /// Compute the energy contained in the field.
   int ComputeNormalizationFactor()
   {
     const uint ndim = 3;
     const uint fdim = 1;
-    double xmin[3] = {-5.0*lambda,-5.0*lambda,-5.0*lambda};
-    double xmax[3] = { 5.0*lambda, 5.0*lambda, 5.0*lambda};
+    double xmin[3] = {-10.0*lambda,-10.0*lambda,-10.0*lambda};
+    double xmax[3] = { 10.0*lambda, 10.0*lambda, 10.0*lambda};
     double val[1], err[1];
 
     int error_flag = hcubature(fdim, interface_to_cubature_e_dipoles, this, ndim, xmin, xmax,
-                               0,0,1.0e-6, ERROR_INDIVIDUAL, val, err);
+                               0,0,1.0e-5, ERROR_INDIVIDUAL, val, err);
 
     return error_flag;
   }
 
+  double omega;          ///< Central frequency of the driving function.
+  double lambda;         ///< Its related wavelength.
+  double a;              ///< The inverse of the pulse duration.
+  double energy;         ///< The total energy contained in the beam.
+  double d;              ///< The magnitude of the dipole, related to the total energy and driving function.
+
 protected:
+  /// Sets the normalization factor, i.e. the magnitude of the dipole.
   void SetD0()
   {
     double sqr = std::sqrt(3.0*a*energy/(4.0*cst::pi<double>()))/(omega*omega);
@@ -111,50 +118,59 @@ protected:
     d = sqr*f;
   }
 
+  /// Retarted form of the driving function.
   double g0_ret(double t, double R)
   {
     return std::exp(-a*a*std::pow(t-R,2))*std::sin(omega*(t-R));
   }
 
+  /// Advanced form of the driving function.
   double g0_adv(double t, double R)
   {
     return std::exp(-a*a*std::pow(t+R,2))*std::sin(omega*(t+R));
   }
 
+  /// Feynman form of the driving function.
   double g0p(double t, double R)
   {
     return g0_ret(t,R)+g0_adv(t,R);
   }
 
+  /// Anti-Feynman form of the driving function.
   double g0m(double t, double R)
   {
     return g0_ret(t,R)-g0_adv(t,R);
   }
 
+  /// First derivative of the Feynman driving function.
   double g1p(double t, double R)
   {
     return (-2.0*a*a*(t+R)*std::sin(omega*(t+R))+std::cos(omega*(t+R))*omega)*std::exp(-std::pow(a*(t+R),2))
           +(-2.0*a*a*(t-R)*std::sin(omega*(t-R))+std::cos(omega*(t-R))*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
+  /// First derivative of the anti-Feynman driving function.
   double g1m(double t, double R)
   {
     return (2.0*a*a*(t+R)*std::sin(omega*(t+R))-std::cos(omega*(t+R))*omega)*std::exp(-std::pow(a*(t+R),2))
          +(-2.0*a*a*(t-R)*std::sin(omega*(t-R))+std::cos(omega*(t-R))*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
+  /// Second derivative of the Feynman driving function.
   double g2p(double t, double R)
   {
     return (-2.0*a*a*std::sin(omega*(t+R))+4.0*std::pow(a*a*(t+R),2)*std::sin(omega*(t+R))-4.0*a*a*(t+R)*std::cos(omega*(t+R))*omega-std::sin(omega*(t+R))*omega*omega)*std::exp(-std::pow(a*(t+R),2))
           +(-2.0*a*a*std::sin(omega*(t-R))+4.0*std::pow(a*a*(t-R),2)*std::sin(omega*(t-R))-4.0*a*a*(t-R)*std::cos(omega*(t-R))*omega-std::sin(omega*(t-R))*omega*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
+  /// Second derivative of the anti-Feynman driving function.
   double g2m(double t, double R)
   {
     return (2.0*a*a*std::sin(omega*(t+R))-4.0*std::pow(a*a*(t+R),2)*std::sin(omega*(t+R))+4.0*a*a*(t+R)*std::cos(omega*(t+R))*omega+std::sin(omega*(t+R))*omega*omega)*std::exp(-std::pow(a*(t+R),2))
          +(-2.0*a*a*std::sin(omega*(t-R))+4.0*std::pow(a*a*(t-R),2)*std::sin(omega*(t-R))-4.0*a*a*(t-R)*std::cos(omega*(t-R))*omega-std::sin(omega*(t-R))*omega*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
+  /// Third derivative of the driving function, evaluated at R=0..
   double g3(double t)
   {
     double exp_prefac = std::exp(-a*a*t*t);
@@ -162,12 +178,6 @@ protected:
     double sin_prefac = 12.0*std::pow(a,4)*t-8.0*std::pow(a,6)*std::pow(t,3)+6.0*a*a*omega*omega*t;
     return exp_prefac*(cos_prefac*std::cos(omega*t)+sin_prefac*std::sin(omega*t));
   }
-
-  double omega;
-  double lambda;
-  double a;
-  double energy;
-  double d;
 
 };
 
@@ -178,7 +188,7 @@ int interface_to_cubature_e_dipoles(unsigned int ndim, const double * x,    void
 
   // We compute the electromagnetic field.
   auto obj = (DipoleQuasiGaussian * )fdata;
-  auto field = obj->ComputeFieldComponents(0.0, x[0], x[1], x[2]);
+  auto field = obj->ComputeFieldComponents(0.0*obj->lambda, x[0], x[1], x[2]);
 
   // We compute the electromagnetic energy.
   fval[0] = 0.0;
@@ -191,5 +201,7 @@ int interface_to_cubature_e_dipoles(unsigned int ndim, const double * x,    void
 
   return 0;
 }
+
+} // namespace mellotron
 
 #endif // E_DIPOLES_HPP

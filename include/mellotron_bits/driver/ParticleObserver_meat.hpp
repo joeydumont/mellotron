@@ -1,6 +1,8 @@
 #ifndef PARTICLE_OBSERVER_MEAT_HPP
 #define PARTICLE_OBSERVER_MEAT_HPP
 
+namespace mellotron {
+
 template <class FieldModel>
 inline
 ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle)
@@ -23,7 +25,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
   momentum.col(n_cols) = x.subvec(5,7);
-  gamma.push_back(x[4]);
+  gamma.push_back(x[4]/particle.GetMass());
   times.push_back(x[0]);
 
   // Compute the electromagnetic field and store it.
@@ -221,5 +223,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   H5Gclose(group_id);
   H5Fclose(file_id);
 }
+
+} // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_MEAT_HPP
