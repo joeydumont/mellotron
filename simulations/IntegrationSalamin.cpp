@@ -64,16 +64,16 @@ int main(int argc, char* argv[])
     double nsteps  = vm["nsteps"].as<int>();
 
     // Create field object
-    SalaminTightlyFocusedLinear                   field(lam,w0,L,energy);
-    Particle<SalaminTightlyFocusedLinear>         particle(Q,mass,field);
-    ParticleObserver<SalaminTightlyFocusedLinear> particle_obs(particle);
+    mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,energy);
+    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field);
+    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);
     x[0] = init_conds[0]; // Initial value of time
     x[1] = init_conds[1]; // Initial position
     x[2] = init_conds[2];
-    x[3] = init_conds[3]; 
+    x[3] = init_conds[3];
 
     x[5] = init_conds[4];
     x[6] = init_conds[5];
