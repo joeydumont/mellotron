@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     po::options_description desc("Allowed options");
     desc.add_options()
     ("help", "produce help message")
-    ("init_conds", po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, respectively (6-vector")
+    ("init_conds", po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, respectively (6-vector)")
     ("energy",     po::value<double>()->default_value(1.0),         "Pulse energy (joules)"                      )
     ("lam",        po::value<double>()->default_value(0.8),         "Wavelength in microns"                      )
     ("w0",         po::value<double>()->default_value(1.0),         "Beam waist in units of wavelength"          )
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     ("mass",       po::value<double>()->default_value(1.0),         "Particle mass in units of electron mass"    )
     ("Q",          po::value<double>()->default_value(-1.0),        "Particle charge in units of electron charge")
     ("dt",         po::value<double>()->default_value(1e-01),       "Duration of a time step"                    )
-    ("nsteps",     po::value<int>()->default_value(100),             "Number of time steps"                       )
+    ("nsteps",     po::value<int>()->default_value(100),            "Number of time steps"                       )
     ;
 
 

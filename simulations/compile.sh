@@ -30,8 +30,10 @@ filenameNoExt="${filename%.*}"
 CXX_FLAGS="-Wall -std=c++14 -O3"
 g++ ${CXX_FLAGS}                          \
       -I ../include                       \
+      -I /opt/local/include               \
+      -L /opt/local/lib                   \
       -o ${filenameNoExt}                 \
       ${filename}                         \
-      -lhdf5 -lboost_program_options -lgtest -larmadillo
+      -lhdf5 -lboost_program_options -lgtest -larmadillo -lCubature
       
 exit 0
