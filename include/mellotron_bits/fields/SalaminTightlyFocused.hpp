@@ -108,7 +108,6 @@ public:
     field[i] /= norm_factor;
    }
 
-
    return field;
   }
 

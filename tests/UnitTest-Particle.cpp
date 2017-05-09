@@ -91,7 +91,8 @@ TEST_F(ParticleTest, TestIntegration)
   double pz_init                     = 0.0;
 
   // Times at which we output the data.
-  arma::colvec           times       = arma::linspace<arma::colvec>(0.0,10.0,50);
+  unsigned int           size_time   = 2500;
+  arma::colvec           times       = arma::linspace<arma::colvec>(0.0,10.0,size_time);
 
   // Set the initial conditions.
   electron.SetInitConditions(x,x_init,y_init,z_init,px_init,py_init,pz_init,times[0]);
@@ -120,7 +121,7 @@ TEST_F(ParticleTest, TestIntegration)
   std::cout << std::endl;
 
   // Comparison between recorded data and analytical solution.
-  for (uint i=0; i<50; i++)
+  for (uint i=0; i<size_time; i++)
   {
     EXPECT_NEAR(electron_obs.momentum(0,i), charge*field.Ex*electron_obs.times[i]+px_init*field.Ex, 1.0e-6);
     EXPECT_NEAR(electron_obs.momentum(1,i), charge*field.Ey*electron_obs.times[i]+py_init*field.Ey, 1.0e-6);
@@ -150,7 +151,8 @@ TEST_F(ParticleTest, TestIntegratinoMagnetostatic)
   double pz_init                     = 0.0;
 
   // Times at which we output the data.
-  arma::colvec           times       = arma::linspace<arma::colvec>(0.0,10.0,50);
+  unsigned int           size_time   = 250;
+  arma::colvec           times       = arma::linspace<arma::colvec>(0.0,10.0,size_time);
 
   // Set the initial conditions.
   electron.SetInitConditions(x,x_init,y_init,z_init,px_init,py_init,pz_init,times[0]);
@@ -186,7 +188,7 @@ TEST_F(ParticleTest, TestIntegratinoMagnetostatic)
   std::cout << std::endl;
 
   // Comparison between recorded data and analytical solution.
-  for (uint i=0; i<50; i++)
+  for (uint i=0; i<size_time; i++)
   {
     EXPECT_NEAR(electron_obs.momentum(0,i), p_perp*std::sin(omega*electron_obs.times[i]+theta_0), 1.0e-5);
     EXPECT_NEAR(electron_obs.momentum(1,i), p_perp*std::cos(omega*electron_obs.times[i]+theta_0), 1.0e-5);

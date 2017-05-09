@@ -93,6 +93,9 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   hsize_t size_dataspace[1];size_dataspace[0] = times.size();
   dataspace_id = H5Screate_simple(1, size_dataspace, NULL);
   plist_id     = H5Pcreate(H5P_DATASET_CREATE);
+  hsize_t chunk_size_1d = 5;
+  H5Pset_chunk(plist_id,1,&chunk_size_1d);
+  H5Pset_deflate(plist_id,5);
   dataset_id   = H5Dcreate(group_id,
                            "times",
                            H5T_NATIVE_DOUBLE,
@@ -150,6 +153,9 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   size_dataspace_position[0] = position.n_cols;
   size_dataspace_position[1] = position.n_rows;
   dataspace_id               = H5Screate_simple(2, size_dataspace_position, NULL);
+  hsize_t chunk_size[2]; chunk_size[0] = 50; chunk_size[1]=3;
+  H5Pset_chunk(plist_id,2,chunk_size);
+  H5Pset_deflate(plist_id,5);
   dataset_id                 = H5Dcreate(group_id,
                                          "position",
                                          H5T_NATIVE_DOUBLE,
