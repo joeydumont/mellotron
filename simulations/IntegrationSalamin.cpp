@@ -70,16 +70,16 @@ int main(int argc, char* argv[])
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);
-    x[0] = init_conds[0];
-    x[1] = init_conds[1];
+    x[0] = init_conds[0]; // Initial value of time
+    x[1] = init_conds[1]; // Initial position
     x[2] = init_conds[2];
-    x[3] = init_conds[3]; // Space-time
+    x[3] = init_conds[3]; 
 
     x[5] = init_conds[4];
     x[6] = init_conds[5];
     x[7] = init_conds[6]; // Momenta
 
-    x[4] = sqrt(1.0 + x[5]*x[5] + x[6]*x[6] + x[7]*x[7]); // Energy
+    x[4] = sqrt(1.0 + x[5]*x[5] + x[6]*x[6] + x[7]*x[7]); // Energy (calculated from momenta)
 
     // Define time coordinates vector
     arma::colvec times = arma::linspace<arma::colvec>(x[0],x[0]+nsteps*dt,nsteps);
