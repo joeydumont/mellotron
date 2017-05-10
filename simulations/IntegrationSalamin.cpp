@@ -29,8 +29,9 @@ int main(int argc, char* argv[])
     ("L",          po::value<double>()->default_value(1.0),         "Axial length of beam in units of wavelength")
     ("mass",       po::value<double>()->default_value(1.0),         "Particle mass in units of electron mass"    )
     ("Q",          po::value<double>()->default_value(-1.0),        "Particle charge in units of electron charge")
-    ("dt",         po::value<double>()->default_value(1e-01),       "Duration of a time step"                    )
-    ("nsteps",     po::value<int>()->default_value(100),            "Number of time steps"                       )
+    ("t_init",     po::value<double>()->default_value(0.0),         "Initial time in simulation (electron units)")
+    ("dt",         po::value<double>()->default_value(1e-01),       "Duration of a time step (electron units)"   )
+    ("nsteps",     po::value<int>()->default_value(100),            "Number of time steps (electron units)"      )
     ;
 
 
@@ -41,14 +42,14 @@ int main(int argc, char* argv[])
 
     // Control the number of components in initial conditions vector
     std::vector<double> init_conds;
-    if (!vm["init_conds"].empty() && (init_conds = vm["init_conds"].as<std::vector<double> >()).size() == 7)
+    if (!vm["init_conds"].empty() && (init_conds = vm["init_conds"].as<std::vector<double> >()).size() == 6)
     {
         // Good to go
     }
     else
     {
         std::cout
-                << "Initial conditions must be a 7 component vector... Exiting."
+                << "Initial conditions must be a 6 component vector... Exiting."
                 << std::endl;
         return 0;
     }
@@ -60,6 +61,7 @@ int main(int argc, char* argv[])
     double L       = vm["L"].as<double>();
     double mass    = vm["mass"].as<double>();
     double Q       = vm["Q"].as<double>();
+    double t_init  = vm["t_init"].as<double>();
     double dt      = vm["dt"].as<double>();
     double nsteps  = vm["nsteps"].as<int>();
 
@@ -70,19 +72,20 @@ int main(int argc, char* argv[])
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);
-    x[0] = init_conds[0]; // Initial value of time
-    x[1] = init_conds[1]; // Initial position
-    x[2] = init_conds[2];
-    x[3] = init_conds[3];
+    double x_init                      = init_conds[0]; // Initial position
+    double y_init                      = init_conds[1];
+    double z_init                      = init_conds[2];
 
-    x[5] = init_conds[4];
-    x[6] = init_conds[5];
-    x[7] = init_conds[6]; // Momenta
+    double px_init = init_conds[3]; // Initial momentum
+    double py_init = init_conds[4];
+    double pz_init = init_conds[5];
 
-    x[4] = sqrt(1.0 + x[5]*x[5] + x[6]*x[6] + x[7]*x[7]); // Energy (calculated from momenta)
 
-    // Define time coordinates vector
-    arma::colvec times = arma::linspace<arma::colvec>(x[0],x[0]+nsteps*dt,nsteps);
+    // Times at which we output the data.
+    arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+nsteps*dt,nsteps); // Time vector
+
+    // Set the initial conditions.
+    particle.SetInitConditions(x,x_init,y_init,z_init,px_init,py_init,pz_init,times[0]);
 
     // Perform integration
     size_t steps = odeint::integrate_times(
