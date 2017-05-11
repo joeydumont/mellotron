@@ -41,6 +41,17 @@ public:
     ComputeNormalizationFactor();
   }
 
+  /// This constructor takes an additional argument, my_norm_constant, which consists in the integral
+  /// of 0.5*(E^2+B^2) for an energy of 1.0.
+  SalaminTightlyFocusedLinear(double my_lambda,double my_waist,double my_L,double my_norm_constant,double my_energy)
+  : lambda(my_lambda)
+  , waist(my_waist)
+  , L(my_L)
+  , energy(my_energy)
+  {
+    norm_factor = std::sqrt(my_norm_constant/energy);
+  }
+
   /// Computes the field components.
   std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
   {
