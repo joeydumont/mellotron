@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     ("nsteps",     po::value<int>()->default_value(100),            "Number of time steps"                            )
     ;
 
-    // Parse command line
+    // Parse command line and store in variable map
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
     if (!vm["init_conds"].empty() && (init_conds = vm["init_conds"].as<std::vector<double> >()).size() == 6)
     {
         // Good to go
+        init_conds = vm["init_conds"].as<std::vector<double> >();
     }
     else
     {
