@@ -28,12 +28,13 @@ filenameNoExt="${filename%.*}"
 
 # -- We compile the test.
 CXX_FLAGS="-Wall -std=c++14 -O3"
+#CXX_FLAGS="-Wall -std=c++14 -pg -g -O0"
 g++ ${CXX_FLAGS}                          \
       -I ../include                       \
       -I /opt/local/include               \
       -L /opt/local/lib                   \
-      -o ${filenameNoExt}                 \
+      -o ${filenameNoExt}.o               \
       ${filename}                         \
       -lhdf5 -lboost_program_options -lgtest -larmadillo -lCubature
-      
+
 exit 0
