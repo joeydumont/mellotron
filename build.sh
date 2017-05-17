@@ -48,7 +48,7 @@ if [ $# -gt 1 ]; then
 
     if [ $? -ne 0 ]; then
       printf "module command could not be executed. Are you sure you are on a cluster?\n"
-      exit 1
+      #exit 1
     fi
 
     module use  /home/maclean_group/modulefiles/

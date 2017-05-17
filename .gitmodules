@@ -1,0 +1,3 @@
+[submodule "external/Cubature"]
+	path = external/Cubature
+	url = https://github.com/valandil/Cubature

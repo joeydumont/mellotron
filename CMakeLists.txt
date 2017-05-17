@@ -33,11 +33,6 @@ find_package(Boost 1.48.0 REQUIRED)
 include_directories(${BOOST_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 
-# -- Required dependency: Cubature.
-find_package(Cubature REQUIRED)
-include_directories(${CUBATURE_INCLUDE_DIRS})
-SET (LIBS ${LIBS} ${CUBATURE_LIBRARIES})
-
 # -- Compiler config for RELEASE build.
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
@@ -72,18 +67,45 @@ endif()
 # -- Included files
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
-install (DIRECTORY include/ DESTINATION include)
+# -- Cubature
+include (external/Cubature/Cubature_version.cmake)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
+
+# -- Source files
+aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/src SRC_LIST)
+
+# -- Build a shared library
+add_library(Cubature SHARED ${SRC_LIST})
+
+# Define the properties of the library to
+# be built (version and other stuff).
+#GET_DIRECTORY_PROPERTY(Cubature_VERSION_MAJOR   DIRECTORY external/Cubature DEFINITION Cubature_VERSION_MAJOR)
+#GET_DIRECTORY_PROPERTY(Cubature_VERSION_MINOR   DIRECTORY external/Cubature DEFINITION Cubature_VERSION_MINOR)
+#GET_DIRECTORY_PROPERTY(Cubature_VERSION_RELEASE DIRECTORY external/Cubature DEFINITION Cubature_VERSION_RELEASE)
+set_target_properties (
+  Cubature
+  PROPERTIES
+    VERSION   ${Cubature_VERSION_MAJOR}.${Cubature_VERSION_MINOR}.${Cubature_VERSION_RELEASE}
+    SOVERSION ${Cubature_VERSION_MAJOR}.${Cubature_VERSION_MINOR}.${Cubature_VERSION_RELEASE}
+)
+
+# Link dependencies
+target_link_libraries (Cubature)
+
+install (DIRECTORY include/                  DESTINATION include)
+install (DIRECTORY external/Cubature/include DESTINATION include/mellotron_bits/external/Cubature)
+install (TARGETS   Cubature                  DESTINATION lib)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #
 # ----------------------------------------------------------------- #
 # add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-add_custom_target(
-  doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen" VERBATIM
-)
-endif(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
+#find_package(Doxygen)
+#if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+#add_custom_target(
+#  doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+#      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#      COMMENT "Generating API documentation with Doxygen" VERBATIM
+#)
+#endif(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
