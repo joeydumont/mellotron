@@ -11,66 +11,9 @@
 # --------------------------------------------------------------------------- #
 
 echo -e " \e[95m--- MELLOTRON SIMULATION AUTOMATIC START ---\e[39m"
-read -r -p " Do you want to compile everything before starting simulation? [y/N] " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-        echo -e " \e[32m--- Starting compilation. ---\e[39m"
-
-        # -- Check if compile.sh exists
-        COMP="compile.sh"
-        if [ ! -f $COMP ]; then
-        echo "Usage: automaticStart.sh needs compile.sh in same directory."
-        exit 1
-        fi
-        chmod +x compile.sh
-
-        # -- Compile IntegrationSalamin.cpp to have .o
-        INTSALCPP="IntegrationSalamin.cpp"
-        if [ ! -f $INTSALCPP ]; then
-        echo "Usage: automaticStart.sh needs IntegrationSalamin.cpp in same directory."
-        exit 1
-        fi
-        ./compile.sh $INTSALCPP
-        echo "Done: compile IntegrationSalamin.cpp."
-
-        # -- Compile ComputeNormalizationConstantsSalaminLinear.cpp to have .o
-        COMPUTECPP="ComputeNormalizationConstantSalaminLinear.cpp"
-        if [ ! -f $COMPUTECPP ]; then
-        echo "Usage: automaticStart.sh needs ComputeNormalizationConstantSalaminLinear.cpp in same directory."
-        exit 1
-        fi
-        ./compile.sh $COMPUTECPP
-        echo "Done: compile ComputeNormalizationConstantSalaminLinear.cpp."
-
-        # -- Check that the script can find IntegrationSalamin.o, GenerateInitialConditions.py and ComputeNormalizationConstantSalaminLinear.o
-        INTSAL="IntegrationSalamin.o"
-        GENINIT="GenerateInitialConditions.py"
-        COMPUTE="ComputeNormalizationConstantSalaminLinear.o" 
-        if [ ! -f $INTSAL ]; then
-        echo "Usage: automaticStart.sh needs IntegrationSalamin.o in same directory."
-        exit 1
-        fi
-        if [ ! -f $GENINIT ]; then
-        echo "Usage: automaticStart.sh needs GenerateInitialConditions.py in same directory."
-        exit 1
-        fi
-        if [ ! -f $COMPUTE ]; then
-        echo "Usage: automaticStart.sh needs ComputeNormalizationConstantSalaminLinear.o in same directory."
-        exit 1
-        fi
-
-        # -- Compute normalization constant
-        OUTNORMCONST="normalization_constant.txt"
-        ./ComputeNormalizationConstantSalaminLinear.o --outfile $OUTNORMCONST
-        echo "Done: compute normalization constant."
-
-        echo -e " \e[32m--- Everything is compiled. Starting to generate initial conditions. ---\e[39m"
-
-    else
-        GENINIT="GenerateInitialConditions.py"
-        OUTNORMCONST="normalization_constant.txt"
-        echo -e " \e[32m--- Starting to generate initial conditions. ---\e[39m"
-
-    fi
+GENINIT="GenerateInitialConditions.py"
+OUTNORMCONST="normalization_constant.txt"
+echo -e " \e[32m--- Starting to generate initial conditions. ---\e[39m"
 
 
 # -- Generate initial conditions
@@ -88,20 +31,20 @@ read -r -p " Do you want to use default values? [y/N] " response
         done
         # -- Wavelength
         LENGTH=""
-        while [[ ! $LENGTH =~ ^[0-9]+\.?[0-9]*$ ]]; do
-            echo "Please enter the wavelength in m (float)"
+        while [[ ! $LENGTH =~ ^[0-9]+\.?[0-9]+\e?[-+]?[0-9]*$ ]]; do
+            echo "Please enter the wavelength in meters with the scientific notation (ex: 8.0e-7)"
             read LENGTH
         done
         # -- Momentum in z
         MOMENTUM=""
         while [[ ! $MOMENTUM =~ ^[-+]?[0-9]+\.?[0-9]*$ ]]; do
-            echo "Please enter the initial value of momentum in z in eV/c (float)"
+            echo "Please enter the initial value of the z momentum in eV/c (float)"
             read MOMENTUM
         done
         # -- Radius
         RADIUS=""
-        while [[ ! $RADIUS =~ ^[0-9]+\.?[0-9]*$ ]]; do
-            echo "Please enter the sphere radius in m (float)"
+        while [[ ! $RADIUS =~ ^[0-9]+\.?[0-9]+\e?[-+]?[0-9]*$ ]]; do
+            echo "Please enter the sphere radius in meters with the scientific notation (ex: 3.0e-6)"
             read RADIUS
         done
         python $GENINIT --outfile $OUTINITCONDS --wavelength $LENGTH --pz $MOMENTUM --numpart $NUMBER --radius $RADIUS
