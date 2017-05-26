@@ -26,13 +26,13 @@ int main(int argc, char* argv[])
     // Declare the supported options.
     po::options_description desc("Allowed options");
     desc.add_options()
-    ("help",                                                                "produce help message")
+    ("help",                                                                "produce help message"                                      )
     ("init_conds",         po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, electronic units (6-vector)")
-    ("norm_constant_file", po::value<std::string>()->required(),            "File that contains the normalization constant.")
+    ("norm_constant_file", po::value<std::string>()->required(),            "File that contains the normalization constant."            )
     ("energy",             po::value<double>()->default_value(10.0),        "Pulse energy, in joules"                                   )
     ("lam",                po::value<double>()->default_value(8.0e-07),     "Wavelength in meters"                                      )
-    ("w0",                 po::value<double>()->default_value(1.0),         "Beam waist in units of lambda"                             )
-    ("L",                  po::value<double>()->default_value(1.0),         "Axial length of beam in units of lambda"                   )
+    ("w0",                 po::value<double>()->default_value(8.0e-01),     "Beam waist in units of lambda"                             )
+    ("L",                  po::value<double>()->default_value(7.0e-01),     "Axial length of beam in units of lambda"                   )
     ("mass",               po::value<double>()->default_value(1.0),         "Particle mass in units of electron mass"                   )
     ("Q",                  po::value<double>()->default_value(-1.0),        "Particle charge in units of electron charge"               )
     ("t_init",             po::value<double>()->default_value(-5.0e-12),    "Initial time in simulation in seconds"                     )
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
     // Parse command line and store in variable map
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::store(parse_command_line(argc, argv, desc, po::command_line_style::unix_style ^ po::command_line_style::allow_short), vm);
     po::notify(vm);
 
     // Control the number of components in initial conditions vector
