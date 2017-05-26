@@ -131,13 +131,6 @@ int main(int argc, char* argv[])
                        std::ref(particle_obs)
                    );
 
-    std::cout << steps << std::endl;
-
-    for (uint i=0; i<8; i++)
-    {
-        std::cout << x[i] << std::endl;
-    }
-
     particle_obs.OutputData();
 
     return 0;
