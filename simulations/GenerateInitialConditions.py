@@ -60,10 +60,10 @@ def main():
         z = r * cos( theta )
 
         # Write momenta
-        of.write(str(px) + " " + str(py) + " " + str(pz) + " ")
+        of.write(str(x) + " " + str(y) + " " + str(z) + " ")
 
         # Write positions
-        of.write(str(x) + " " + str(y) + " " + str(z) + '\n')
+        of.write(str(px) + " " + str(py) + " " + str(pz) + '\n')
 
 if __name__ == "__main__":
     main()
