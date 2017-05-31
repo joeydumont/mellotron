@@ -3,6 +3,20 @@ import argparse as ap
 import h5py as hp
 import sys as sys
 
+def writeAttribute(of, n, nTimeSteps, nParticles, nDimensions, nameOfAttribute):
+    of.write('<Attribute Name="' + str(nameOfAttribute) + '" Center="Node">\n')
+    of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nDimensions) + ' ' + str(nParticles) + '">\n')
+    of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
+    of.write(str(n) + ' 0 0\n')
+    of.write('1 1 1\n')
+    of.write('1 ' + str(nDimensions) + ' ' + str(nParticles) + '\n')
+    of.write('</DataItem>\n')
+    of.write('<DataItem Name="' + str(nameOfAttribute) + '" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' ' + str(nDimensions) + ' ' + str(nParticles) + '">\n')
+    of.write('global.hdf5:/global.hdf5/' + str(nameOfAttribute) + '\n')
+    of.write('</DataItem>\n')
+    of.write('</DataItem>\n')
+    of.write('</Attribute>\n')
+
 def generateXMF(directory, nParticles, nTimeSteps):
     # Initialize xdmf file
     of = open(directory + 'global.xdmf','w')
@@ -28,7 +42,7 @@ def generateXMF(directory, nParticles, nTimeSteps):
 
     # For each timestep 
     for n in range(0, nTimeSteps):
-        # Declare a grid
+        # Declare a grid of points
         of.write('<Grid Name="timestep' + str(n) + '" GridType="Uniform">\n')
         of.write('<Topology TopologyType="Polyvertex" NumberOfElements="' + str(nParticles) + '"/>\n')
         of.write('<Geometry GeometryType="XYZ">\n')
@@ -44,82 +58,19 @@ def generateXMF(directory, nParticles, nTimeSteps):
         of.write('</DataItem>\n')
         of.write('</Geometry>\n')
         
-
+        # Write attributes
         # -- chi
-        of.write('<Attribute Name="chi" Center="Node">\n')
-        of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 1 ' + str(nParticles) + '">\n')
-        of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
-        of.write(str(n) + ' 0 0\n')
-        of.write('1 1 1\n')
-        of.write('1 1 ' + str(nParticles) + '\n')
-        of.write('</DataItem>\n')
-        of.write('<DataItem Name="chi" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 1 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/chi\n')
-        of.write('</DataItem>\n')
-        of.write('</DataItem>\n')
-        of.write('</Attribute>\n')
-
-
+        writeAttribute(of, n, nTimeSteps, nParticles, 1, "chi")
         # -- gamma
-        of.write('<Attribute Name="gamma" Center="Node">\n')
-        of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 1 ' + str(nParticles) + '">\n')
-        of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
-        of.write(str(n) + ' 0 0\n')
-        of.write('1 1 1\n')
-        of.write('1 1 ' + str(nParticles) + '\n')
-        of.write('</DataItem>\n')
-        of.write('<DataItem Name="gamma" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 1 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/gamma\n')
-        of.write('</DataItem>\n')
-        of.write('</DataItem>\n')
-        of.write('</Attribute>\n')
-
-
+        writeAttribute(of, n, nTimeSteps, nParticles, 1, "gamma")
         # -- magnetic_field
-        of.write('<Attribute Name="magnetic_field" Center="Node">\n')
-        of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 3 ' + str(nParticles) + '">\n')
-        of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
-        of.write(str(n) + ' 0 0\n')
-        of.write('1 1 1\n')
-        of.write('1 3 ' + str(nParticles) + '\n')
-        of.write('</DataItem>\n')
-        of.write('<DataItem Name="magnetic_field" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 3 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/magnetic_field\n')
-        of.write('</DataItem>\n')
-        of.write('</DataItem>\n')
-        of.write('</Attribute>\n')
-
-
+        writeAttribute(of, n, nTimeSteps, nParticles, 3, "magnetic_field")
         # -- electric_field
-        of.write('<Attribute Name="electric_field" Center="Node">\n')
-        of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 3 ' + str(nParticles) + '">\n')
-        of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
-        of.write(str(n) + ' 0 0\n')
-        of.write('1 1 1\n')
-        of.write('1 3 ' + str(nParticles) + '\n')
-        of.write('</DataItem>\n')
-        of.write('<DataItem Name="electric_field" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 3 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/electric_field\n')
-        of.write('</DataItem>\n')
-        of.write('</DataItem>\n')
-        of.write('</Attribute>\n')
-
-
+        writeAttribute(of, n, nTimeSteps, nParticles, 3, "electric_field")
         # -- momentum
-        of.write('<Attribute Name="momentum" Center="Node">\n')
-        of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 3 ' + str(nParticles) + '">\n')
-        of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
-        of.write(str(n) + ' 0 0\n')
-        of.write('1 1 1\n')
-        of.write('1 3 ' + str(nParticles) + '\n')
-        of.write('</DataItem>\n')
-        of.write('<DataItem Name="momentum" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 3 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/momentum\n')
-        of.write('</DataItem>\n')
-        of.write('</DataItem>\n')
-        of.write('</Attribute>\n')
+        writeAttribute(of, n, nTimeSteps, nParticles, 3, "momentum")
 
-        # Close grid after attributes
+        # Close grid after writing attributes
         of.write('</Grid>\n')
 
     # Close all nametags to finalize and close file
@@ -216,19 +167,14 @@ def main():
 
     # -- chi
     globalGroup.create_dataset("chi", (nTimeSteps, 1, nParticles), dtype="f8")
-
     # -- gamma
     globalGroup.create_dataset("gamma", (nTimeSteps, 1, nParticles), dtype="f8")
-
     # -- magnetic_field
     globalGroup.create_dataset("magnetic_field", (nTimeSteps, 3, nParticles), dtype="f8")
-
     # -- electric_field
     globalGroup.create_dataset("electric_field", (nTimeSteps, 3, nParticles), dtype="f8")
-
     # -- momentum
     globalGroup.create_dataset("momentum", (nTimeSteps, 3, nParticles), dtype="f8")
-
     # -- position
     globalGroup.create_dataset("position", (nTimeSteps, 3, nParticles), dtype="f8")
 
