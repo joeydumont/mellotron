@@ -12,12 +12,10 @@
 
 echo -e " \e[95m--- MELLOTRON SIMULATION AUTOMATIC START ---\e[39m"
 GENINIT="GenerateInitialConditions.py"
-OUTNORMCONST="normalization_constant.txt"
 echo -e " \e[32m--- Starting to generate initial conditions. ---\e[39m"
 
-
 # -- Generate initial conditions
-OUTINITCONDS="init_conds.txt"
+OUTINITCONDS="init_conds.sh"
 read -r -p " Do you want to use default values? [y/N] " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         python $GENINIT --outfile $OUTINITCONDS
@@ -58,21 +56,10 @@ echo "Done: generate initial conditions."
 # -- Calculate particles behavior
 echo -e " \e[32m--- Starting to calculate particles behavior. ---\e[39m"
 cd $DIRNAME
-while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-    ../IntegrationSalamin.o --norm_constant_file ../$OUTNORMCONST --init_conds $LINE
-done < $OUTINITCONDS
+chmod +x $OUTINITCONDS
+./$OUTINITCONDS
 cd ..
 echo "Done: calculate particles behavior."
-
-# -- Calculate particles behavior parallel
-# -- echo -e " \e[32m--- Starting to calculate particles behavior. ---\e[39m"
-# -- cd $DIRNAME
-# -- while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-# -- parallel -p 2 ../IntegrationSalamin.o --norm_constant_file {../$OUTNORMCONST} --init_conds $LINE {} ::: #1 ::: #2  
-# -- done < $OUTINITCONDS
-# -- cd ..
-# -- echo "Done: calculate particles behavior."
-
 
 # -- Manage outputs
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"

@@ -25,7 +25,7 @@ def main():
                         help='Number of initial conditions')
     parser.add_argument('--radius', type=float,  default=1.0e-06,
                         help='Sphere radius in SI units (meters)')
-    parser.add_argument('--outfile', type=str,   default='init_conds.txt',
+    parser.add_argument('--outfile', type=str,   default='init_conds.sh',
                         help='Name of output file')
 
     # Parse arguments
@@ -51,6 +51,9 @@ def main():
     # Create file
     of = open(args.outfile,'w')
 
+    # Write parallel line
+    of.write('#!/usr/bin/parallel --shebang -r -j 2 --colsep " " ../IntegrationSalamin.o --init_conds {1} {2} {3} {4} {5} {6}\n')
+
     for pid in range(numpart): # Loop on particle indices
         theta = np.arccos( costheta[pid] )
         r = R * pow( radius[pid], 1./3. ) # In electronic units (use R)
@@ -59,10 +62,10 @@ def main():
         y = r * sin( theta) * sin( phi[pid] )
         z = r * cos( theta )
 
-        # Write momenta
+        # Write positions
         of.write(str(x) + " " + str(y) + " " + str(z) + " ")
 
-        # Write positions
+        # Write momenta
         of.write(str(px) + " " + str(py) + " " + str(pz) + '\n')
 
 if __name__ == "__main__":

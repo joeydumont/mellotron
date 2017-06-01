@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
     desc.add_options()
     ("help",                                                                "produce help message"                                      )
     ("init_conds",         po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, electronic units (6-vector)")
-    ("norm_constant_file", po::value<std::string>()->required(),            "File that contains the normalization constant."            )
     ("energy",             po::value<double>()->default_value(10.0),        "Pulse energy, in joules"                                   )
     ("lam",                po::value<double>()->default_value(8.0e-07),     "Wavelength in meters"                                      )
     ("w0",                 po::value<double>()->default_value(8.0e-01),     "Beam waist in units of lambda"                             )
@@ -82,7 +81,14 @@ int main(int argc, char* argv[])
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
     std::ifstream norm_constant_file;
-    norm_constant_file.open(vm["norm_constant_file"].as<std::string>().c_str());
+    norm_constant_file.open("../normalization_constant.txt");
+    if(!norm_constant_file.is_open())
+    {
+        std::cout
+                << "normalization_constant.txt must be in the same directory... Exiting."
+                << std::endl;
+        return 0;
+    }
 
     std::string line;
     std::getline(norm_constant_file, line);std::getline(norm_constant_file, line);
