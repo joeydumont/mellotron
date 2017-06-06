@@ -84,7 +84,7 @@ def addToGlobal(directory, partialfile, globalGroup, nTimeSteps, n):
     # Fill the particle dimension in global hdf5 file
     partialFile = hp.File(directory + partialfile, "r")
     partialGroup = partialFile.require_group(partialfile)
-    nTimeSteps = nTimeSteps - 1
+    nTimeSteps = nTimeSteps
     # -- chi
     partialData = partialGroup["chi"]
     globalData = globalGroup["chi"]

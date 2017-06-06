@@ -9,14 +9,14 @@ from mpl_toolkits.mplot3d import Axes3D
 
 def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps):
     # Initiate arrays of good size.
-    xp = np.empty((nParticles, nTimeSteps - 1))
-    yp = np.empty((nParticles, nTimeSteps - 1))
-    zp = np.empty((nParticles, nTimeSteps - 1))
+    xp = np.empty((nParticles, nTimeSteps))
+    yp = np.empty((nParticles, nTimeSteps))
+    zp = np.empty((nParticles, nTimeSteps))
 
 
     # Stepping through the Particles and the TimeSteps.
     for j in range(nParticles):
-        for i in range(nTimeSteps - 1):
+        for i in range(nTimeSteps):
             xp[j, i] = globalModelPositions[i, 0, j]
             yp[j, i] = globalModelPositions[i, 1, j]
             zp[j, i] = globalModelPositions[i, 2, j]
@@ -41,12 +41,12 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     maxGamma = 0.0
 
     for j in range(nParticles):
-            r[j] = globalModelGamma[nTimeSteps - 2, 0, j]
+            r[j] = globalModelGamma[nTimeSteps - 1, 0, j]
             if r[j] > maxGamma:
                 maxGamma = r[j]
-            px = globalModelMomentums[nTimeSteps - 2, 0, j]
-            py = globalModelMomentums[nTimeSteps - 2, 1, j]
-            pz = globalModelMomentums[nTimeSteps - 2, 2, j]
+            px = globalModelMomentums[nTimeSteps - 1, 0, j]
+            py = globalModelMomentums[nTimeSteps - 1, 1, j]
+            pz = globalModelMomentums[nTimeSteps - 1, 2, j]
             theta[j] = np.arctan2(px,pz)
             phi[j] = np.arctan2(px,py)
 
