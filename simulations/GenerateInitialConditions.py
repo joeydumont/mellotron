@@ -51,9 +51,6 @@ def main():
     # Create file
     of = open(args.outfile,'w')
 
-    # Write parallel line
-    of.write('#!/usr/bin/parallel --shebang -r -j 2 --colsep " " ../IntegrationSalamin.o --init_conds {1} {2} {3} {4} {5} {6}\n')
-
     for pid in range(numpart): # Loop on particle indices
         theta = np.arccos( costheta[pid] )
         r = R * pow( radius[pid], 1./3. ) # In electronic units (use R)
