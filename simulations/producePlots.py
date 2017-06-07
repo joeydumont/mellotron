@@ -4,10 +4,18 @@ import h5py as hp
 import sys as sys
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps):
+
+# Plot parameters
+mpl.rcParams['ps.useafm'] = True
+mpl.rcParams['pdf.use14corefonts'] = True
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['font.family'] = 'serif'
+
+def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory):
     # Initiate arrays of good size.
     xp = np.empty((nParticles, nTimeSteps))
     yp = np.empty((nParticles, nTimeSteps))
@@ -26,15 +34,15 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps):
 
     for j in range(nParticles):
         ax.plot(xp[j], yp[j], zs=zp[j], lw=0.5)
-    ax.set_xlabel("X Axis")
-    ax.set_ylabel("Y Axis")
-    ax.set_zlabel("Z Axis")
-    ax.set_title("Positions of Particles")
+    ax.set_xlabel(r"X Axis")
+    ax.set_ylabel(r"Y Axis")
+    ax.set_zlabel(r"Z Axis")
+    ax.set_title(r"Positions of Particles")
 
-    plt.show()
+    plt.savefig(directory + "positionsPlot.eps")
 
 
-def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps):
+def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
     r = np.empty((nParticles))
     theta = np.empty((nParticles))
     phi = np.empty((nParticles))
@@ -60,18 +68,18 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax1.scatter(theta, r)
     ax2.scatter(phi, r)
 
-    ax1.set_title("zx plane (θ)", va='bottom')
-    ax1.set_ylabel("gamma", labelpad=30)
-    ax2.set_title("yx plane (ϕ)", va='bottom')
-    ax2.set_ylabel("gamma", labelpad=30)
+    ax1.set_title(r"zx plane ($\theta$)", va='bottom')
+    ax1.set_ylabel(r"gamma", labelpad=30)
+    ax2.set_title(r"yx plane ($\phi$)", va='bottom')
+    ax2.set_ylabel(r"gamma", labelpad=30)
 
     N, bins, patches = ax3.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
     for i in range(len(patches)):
         patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
-    ax3.set_xlabel("gamma")
-    ax3.set_ylabel("Number of particles")
-    plt.show()
+    ax3.set_xlabel(r"gamma")
+    ax3.set_ylabel(r"Number of particles")
+    plt.savefig(directory + "polarGammaPlots.eps")
 
 def main():
     """
@@ -115,12 +123,12 @@ def main():
     nParticles = globalModelPositions.shape[2]
 
     # Create positions plot
-    createPositionsPlot(globalModelPositions, nParticles, nTimeSteps)
+    createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
 
     # Create polar chi plot
     globalModelGamma = globalModelGroup["gamma"]
     globalModelMomentums = globalModelGroup["momentum"]
-    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps)
+    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
     
 
 if __name__ == "__main__":
