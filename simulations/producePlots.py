@@ -15,6 +15,50 @@ mpl.rcParams['pdf.use14corefonts'] = True
 mpl.rcParams['text.usetex'] = True
 mpl.rcParams['font.family'] = 'serif'
 
+
+def createOneParticleTrajectory(directory, hdf5File):
+    # Find the .hdf5 file
+    globalModel = ""
+    for file in os.listdir(directory):
+        if file == hdf5File:
+            globalModel = file
+            break
+
+    if globalModel == "":
+        print("It seems like the folder you gave doesn\'t have the specified .hdf5 file in it.")
+        sys.exit()
+    
+    # Determine exactly how many TimeSteps there are.
+    globalModelFile = hp.File(directory + globalModel, "r")
+    globalModelGroup = globalModelFile.require_group(globalModel)
+    globalModelTimes = globalModelGroup["times"]
+    nTimeSteps = globalModelTimes.len()
+
+    
+    # Create positions plot
+    globalModelPositions = globalModelGroup["position"]
+    # Initiate arrays of good size.
+    xp = np.empty((nTimeSteps))
+    yp = np.empty((nTimeSteps))
+    zp = np.empty((nTimeSteps))
+    # Stepping through the TimeSteps.
+    for i in range(nTimeSteps):
+        xp[i] = globalModelPositions[i, 0]
+        yp[i] = globalModelPositions[i, 1]
+        zp[i] = globalModelPositions[i, 2]
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    ax.plot(xp, yp, zs=zp, lw=0.5)
+    ax.set_xlabel(r"X Axis")
+    ax.set_ylabel(r"Y Axis")
+    ax.set_zlabel(r"Z Axis")
+    ax.set_title(r"Positions of Particles")
+    
+    plt.savefig(directory + os.path.splitext(hdf5File)[0] + ".eps")
+    sys.exit()
+
 def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory):
     # Initiate arrays of good size.
     xp = np.empty((nParticles, nTimeSteps))
@@ -83,15 +127,18 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
 
 def main():
     """
-    Produce the plots for a given global.hdf5 file.
+    Produce the plots for a given .hdf5 output file.
 
     Author: Justine Pepin <justine.pepin@emt.inrs.ca>
     """
 
     # Command line arguments
-    parser = ap.ArgumentParser(description="Produce the plots for a given global.hdf5 file.")
+    parser = ap.ArgumentParser(description="Produce the plots for a given .hdf5 output file."
+                        "If no file provided, the global.hdf5 file will be considered.")
     parser.add_argument("--directory", type=str,   default="./",
-                        help="Target directory containing global.hdf5 file")
+                        help="Target directory containing a .hdf5 file.")
+    parser.add_argument("--file", type=str,   default="global.hdf5",
+                        help=".hdf5 file with 1 particle to generate the trajectory plot with.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -100,6 +147,11 @@ def main():
     directory = args.directory
     if( not directory.endswith("/")):
         directory += "/"
+
+    # Target file
+    hdf5File = args.file
+    if hdf5File != "global.hdf5":
+        createOneParticleTrajectory(directory, hdf5File)
 
     # Find the global.hdf5 file
     globalModel = ""

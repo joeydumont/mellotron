@@ -95,19 +95,19 @@ def addToGlobal(directory, partialfile, globalGroup, nTimeSteps, n):
     # -- magnetic_field
     partialData = partialGroup["magnetic_field"]
     globalData = globalGroup["magnetic_field"]
-    globalData[0:nTimeSteps, 0:2, n] = partialData[0:nTimeSteps, 0:2]
+    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
     # -- electric_field
     partialData = partialGroup["electric_field"]
     globalData = globalGroup["electric_field"]
-    globalData[0:nTimeSteps, 0:2, n] = partialData[0:nTimeSteps, 0:2]
+    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
     # -- momentum
     partialData = partialGroup["momentum"]
     globalData = globalGroup["momentum"]
-    globalData[0:nTimeSteps, 0:2, n] = partialData[0:nTimeSteps, 0:2]
+    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
     # -- position
     partialData = partialGroup["position"]
     globalData = globalGroup["position"]
-    globalData[0:nTimeSteps, 0:2, n] = partialData[0:nTimeSteps, 0:2]
+    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
 
     # -- close partial hdf5 file
     partialFile.close()
