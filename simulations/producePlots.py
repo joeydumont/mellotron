@@ -79,8 +79,28 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
 
     plt.savefig(directory + "positionsPlot.eps")
 
+def createGammaVariationInTime(graph, globalModelTimes, globalModelGamma, nParticles, nTimeSteps):
+    # Initiate arrays of good size.
+    times = np.empty((nTimeSteps))
+    dGamma = np.empty((nTimeSteps))
+    oldGammas = np.empty((nParticles))
+    for j in range(nParticles):
+        oldGammas[j] = globalModelGamma[0, 0, j]
 
-def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
+    for i in range(nTimeSteps):
+        times[i] = globalModelTimes[i]
+        delta = 0
+        for j in range(nParticles):
+            currentGamma = globalModelGamma[i, 0, j]
+            delta += np.absolute(currentGamma - oldGammas[j])
+            oldGammas[j] = currentGamma
+        dGamma[i] = delta
+
+    graph.scatter(times, dGamma)
+    graph.set_ylabel(r"gamma variation since last dt")
+    graph.set_xlabel(r"time")
+
+def createPolarGammaPlot(globalModelTimes, globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
     # Initiate arrays of good size.
     r = np.empty((nParticles))
     theta = np.empty((nParticles))
@@ -101,11 +121,14 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax1 = f.add_subplot(221, projection='polar')
     ax2 = f.add_subplot(222, projection='polar')
     ax3 = f.add_subplot(223)
+    ax4 = f.add_subplot(224)
     ax1.grid(True)
     ax2.grid(True)
     ax3.grid(True)
+    ax4.grid(True)
     ax1.scatter(theta, r)
     ax2.scatter(phi, r)
+    createGammaVariationInTime(ax4, globalModelTimes, globalModelGamma, nParticles, nTimeSteps)
 
     ax1.set_title(r"zx plane ($\theta$)", va='bottom')
     ax1.set_ylabel(r"gamma", labelpad=30)
@@ -178,7 +201,7 @@ def main():
     # Create polar chi plot
     globalModelGamma = globalModelGroup["gamma"]
     globalModelMomentums = globalModelGroup["momentum"]
-    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
+    createPolarGammaPlot(globalModelTimes, globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
     
 
 if __name__ == "__main__":
