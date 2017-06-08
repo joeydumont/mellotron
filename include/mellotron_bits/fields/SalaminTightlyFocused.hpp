@@ -49,7 +49,7 @@ public:
   , L(my_L)
   , energy(my_energy)
   {
-    norm_factor = std::sqrt(my_norm_constant/energy);
+    norm_factor = my_norm_constant/std::sqrt(energy);
   }
 
   /// Computes the field components.
