@@ -2,6 +2,7 @@
 #define SALAMIN_TIGHTLY_FOCUSED_HPP
 
 #include <Cubature>
+#include <cuba.h>
 #include <boost/math/constants/constants.hpp>
 #include <complex>
 
@@ -13,6 +14,10 @@ namespace cst = boost::math::constants;
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
                                   unsigned int fdim,       double * fval);
+
+/// Forward declaration of the interface to Cuba.
+int interface_to_cuba_salamin(const int *ndim, const double x[],
+	                            const int *fdim, double fval[], void *fdata);
 
 /*!
  *  \class  SalaminTightlyFocusedLinear
@@ -38,7 +43,9 @@ public:
   , energy(my_energy)
   {
     norm_factor = 1.0;
-    ComputeNormalizationFactor();
+    int error_flag = ComputeNormalizationFactor();
+
+    std::cerr << "Error flag of ComputeNormalizationFactor: " << error_flag << std::endl;
   }
 
   /// This constructor takes an additional argument, my_norm_constant, which consists in the integral
@@ -73,20 +80,20 @@ public:
     std::complex<double> E0     = 2.0*k0*zr/(1i*(1.0+4.0*k0*zr));
     std::complex<double> Q1     = 4.0*1i*k0 - 2.0/zeta + 1i*(p-rho*rho)/(zr*p*p);
     std::complex<double> Q2     = 4.0*1i*k0 - 2.0/zeta - 1i*(2.0*p-rho*rho)/(zr*p*p);
-    std::complex<double> Q3     = 4.0/(zeta*zeta) + (p-2.0*rho*rho)/(zr*zr*p*p*p) - std::pow((2.0*pi/L)/std::sin(zetap),2);
+    std::complex<double> Q3     = 4.0/(zeta*zeta) + (p-2.0*rho*rho)/(zr*zr*p*p*p) - std::pow(2.0*pi/(L*std::sin(zetap)),2);
     std::complex<double> R      = 0.5*(Q1 + 2.0*pi/(L*std::tan(zetap)));
     std::complex<double> prefac = E0/k0*std::exp(2.0*1i*k0*zeta)/(zetap)*std::exp(-rho*rho/p)/p;
 
     // Compute the fields.
     double Ex = std::real(0.5*prefac
                           *(
-                            (Q1 - (16.0*x*x/(p*p*std::pow(waist,4)))*(1.0/(2.0*R)-1i/(4.0*zr*p*R*R)))*std::sin(zetap)
+                            (Q1 - (16.0*x*x/(p*p*std::pow(waist,4)))*(0.5/R-1i/(4.0*zr*p*R*R)))*std::sin(zetap)
                             +2.0*pi/L*std::cos(zetap)
                            )
                          );
 
 
-    double Ey = std::real(-8.0*prefac*x*y/(p*p*std::pow(waist,4))*(1.0/(2.0*R)-1i/(4.0*zr*p*R*R))*std::sin(zetap));
+    double Ey = std::real(-8.0*prefac*x*y/(p*p*std::pow(waist,4))*(0.5/R-1i/(4.0*zr*p*R*R))*std::sin(zetap));
     double Ez = std::real(2.0*prefac*x/(p*waist*waist)
                           *(
                             (Q2/(2.0*R)-Q3/(4.0*R*R))*std::sin(zetap)
@@ -128,23 +135,33 @@ public:
   double energy;           ///< Total energy contained in the pulse.
   double norm_factor;      ///< Normalization factor for the field to contain the proper energy.
 
-//protected:
   /// Compute the energy contained in the field and rescale the components.
   int ComputeNormalizationFactor()
   {
     const uint ndim = 3;
     const uint fdim = 1;
-    double xmin[3] = {-10.0*lambda,-10.0*lambda,-10.0*L};
-    double xmax[3] = {10.0*lambda,10.0*lambda,10.0*L};
-    double val[1], err[1];
+    int nregions, neval, error_flag;
+    double val[1], err[1], prob[1];
 
-    int error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
-                               0,0,1.0e-5, ERROR_INDIVIDUAL, val, err);
+    //error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
+    //                       0,1.0e-5,1.0e-5, ERROR_INDIVIDUAL, val, err);
+
+    Cuhre(ndim, fdim, interface_to_cuba_salamin, this, 1,1.0e-4,1.0e-4,0,1,1e8,0,NULL,NULL,
+    	    &nregions,&neval,&error_flag,&val[0],&err[0],&prob[0]);
+
+    if (error_flag > 0)
+    {
+    	std::cerr << "There was an error in ComputeNormalizationFactor: " << error_flag << "\n";
+    	std::cerr << "The result is " << val[0] << " ± " << err[0] << " with probability " << prob[0] <<  "." << "\n";
+    }
 
     norm_factor = std::sqrt(val[0]/energy);
 
     return error_flag;
   }
+
+  const double xmin[3] = {-15.0*lambda,-15.0*lambda,-30.0*L};
+  const double xmax[3] = { 15.0*lambda, 15.0*lambda, 30.0*L};
 
 };
 
@@ -167,6 +184,40 @@ int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *
   fval[0] *= 0.5;
 
   return 0;
+}
+
+/// Interface to Cuba
+int interface_to_cuba_salamin(const int *ndim, const double x[],
+	                            const int *fdim, double fval[], void *fdata)
+{
+	auto obj = (SalaminTightlyFocusedLinear* ) fdata;
+
+  // We scale the integrand by applying the transformation
+  // 	int_a^b f(x)dx --> int_0^1 f[a+(b-a)*y]*(b-a)dy
+  // in each dimension.
+
+  double xscaled[3];
+  double jacobian = 1.0;
+  for (int i=0; i<(*ndim); i++)
+  {
+  	double range = obj->xmax[i]-obj->xmin[i];
+  	jacobian *= range;
+  	xscaled[i] = obj->xmin[i]+range*x[i];
+  }
+
+	// We compute the electromagnetic field.
+	auto field = obj->ComputeFieldComponents(0.2*obj->lambda, xscaled[0],xscaled[1], xscaled[2]);
+
+	// We compute the electromagnetic energy.
+	fval[0] = 0.0;
+	for (uint i=0; i<6; i++)
+	{
+		fval[0] += field[i]*field[i];
+	}
+
+	fval[0] *= 0.5*jacobian;
+
+	return 0;
 }
 
 } // namespace mellotron

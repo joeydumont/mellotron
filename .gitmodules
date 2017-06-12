@@ -1,3 +1,6 @@
 [submodule "external/Cubature"]
 	path = external/Cubature
 	url = https://github.com/valandil/Cubature
+[submodule "external/Cuba"]
+	path = external/Cuba
+	url = https://github.com/valandil/Cuba

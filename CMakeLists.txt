@@ -67,34 +67,9 @@ endif()
 # -- Included files
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
-# -- Cubature
-include (external/Cubature/Cubature_version.cmake)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
-
-# -- Source files
-aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/src SRC_LIST)
-
-# -- Build a shared library
-add_library(Cubature SHARED ${SRC_LIST})
-
-# Define the properties of the library to
-# be built (version and other stuff).
-#GET_DIRECTORY_PROPERTY(Cubature_VERSION_MAJOR   DIRECTORY external/Cubature DEFINITION Cubature_VERSION_MAJOR)
-#GET_DIRECTORY_PROPERTY(Cubature_VERSION_MINOR   DIRECTORY external/Cubature DEFINITION Cubature_VERSION_MINOR)
-#GET_DIRECTORY_PROPERTY(Cubature_VERSION_RELEASE DIRECTORY external/Cubature DEFINITION Cubature_VERSION_RELEASE)
-set_target_properties (
-  Cubature
-  PROPERTIES
-    VERSION   ${Cubature_VERSION_MAJOR}.${Cubature_VERSION_MINOR}.${Cubature_VERSION_RELEASE}
-    SOVERSION ${Cubature_VERSION_MAJOR}.${Cubature_VERSION_MINOR}.${Cubature_VERSION_RELEASE}
-)
-
-# Link dependencies
-target_link_libraries (Cubature)
-
 install (DIRECTORY include/                  DESTINATION include)
-install (DIRECTORY external/Cubature/include DESTINATION include/mellotron_bits/external/Cubature)
-install (TARGETS   Cubature                  DESTINATION lib)
+install (DIRECTORY external/Cuba             DESTINATION include/mellotron_bits/external)
+install (DIRECTORY external/Cubature         DESTINATION include/mellotron_bits/external)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #

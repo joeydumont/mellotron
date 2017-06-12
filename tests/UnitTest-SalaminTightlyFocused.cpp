@@ -17,17 +17,18 @@ class SalaminTightlyFocusedTest : public testing::Test
 {
 public:
   SalaminTightlyFocusedTest()
-  : lambda(800e-9)
+  : lambda(800.0e-9)
   , omega_0(2.0*constants::math::pi*constants::physics::c/lambda)
   , electron_units(omega_0)
-  , w0(0.7*lambda/electron_units.UNIT_LENGTH)
-  , L(0.8*lambda/electron_units.UNIT_LENGTH)
+  , w0(0.272*lambda/electron_units.UNIT_LENGTH)
+  , L(14.4*lambda/electron_units.UNIT_LENGTH)
   , xmax(1.5*lambda/electron_units.UNIT_LENGTH)
-  , energy(15.0/electron_units.UNIT_ENERGY)
+  , energy(13.5/electron_units.UNIT_ENERGY)
   , field(lambda/electron_units.UNIT_LENGTH,w0,L,energy)
   {
     lambda /= electron_units.UNIT_LENGTH;
 
+    std::cout << "Norm factor: " << field.norm_factor << "  " <<  1.0/field.norm_factor << std::endl;
     std::cout << "Energy [in Mellotron Units]: " << energy << std::endl;
   }
 
@@ -52,19 +53,30 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   // Define the mesh of the plot.
   uint size_plot = 100;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
-  auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
-  arma::mat field_values(size_plot,size_plot);
+  auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, 2*size_plot);
+  arma::mat Ex(size_plot,2*size_plot);
+  auto      Ey =Ex;
+  auto      Ez =Ex;
+  auto      Bx =Ex;
+  auto      By =Ex;
+  auto      Bz =Ex;
 
   // Compute the field values.
   for (uint i=0; i<size_plot; i++)
   {
-    for (uint j=0; j<size_plot; j++)
+    for (uint j=0; j<2*size_plot; j++)
     {
-      field_values(i,j) = field.ComputeFieldComponents(lambda/4.0,x_field[i],y_field[j],lambda/2.0)[0];
+      auto field_vector = field.ComputeFieldComponents(lambda/4.0,x_field[i],y_field[j],lambda/2.0);
+      Ex(i,j) = field_vector[0];
+      Ey(i,j) = field_vector[1];
+      Ez(i,j) = field_vector[2];
+      Bx(i,j) = field_vector[3];
+      By(i,j) = field_vector[4];
+      Bz(i,j) = field_vector[5];
     }
   }
 
-  field.ComputeNormalizationFactor();
+  //field.ComputeNormalizationFactor();
 
   // Output the data.
   x_field *= electron_units.UNIT_LENGTH;
@@ -72,7 +84,12 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
 
   x_field.save("x_field_salamin.txt", arma::raw_ascii);
   y_field.save("y_field_salamin.txt", arma::raw_ascii);
-  field_values.save("SalaminField.txt", arma::raw_ascii);
+  Ex.save("SalaminField_Ex.txt", arma::raw_ascii);
+  Ey.save("SalaminField_Ey.txt", arma::raw_ascii);
+  Ez.save("SalaminField_Ez.txt", arma::raw_ascii);
+  Bx.save("SalaminField_Bx.txt", arma::raw_ascii);
+  By.save("SalaminField_By.txt", arma::raw_ascii);
+  Bz.save("SalaminField_Bz.txt", arma::raw_ascii);
 }
 
 class SalaminTightlyFocusedNormalizationTest : public testing::Test
@@ -114,7 +131,7 @@ protected:
 TEST_F(SalaminTightlyFocusedNormalizationTest, Linear)
 {
   // Define the mesh of the plot.
-  uint size_plot = 100;
+  uint size_plot = 200  ;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   arma::mat field_values(size_plot,size_plot);
@@ -128,7 +145,7 @@ TEST_F(SalaminTightlyFocusedNormalizationTest, Linear)
       field_values(i,j)      = field.ComputeFieldComponents(0.0,x_field[i],y_field[j],lambda/(2.0*electron_units.UNIT_LENGTH))[0];
       field_values_norm(i,j) = field_norm_test.ComputeFieldComponents(0.0,x_field[i],y_field[j],lambda/(2.0*electron_units.UNIT_LENGTH))[0];
 
-      std::cout << field_values(i,j) << "\t" << std::sqrt(energy)*field_values_norm(i,j) << std::endl;
+      //std::cout << field_values(i,j) << "\t" << std::sqrt(energy)*field_values_norm(i,j) << std::endl;
 
       EXPECT_NEAR(field_values(i,j),std::sqrt(energy)*field_values_norm(i,j),1.0e-5);
     }
@@ -138,8 +155,8 @@ TEST_F(SalaminTightlyFocusedNormalizationTest, Linear)
   x_field *= electron_units.UNIT_LENGTH;
   y_field *= electron_units.UNIT_LENGTH;
 
-  x_field.save("x_field_salamin.txt", arma::raw_ascii);
-  y_field.save("y_field_salamin.txt", arma::raw_ascii);
+  //x_field.save("x_field_salamin.txt", arma::raw_ascii);
+  //y_field.save("y_field_salamin.txt", arma::raw_ascii);
   field_values.save("SalaminField.txt", arma::raw_ascii);
 }
 
@@ -197,13 +214,14 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
   }
 
   field.ComputeNormalizationFactor();
+  std::cout << "New norm factor should be unity: " << field.norm_factor << std::endl;
 
   // Output the data.
   x_field *= UNIT_LENGTH;
   y_field *= UNIT_LENGTH;
 
-  x_field.save("x_field_salamin.txt", arma::raw_ascii);
-  y_field.save("y_field_salamin.txt", arma::raw_ascii);
+  //x_field.save("x_field_salamin.txt", arma::raw_ascii);
+  //y_field.save("y_field_salamin.txt", arma::raw_ascii);
   field_values.save("SalaminField_qed.txt", arma::raw_ascii);
 }
 
