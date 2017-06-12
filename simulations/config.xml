@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<config>
+    <normalization_constant>
+        <lambda>8.0e-7</lambda>
+        <w0>0.272</w0>
+        <L>14.4</L>
+    </normalization_constant>
+    <integration_salamin>
+        <lambda>8.0e-7</lambda>
+        <w0>0.272</w0>
+        <L>14.4</L>
+        <energy>13.0</energy>
+        <mass>1.0</mass>
+        <Q>-1.0</Q>
+        <t_init>-5.0e-12</t_init>
+        <dt>1e-13</dt>
+        <nsteps>100</nsteps>
+    </integration_salamin>
+    <generate_initial_conditions>
+        <wavelength>1.0e-06</wavelength>
+        <pz>0.0</pz>
+        <numpart>10</numpart>
+        <radius>1.0e-06</radius>
+    </generate_initial_conditions>
+    <comments_and_units>
+    <!-- lambda: Wavelength of the beam in metres ex: 800.0e-9 -->
+    <!-- w0: Beam waist as a multiple of lambda ex: 0.8 -->
+    <!-- L: Axial length as a multiple of lambda ex: 0.7 -->
+    <!-- energy: Pulse energy, in joules ex: 10.0 -->
+    <!-- mass: Particle mass in units of electron mass ex: 1.0 -->
+    <!-- Q: Particle charge in units of electron charge ex: -1.0 -->
+    <!-- t_init: Initial time in simulation in seconds ex: -5.0e-12 -->
+    <!-- dt: Duration of a time step in seconds ex: 1e-13 -->
+    <!-- nsteps: Number of time steps ex: 100 -->
+    <!-- wavelength: Laser wavelength in SI units (meters) ex: 1.0e-06 -->
+    <!-- pz: Initial value of momentum in z in eV/c ex: 0.0 -->
+    <!-- numpart: Number of initial conditions ex: 10 -->
+    <!-- radius: Sphere radius in SI units (meters) ex: 1.0e-06 -->
+    </comments_and_units>
+</config>

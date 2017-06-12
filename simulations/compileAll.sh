@@ -38,14 +38,9 @@ echo "Done: compile ComputeNormalizationConstantSalaminLinear.cpp."
 
 # -- Check that the script can find IntegrationSalamin.o, GenerateInitialConditions.py and ComputeNormalizationConstantSalaminLinear.o
 INTSAL="IntegrationSalamin.o"
-GENINIT="GenerateInitialConditions.py"
 COMPUTE="ComputeNormalizationConstantSalaminLinear.o" 
 if [ ! -f $INTSAL ]; then
 echo "Usage: compileAll.sh needs IntegrationSalamin.o in same directory."
-exit 1
-fi
-if [ ! -f $GENINIT ]; then
-echo "Usage: compileAll.sh needs GenerateInitialConditions.py in same directory."
 exit 1
 fi
 if [ ! -f $COMPUTE ]; then
@@ -53,9 +48,5 @@ echo "Usage: compileAll.sh needs ComputeNormalizationConstantSalaminLinear.o in 
 exit 1
 fi
 
-# -- Compute normalization constant
-OUTNORMCONST="normalization_constant.txt"
-./ComputeNormalizationConstantSalaminLinear.o --outfile $OUTNORMCONST
-echo "Done: compute normalization constant."
 
 
