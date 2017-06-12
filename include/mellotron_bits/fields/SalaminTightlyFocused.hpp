@@ -195,7 +195,7 @@ public:
     		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
     		                     this,															// Passes the pointer to the object currently allocated. Allows Cuhre to access elements inside the class.
     		                     ndim,                              // Number of dimensions over which to integrate.
-    		                     xmin.data(), xmax.data(),                        // Integration boundaries.
+    		                     xmin.data(), xmax.data(),          // Integration boundaries.
     	                       maxeval,                           // Maximum number of evaluations.
     	                       abstol,reltol, ERROR_INDIVIDUAL,		// Absolute and relative tolerances, and the error norm (irrelevant as fdim=1).
     	                       val, err);                         // Store the value of the integrand and its error.
@@ -207,7 +207,7 @@ public:
     		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
     		                     this,															// Passes the pointer to the object currently allocated. Allows Cuhre to access elements inside the class.
     		                     ndim,                              // Number of dimensions over which to integrate.
-    		                     xmin.data(), xmax.data(),                        // Integration boundaries.
+    		                     xmin.data(), xmax.data(),          // Integration boundaries.
     	                       maxeval,                           // Maximum number of evaluations.
     	                       abstol,reltol, ERROR_INDIVIDUAL,		// Absolute and relative tolerances, and the error norm (irrelevant as fdim=1).
     	                       val, err);                         // Store the value of the integrand and its error.
