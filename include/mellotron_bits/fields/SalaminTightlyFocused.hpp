@@ -5,11 +5,15 @@
 #include <cuba.h>
 #include <boost/math/constants/constants.hpp>
 #include <complex>
+#include <stdexcept>
 
 using namespace std::complex_literals;
 
 namespace mellotron {
 namespace cst = boost::math::constants;
+
+/// enum to choose the quadrature method.
+enum SalaminQuadratureMethod {Cubatureh, Cubaturep, CubaCuhre};
 
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
@@ -35,17 +39,42 @@ class SalaminTightlyFocusedLinear
 public:
 
   /// The model depends on the following parameters, the wavelength lambda,
-  /// the waist waist and the axial length L.
-  SalaminTightlyFocusedLinear(double my_lambda,double my_waist,double my_L,double my_energy)
+  /// the waist waist and the axial length L. It is also possible to pass
+  /// parameters for the integration routine.
+  ///		@param[in] my_lambda		Central wavelength of the beam.
+  ///   @param[in] my_waist			Waist size of the beam.
+  ///   @param[in] my_L         Axial length of the beam.
+  ///   @param[in] my_method    Integration method to use.
+  ///   @param[in] my_xmin      Lower bounds of the integration. Array in units of (lambda, lambda, L).
+  ///   @param[in] my_xmax      Upper bounds of the integration. Array in units of (lambda, lambda, L).
+  ///   @param[in] my_abstol    Absolute tolerance.
+  ///   @param[in] my_reltol    Relative tolerance.
+  ///   @param[in] my_mineval   Minimum number of function evaluations.
+  ///   @param[in] my_maxeval   Maximum number of function evaluations.
+  SalaminTightlyFocusedLinear(double my_lambda,double my_waist,double my_L,double my_energy,
+  	SalaminQuadratureMethod my_method = CubaCuhre, std::initializer_list<double> my_xmin = {-15,-15,-30}, std::initializer_list<double> my_xmax = {15,15,30},
+  	double my_abstol = 1.0e-4, double my_reltol = 1.0e-4, int my_mineval = 1, int my_maxeval = 1e8)
   : lambda(my_lambda)
   , waist(my_waist)
   , L(my_L)
   , energy(my_energy)
+  , method(my_method)
+  , xmin(my_xmin)
+  , xmax(my_xmax)
+  , abstol(my_abstol)
+  , reltol(my_reltol)
+  , mineval(my_mineval)
+  , maxeval(my_maxeval)
   {
-    norm_factor = 1.0;
-    int error_flag = ComputeNormalizationFactor();
+  	xmin[0] *= lambda;
+   	xmin[1] *= lambda;
+   	xmin[2] *= L;
+   	xmax[0] *= lambda;
+   	xmax[1] *= lambda;
+   	xmax[2] *= L;
 
-    std::cerr << "Error flag of ComputeNormalizationFactor: " << error_flag << std::endl;
+    norm_factor = 1.0;
+    ComputeNormalizationFactor();
   }
 
   /// This constructor takes an additional argument, my_norm_constant, which consists in the integral
@@ -138,21 +167,61 @@ public:
   /// Compute the energy contained in the field and rescale the components.
   int ComputeNormalizationFactor()
   {
-    const uint ndim = 3;
-    const uint fdim = 1;
+  	const int ndim = 3;
+  	const int fdim = 1;
     int nregions, neval, error_flag;
     double val[1], err[1], prob[1];
 
-    //error_flag = hcubature(fdim, interface_to_cubature_salamin, this, ndim, xmin, xmax,
-    //                       0,1.0e-5,1.0e-5, ERROR_INDIVIDUAL, val, err);
+    if (method == CubaCuhre)
+    {
+	    Cuhre(ndim,                           // Number of dimensions over which to integrate.
+	    		  fdim,                           // Number of components of the vector integrand. We have a scalar integrand here.
+	    		  interface_to_cuba_salamin,      // Function that evaluates the integrand.
+	    		  this,                           // Pass the pointer to the object currently allocated. Allows Cuhre to access elements inside the class.
+	    		  1,                              // Number of points to be given to the integrand for evaluation. Not sure how to make ComputeFieldComponents SIMD-compatible, so set to 1.
+	    		  reltol,abstol,                  // Relative and absolute tolerance.
+	    		  0,                              // Complicated system of flags passed to Cuhre and other integrators. Unused here.
+	    		  mineval,maxeval,                // The minimum and maximum number of function evaluations.
+	    		  0,                              // Specifies the order of the integration. In 3D, this results in degree-11 rule.
+	    		  NULL,                           // Can be used to specify a checkpoint/restart file.
+	    		  NULL,                           // Spin variable, used in the threading model. Best not to use it.
+	    	    &nregions,&neval,&error_flag,		// Stores the number of regions that were needed, the number of function evaluations that were needed and the error flag.
+	    	    &val[0],&err[0],&prob[0]);      // Stores the actual value of the integration, the estimated error and the xi^2 probability of error (not really applicable to Cuhre).
+    }
 
-    Cuhre(ndim, fdim, interface_to_cuba_salamin, this, 1,1.0e-4,1.0e-4,0,1,1e8,0,NULL,NULL,
-    	    &nregions,&neval,&error_flag,&val[0],&err[0],&prob[0]);
+    else if (method == Cubatureh)
+    {
+    	error_flag = hcubature(fdim,                              // Number of components of the vector integrand. We have a scalar integrand here.
+    		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
+    		                     this,															// Passes the pointer to the object currently allocated. Allows Cuhre to access elements inside the class.
+    		                     ndim,                              // Number of dimensions over which to integrate.
+    		                     xmin.data(), xmax.data(),                        // Integration boundaries.
+    	                       maxeval,                           // Maximum number of evaluations.
+    	                       abstol,reltol, ERROR_INDIVIDUAL,		// Absolute and relative tolerances, and the error norm (irrelevant as fdim=1).
+    	                       val, err);                         // Store the value of the integrand and its error.
+    }
+
+    else if (method == Cubaturep)
+    {
+    	error_flag = pcubature(fdim,                              // Number of components of the vector integrand. We have a scalar integrand here.
+    		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
+    		                     this,															// Passes the pointer to the object currently allocated. Allows Cuhre to access elements inside the class.
+    		                     ndim,                              // Number of dimensions over which to integrate.
+    		                     xmin.data(), xmax.data(),                        // Integration boundaries.
+    	                       maxeval,                           // Maximum number of evaluations.
+    	                       abstol,reltol, ERROR_INDIVIDUAL,		// Absolute and relative tolerances, and the error norm (irrelevant as fdim=1).
+    	                       val, err);                         // Store the value of the integrand and its error.
+    }
+
+    else
+    {
+    	throw std::runtime_error("Unknown integration method in SalaminTightlyFocusedLinear");
+    }
 
     if (error_flag > 0)
     {
     	std::cerr << "There was an error in ComputeNormalizationFactor: " << error_flag << "\n";
-    	std::cerr << "The result is " << val[0] << " ± " << err[0] << " with probability " << prob[0] <<  "." << "\n";
+    	std::cerr << "The result is " << val[0] << " ± " << err[0] << "." << "\n";
     }
 
     norm_factor = std::sqrt(val[0]/energy);
@@ -160,8 +229,13 @@ public:
     return error_flag;
   }
 
-  const double xmin[3] = {-15.0*lambda,-15.0*lambda,-30.0*L};
-  const double xmax[3] = { 15.0*lambda, 15.0*lambda, 30.0*L};
+	SalaminQuadratureMethod		method;
+	std::vector<double>       xmin;
+	std::vector<double>       xmax;
+	double 										abstol;
+	double 										reltol;
+	int 											mineval;
+	int 											maxeval;
 
 };
 

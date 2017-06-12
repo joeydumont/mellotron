@@ -32,5 +32,5 @@ g++ ${CXX_FLAGS}                          \
       -I ../include                       \
       -o ${filenameNoExt}.o               \
       ${filename}                         \
-      -lhdf5 -lgtest -lCubature -lcuba -larmadillo
+      -lhdf5 -lgtest -lCubature -lcuba -larmadillo -lfftw3l
 exit 0
