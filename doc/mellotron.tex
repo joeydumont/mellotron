@@ -305,9 +305,6 @@ Substituting this into the Landau-Lifshitz equation yields
   \end{align}
 where $q_\text{el}$ is the charge of the particle in units of the electron charge.
 
-
-
-
 % In the implementation, we assume QED units. The equation thus reads
 %   \begin{equation}
 %     \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
@@ -414,6 +411,55 @@ and $\theta_0=\arctan(p_x(0)/p_y(0))$. The position as a function of time
 		y(t)  &=  \frac{p_\perp}{\gamma m_\text{el}\Omega}\left(\sin(\Omega t+\theta_0)-\sin(\theta_0)\right)+y_0 \\
 		z(t)  &= \frac{p_z(0)}{\gamma m_\text{el}}t+z_0.
 	\end{align}
+
+\chapter{Field Models}
+
+In this section, we discuss the field models that can be used with the MELLOTRON.
+They are all listed here:
+	\begin{itemize}
+			\item Linearly polarized Salamin field model \cite{SAL2015b};
+			\item Quasi-Gaussian, radially polarized e-dipole \cite{GON2012};
+			\item All field models contained in the StrattoCalculator \cite{DUM2017};
+			\item Paraxial Gaussian beam in free space of after passing through a lens.
+	\end{itemize}
+
+\section{Salamin Field Model}
+\textbf{Header:}\hfill\texttt{SalaminTightlyFocused.hpp}
+\vspace{0.5cm}
+
+This field model is characterized by the tuple $(\lambda_c,w_0,L)$ which
+defines the central wavelength of its spectral power, its beam waist and
+its axial length. The beam waist is basically the term that appears in the exponential
+part of the spatial dependence, i.e. as $\exp(-r^2/w_0^2)$. The axial length $L$
+is the size of the window function that describes the spectral power of the beam.
+In other words, the spectral character of the beam is given as a window function
+defined over $\omega=[\omega_c-L/2,­\omega_c+L/2]$ where $\omega_c=2\pi c/\lambda_c$.
+
+In order to normalize the field to a given energy, the whole field is integrated
+over a volume space sufficient to achieve convergence. In the tranverse
+directions we integrate from $-10\lambda$ to $10\lambda$, while we integrate
+from $-10L$ to $10L$ in the longitudinal direction. The integration routine
+is based on the \texttt{Cubature} package.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figs/SalaminComponentsExample.pdf}
+	\caption{Field components in the Salamin model. Here we used the tuple
+	$(\lambda_c=800.0\,\si{\nano\metre},w_0=0.7\lambda_c, L=0.8\lambda_c)$
+	with an energy of $15\,\si{\joule}$.}
+\end{figure}
+
+\section{Quasi-Gaussian e-dipoles}
+\textbf{Header:}\hfill\texttt{eDipoles.hpp}
+\vspace{0.5cm}
+
+This field model is characterized by the tuple $(\omega_c,a)$ where $\omega_c$
+is the central frequency of the quasi-Gaussian envelope and $a$ is related
+to the pulse duration.
+
+The normalization factor can be determined analytically, as is done
+in the original article \cite{GON2012}. It is computed in the \texttt{SetD0()}
+member function of the \texttt{DipoleQuasiGaussian} class.
 
 \appendix
 
