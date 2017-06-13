@@ -24,11 +24,12 @@ public:
     lambda         /= electronic_units.UNIT_LENGTH;
     omega          *= electronic_units.UNIT_TIME;
     pulse_duration = 0.1*omega;
-    xmax           = lambda;
+    xmax           = 1.5*lambda;
     energy         = 15.0/electronic_units.UNIT_ENERGY;
     field = new DipoleQuasiGaussian(omega,pulse_duration,energy);
 
     std::cout << "Energy [in Mellotron Units]: " << energy << std::endl;
+    std::cout << "lambda [main] " << lambda << " [DipoleClass] " << field->lambda << "\n";
   }
 
 protected:
@@ -50,7 +51,7 @@ protected:
 TEST_F(DipoleQuasiGaussianTest, q_gauss)
 {
   // Define the mesh of the plot.
-  uint size_plot = 100;
+  uint size_plot = 200;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   arma::mat Ex(size_plot,size_plot);
@@ -75,7 +76,7 @@ TEST_F(DipoleQuasiGaussianTest, q_gauss)
     }
   }
 
-  field->ComputeNormalizationFactor();
+//  field->ComputeNormalizationFactor();
 
   // Output the data.
   x_field *= electronic_units.UNIT_LENGTH;
@@ -116,7 +117,7 @@ public:
   , lambda(800e-9/UNIT_LENGTH)
   , omega(2.0*cst::pi<double>()/lambda)
   , pulse_duration(0.1*omega)
-  , xmax(lambda)
+  , xmax(1.5*lambda)
   , energy(15.0/UNIT_ENERGY)
   , field(omega,pulse_duration,energy)
   {
@@ -144,7 +145,7 @@ protected:
 TEST_F(DipoleQuasiGaussianQEDTest, q_gauss)
 {
   // Define the mesh of the plot.
-  uint size_plot = 100;
+  uint size_plot = 200;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   arma::mat field_values(size_plot,size_plot);
@@ -160,8 +161,6 @@ TEST_F(DipoleQuasiGaussianQEDTest, q_gauss)
       field_values(i,j) = mellotron_to_qed_factor*field.ComputeFieldComponents(0.0*lambda,x_field[i],y_field[j],0.0)[2];
     }
   }
-
-  field.ComputeNormalizationFactor();
 
   // Output the data.
   x_field *= UNIT_LENGTH;
