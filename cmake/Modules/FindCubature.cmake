@@ -21,13 +21,17 @@ libfind_pkg_check_modules(CUBATURE_PKGCONF Cubature)
 
 find_path(CUBATURE_INCLUDE_DIR
   NAMES Cubature
-  PATHS ${CUBATURE_PKGCONF_INCLUDE_DIRS})
-
-find_library(CUBATURE_LIBRARY
-  NAMES Cubature
-  PATHS ${CUBATURE_PKGCONF_LIBRARY_DIRS}
+  PATHS ${CUBATURE_PKGCONF_INCLUDE_DIRS}
+  HINT external/Cubature/include
 )
 
+# Finally the library itself
+find_library(CUBATURE_LIBRARY 
+    NAMES Cubature libCubature
+    PATHS ${CUBATURE_PKGCONF_LIBRARY_DIRS}
+    HINT external/Cubature/
+)
+  
 # Set the include dir variables and the libraries and let libfind_process do the rest.
 # NOTE: Singular variables for this library, plural for libraries this this lib depends on.
 set(CUBATURE_PROCESS_INCLUDE CUBATURE_INCLUDE_DIR)
