@@ -20,10 +20,10 @@ public:
   : lambda(800.0e-9)
   , omega_0(2.0*constants::math::pi*constants::physics::c/lambda)
   , electron_units(omega_0)
-  , w0(0.7*lambda/electron_units.UNIT_LENGTH)
-  , L(0.8*lambda/electron_units.UNIT_LENGTH)
+  , w0(0.272*lambda/electron_units.UNIT_LENGTH)
+  , L(14.4*lambda/electron_units.UNIT_LENGTH)
   , xmax(1.5*lambda/electron_units.UNIT_LENGTH)
-  , energy(13.5/electron_units.UNIT_ENERGY)
+  , energy(13.0/electron_units.UNIT_ENERGY)
   , field(lambda/electron_units.UNIT_LENGTH,w0,L,energy)
   {
     lambda /= electron_units.UNIT_LENGTH;
@@ -76,7 +76,26 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
     }
   }
 
-  //field.ComputeNormalizationFactor();
+  // Compare to test data.
+  arma::mat Ex_ref; Ex_ref.load("test_data/SalaminField_Ex.txt", arma::raw_ascii);
+  arma::mat Ey_ref; Ey_ref.load("test_data/SalaminField_Ey.txt", arma::raw_ascii);
+  arma::mat Ez_ref; Ez_ref.load("test_data/SalaminField_Ez.txt", arma::raw_ascii);
+  arma::mat Bx_ref; Bx_ref.load("test_data/SalaminField_Bx.txt", arma::raw_ascii);
+  arma::mat By_ref; By_ref.load("test_data/SalaminField_By.txt", arma::raw_ascii);
+  arma::mat Bz_ref; Bz_ref.load("test_data/SalaminField_Bz.txt", arma::raw_ascii);
+
+  for (uint i=0; i<size_plot; i++)
+  {
+    for (uint j=0; j<2*size_plot; j++)
+    {
+      EXPECT_NEAR(Ex(i,j), Ex_ref(i,j), 1.0e-3);
+      EXPECT_NEAR(Ey(i,j), Ey_ref(i,j), 1.0e-3);
+      EXPECT_NEAR(Ez(i,j), Ez_ref(i,j), 1.0e-3);
+      EXPECT_NEAR(Bx(i,j), Bx_ref(i,j), 1.0e-3);
+      EXPECT_NEAR(By(i,j), By_ref(i,j), 1.0e-3);
+      EXPECT_NEAR(Bz(i,j), Bz_ref(i,j), 1.0e-3);
+    }
+  }
 
   // Output the data.
   x_field *= electron_units.UNIT_LENGTH;
@@ -102,9 +121,9 @@ public:
   , w0(0.7*lambda/electron_units.UNIT_LENGTH)
   , L(0.8*lambda/electron_units.UNIT_LENGTH)
   , xmax(1.5*lambda/electron_units.UNIT_LENGTH)
-  , energy(15.0/electron_units.UNIT_ENERGY)
+  , energy(13.0/electron_units.UNIT_ENERGY)
   , field_norm_test(lambda/electron_units.UNIT_LENGTH,w0,L,1.0)
-  , field(lambda/electron_units.UNIT_LENGTH,w0,L,std::pow(field_norm_test.norm_factor,2),energy)
+  , field(lambda/electron_units.UNIT_LENGTH,w0,L,field_norm_test.norm_factor,energy)
   {
     lambda /= electron_units.UNIT_LENGTH;
 

@@ -79,7 +79,7 @@ protected:
 };
 
 // We test that we compute the proper coordinates.
-TEST_F(ParticleTest, TestIntegration)
+TEST_F(ParticleTest, TestIntegrationElectrostatic)
 {
   // Define the initial conditions.
   arma::colvec::fixed<8> x           = arma::zeros<arma::colvec>(8);
@@ -201,15 +201,12 @@ TEST_F(ParticleTest, TestIntegratinoMagnetostatic)
   }
 }
 
-
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
   printf("Running main() UnitTest-Particle.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
-//  MPI_Init(&argc,&argv);
   auto result =  RUN_ALL_TESTS();
-  //MPI_Finalize();
   H5close();
 
   return result;

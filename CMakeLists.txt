@@ -68,8 +68,6 @@ endif()
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
 install (DIRECTORY include/                  DESTINATION include)
-install (DIRECTORY external/Cuba             DESTINATION include/mellotron_bits/external)
-install (DIRECTORY external/Cubature         DESTINATION include/mellotron_bits/external)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #

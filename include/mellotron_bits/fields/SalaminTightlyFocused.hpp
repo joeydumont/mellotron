@@ -13,7 +13,7 @@ namespace mellotron {
 namespace cst = boost::math::constants;
 
 /// enum to choose the quadrature method.
-enum SalaminQuadratureMethod {Cubatureh, Cubaturep, CubaCuhre};
+enum SalaminQuadratureMethod {CubatureH, CubatureP, CubaCuhre};
 
 /// Forward declaration of the interface to Cubature.
 int interface_to_cubature_salamin(unsigned int ndim, const double * x,    void *fdata,
@@ -85,7 +85,7 @@ public:
   , L(my_L)
   , energy(my_energy)
   {
-    norm_factor = std::sqrt(my_norm_constant/energy);
+    norm_factor = my_norm_constant/std::sqrt(energy);
   }
 
   /// Computes the field components.
@@ -189,7 +189,7 @@ public:
 	    	    &val[0],&err[0],&prob[0]);      // Stores the actual value of the integration, the estimated error and the xi^2 probability of error (not really applicable to Cuhre).
     }
 
-    else if (method == Cubatureh)
+    else if (method == CubatureH)
     {
     	error_flag = hcubature(fdim,                              // Number of components of the vector integrand. We have a scalar integrand here.
     		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
@@ -201,7 +201,7 @@ public:
     	                       val, err);                         // Store the value of the integrand and its error.
     }
 
-    else if (method == Cubaturep)
+    else if (method == CubatureP)
     {
     	error_flag = pcubature(fdim,                              // Number of components of the vector integrand. We have a scalar integrand here.
     		                     interface_to_cubature_salamin,     // Function that evaluates the integrand.
