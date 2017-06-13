@@ -16,14 +16,7 @@ set (mellotron_VERSION_RELEASE 0)
 # --               Configuration and Dependencies                -- #
 # ----------------------------------------------------------------- #
 # -- CMake version and installation directory.
-# CMake version
-cmake_minimum_required(VERSION 3.1)
-
-# C++11 Standard required
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
+cmake_minimum_required(VERSION 2.8)
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
@@ -36,45 +29,47 @@ include_directories(${HDF5_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
 # -- Required dependency: Boost.
-find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
-include_directories(${Boost_INCLUDE_DIRS})
-SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
+find_package(Boost 1.48.0 REQUIRED)
+include_directories(${BOOST_INCLUDE_DIRS})
+SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 
-# -- Required dependency: Cubature (should be in submodules)
-find_package(Cubature REQUIRED)
-include_directories(${CUBATURE_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${CUBATURE_LIBRARIES})
-message(STATUS "Cubature include directory: " ${CUBATURE_INCLUDE_DIR})
+# -- Compiler config for RELEASE build.
+# Configuration for the GCC compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  MESSAGE( STATUS "We use the GNU compiler settings.")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wall -march=native -std=c++14")
+  set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3 -Wall -march=native")
+endif()
 
-# -- Required dependency: cuba (should be in submodules)
-find_package(cuba REQUIRED)
-include_directories(${cuba_INCLUDE_DIRS})
-message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
+# Configuration for the Intel compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++14")
+  set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -O3")
+endif()
 
+# -- Compiler config for DEBUG build.
+# Configuration for the GCC compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  MESSAGE( STATUS "We use the GNU compiler settings.")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -O0 -pg -g -Wall -march=native -std=c++14")
+  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -fPIC -O0 -pg -g -Wall -march=native")
+endif()
 
-# -- Required dependency: Armadillo
-find_package(armadillo REQUIRED)
-include_directories(${armadillo_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${armadillo_LIBRARIES})
-message(STATUS "armadillo include directory: " ${armadillo_INCLUDE_DIR})
-
-# -- Compiler flags
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
-set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
-
+# Configuration for the Intel compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -debug all -std=c++14")
+  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -O0 -g -debug all")
+endif()
 
 # ----------------------------------------------------------------- #
 # --                  Compilation Instructions                   -- #
 # ----------------------------------------------------------------- #
 # -- Included files
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include external/Cubature/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
 install (DIRECTORY include/                  DESTINATION include)
 install (DIRECTORY external/Cuba             DESTINATION include/mellotron_bits/external)
 install (DIRECTORY external/Cubature         DESTINATION include/mellotron_bits/external)
-
-add_executable("IntegrationSalamin" "simulations/IntegrationSalamin.cpp")
-target_link_libraries("IntegrationSalamin" LINK_PUBLIC ${LIBS})
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #
