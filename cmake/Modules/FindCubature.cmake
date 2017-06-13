@@ -17,23 +17,23 @@
 include(LibFindMacros)
 
 # -- We use pkg-config to give information about the
-libfind_pkg_check_modules(CUBATURE_PKGCONF Cubature)
+libfind_pkg_check_modules(Cubature_PKGCONF Cubature)
 
-find_path(CUBATURE_INCLUDE_DIR
+find_path(Cubature_INCLUDE_DIR
   NAMES Cubature
-  PATHS ${CUBATURE_PKGCONF_INCLUDE_DIRS}
+  PATHS ${Cubature_PKGCONF_INCLUDE_DIRS}
   HINT external/Cubature/include
 )
 
 # Finally the library itself
-find_library(CUBATURE_LIBRARY 
-    NAMES Cubature libCubature
-    PATHS ${CUBATURE_PKGCONF_LIBRARY_DIRS}
-    HINT external/Cubature/
+find_library(Cubature_LIBRARY 
+    NAMES libCubature.a libCubature.so Cubature libCubature
+    PATHS ${Cubature_PKGCONF_LIBRARY_DIRS}
+    HINT external/Cubature
 )
   
 # Set the include dir variables and the libraries and let libfind_process do the rest.
 # NOTE: Singular variables for this library, plural for libraries this this lib depends on.
-set(CUBATURE_PROCESS_INCLUDE CUBATURE_INCLUDE_DIR)
-set(CUBATURE_PROCESS_LIB CUBATURE_LIBRARY)
-libfind_process(CUBATURE)
+set(Cubature_PROCESS_INCLUDE Cubature_INCLUDE_DIR)
+set(Cubature_PROCESS_LIB Cubature_LIBRARY)
+libfind_process(Cubature)

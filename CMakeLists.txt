@@ -42,16 +42,18 @@ SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 
 # -- Required dependency: Cubature (should be in submodules)
 find_package(Cubature REQUIRED)
-include_directories(${CUBATURE_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${CUBATURE_LIBRARIES})
-message(STATUS "Cubature include directory: " ${CUBATURE_INCLUDE_DIR})
+include_directories(${Cubature_INCLUDE_DIRS})
+set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
+message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
+message(STATUS "Cubature library: " ${Cubature_LIBRARY})
+
 
 # -- Required dependency: cuba (should be in submodules)
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${cuba_LIBRARIES})
+set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
 message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
-
+message(STATUS "cuba library: " ${cuba_LIBRARY})
 
 # -- Required dependency: Armadillo
 find_package(armadillo REQUIRED)
