@@ -31,6 +31,8 @@ if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
 else 
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
+    rm $GENINIT $INTEGSAL $COMPNORMCONST $MANAGEOUT
+    echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
 

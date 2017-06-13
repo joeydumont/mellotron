@@ -5,7 +5,7 @@
 #  \author Justine Pepin                  <justine.pepin@emt.inrs.ca>         #
 #  \since 2017-05-26                                                          #
 #                                                                             #
-# This bash file compile all required files for the MELLOTRON.                #
+# This bash file compile all required cpp files for the MELLOTRON.            #
 #                                                                             #
 # Usage: ./compileAll.sh                                                      #
 # --------------------------------------------------------------------------- #

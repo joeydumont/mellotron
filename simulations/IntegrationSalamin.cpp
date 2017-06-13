@@ -44,26 +44,43 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
     using boost::property_tree::ptree;
     ptree pt;
     read_xml(file, pt);
+    bool configIsEmpty = true;
+    bool hasFoundParticle = false;
+    bool hasFoundIntegSala = false;
     BOOST_FOREACH(ptree::value_type const& v, pt.get_child("config"))
     {
         if(v.first == "integration_salamin")
         {
-            config = new IntegrationSalaminConfig();
+            if(configIsEmpty)
+            {
+                config = new IntegrationSalaminConfig();
+                configIsEmpty = false;
+            }
+            hasFoundIntegSala = true;
             config->lam_ = v.second.get<double>("lambda");
             config->w0_ = v.second.get<double>("w0");
             config->L_ = v.second.get<double>("L");
             config->energy_ = v.second.get<double>("energy");
-            config->mass_ = v.second.get<double>("mass");
-            config->Q_ = v.second.get<double>("Q");
             config->t_init_ = v.second.get<double>("t_init");
             config->dt_ = v.second.get<double>("dt");
             config->nsteps_ = v.second.get<double>("nsteps");
         }
+        if(v.first == "particle")
+        {
+            if(configIsEmpty)
+            {
+                config = new IntegrationSalaminConfig();
+                configIsEmpty = false;
+            }
+            hasFoundParticle = true;
+            config->mass_ = v.second.get<double>("mass");
+            config->Q_ = v.second.get<double>("Q");
+        }
     }
     
-    if(config == nullptr)
+    if(config == nullptr || !hasFoundParticle || !hasFoundIntegSala)
     {
-        throw std::runtime_error("Missing integration_salamin config.");
+        throw std::runtime_error("Missing integration_salamin or particle config.");
     }
 }
 

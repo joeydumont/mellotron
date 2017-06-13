@@ -25,19 +25,23 @@ def main():
     radius = ""
     for child in config:
         if child.tag == "generate_initial_conditions":
-            if  child[0].tag == "wavelength" \
-            and child[1].tag == "pz" \
-            and child[2].tag == "numpart" \
-            and child[3].tag == "radius":
-                wavelength = float(child[0].text)
-                pz = float(child[1].text)
-                numpart = int(child[2].text)
-                radius = float(child[3].text)
+            if  child[0].tag == "pz" \
+            and child[1].tag == "numpart" \
+            and child[2].tag == "radius":
+                pz = float(child[0].text)
+                numpart = int(child[1].text)
+                radius = float(child[2].text)
             else:
                 print("Wrong order of arguments in generate_initial_conditions tag")
                 sys.exit()
+        if child.tag == "integration_salamin":
+            if  child[0].tag == "lambda":
+                wavelength = float(child[0].text)
+            else:
+                print("Wrong order of arguments in integration_salamin tag")
+                sys.exit()
     if wavelength == "" or pz == "" or numpart == "" or radius == "":
-        print("Can't find generate_initial_conditions tag or missing argument")
+        print("Can't find generate_initial_conditions tag, integration_salamin tag or missing argument")
         sys.exit()
 
     # Momentum values for px and py
