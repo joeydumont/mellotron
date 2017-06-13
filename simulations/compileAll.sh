@@ -36,7 +36,7 @@ fi
 ./compile.sh $COMPUTECPP
 echo "Done: compile ComputeNormalizationConstantSalaminLinear.cpp."
 
-# -- Check that the script can find IntegrationSalamin.o, GenerateInitialConditions.py and ComputeNormalizationConstantSalaminLinear.o
+# -- Check that the script can find IntegrationSalamin.o and ComputeNormalizationConstantSalaminLinear.o
 INTSAL="IntegrationSalamin.o"
 COMPUTE="ComputeNormalizationConstantSalaminLinear.o" 
 if [ ! -f $INTSAL ]; then
