@@ -16,6 +16,13 @@ find_path(cuba_INCLUDE_DIR
   HINT external/Cuba
 )
 
+# Finally the library itself
+find_library(cuba_LIBRARY 
+    NAMES cuba libcuba
+    PATHS ${CUBATURE_PKGCONF_LIBRARY_DIRS}
+    HINT external/Cuba
+)
+
 # Set the include dir variables and the libraries and let libfind_process do the rest.
 # NOTE: Singular variables for this library, plural for libraries this this lib depends on.
 set(cuba_PROCESS_INCLUDE cuba_INCLUDE_DIR)

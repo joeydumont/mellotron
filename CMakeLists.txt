@@ -49,6 +49,7 @@ message(STATUS "Cubature include directory: " ${CUBATURE_INCLUDE_DIR})
 # -- Required dependency: cuba (should be in submodules)
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
+set (LIBS ${LIBS} ${cuba_LIBRARIES})
 message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
 
 
