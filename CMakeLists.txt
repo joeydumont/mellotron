@@ -33,11 +33,6 @@ find_package(Boost 1.48.0 REQUIRED)
 include_directories(${BOOST_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
 
-# -- Required dependency: Cubature.
-find_package(Cubature REQUIRED)
-include_directories(${CUBATURE_INCLUDE_DIRS})
-SET (LIBS ${LIBS} ${CUBATURE_LIBRARIES})
-
 # -- Compiler config for RELEASE build.
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
@@ -72,18 +67,18 @@ endif()
 # -- Included files
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
 
-install (DIRECTORY include/ DESTINATION include)
+install (DIRECTORY include/                  DESTINATION include)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #
 # ----------------------------------------------------------------- #
 # add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-add_custom_target(
-  doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen" VERBATIM
-)
-endif(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
+#find_package(Doxygen)
+#if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+#add_custom_target(
+#  doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+#      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#      COMMENT "Generating API documentation with Doxygen" VERBATIM
+#)
+#endif(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)

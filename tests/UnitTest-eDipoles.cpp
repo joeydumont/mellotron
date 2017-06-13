@@ -79,7 +79,7 @@ TEST_F(DipoleQuasiGaussianTest, q_gauss)
   double tmax    = 5.0*lambda;
   auto   t_data  = arma::linspace<arma::colvec>(-tmax,tmax,size_plot);
   arma::colvec t_field(size_plot);
-  
+
   for (uint i=0; i<size_plot; i++)
   {
     t_field(i) = field->ComputeFieldComponents(t_data(i), 0.0,0.0,0.0)[2];
