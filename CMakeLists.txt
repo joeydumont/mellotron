@@ -40,6 +40,11 @@ find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 
+# -- Required dependency: Armadillo
+find_package(armadillo REQUIRED)
+include_directories(${armadillo_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${armadillo_LIBRARIES})
+
 # -- Required dependency: Cubature (should be in submodules)
 find_package(Cubature REQUIRED)
 include_directories(${Cubature_INCLUDE_DIRS})
@@ -47,19 +52,12 @@ set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
 message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
 message(STATUS "Cubature library: " ${Cubature_LIBRARY})
 
-
 # -- Required dependency: cuba (should be in submodules)
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
 set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
 message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
 message(STATUS "cuba library: " ${cuba_LIBRARY})
-
-# -- Required dependency: Armadillo
-find_package(armadillo REQUIRED)
-include_directories(${armadillo_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${armadillo_LIBRARIES})
-message(STATUS "armadillo include directory: " ${armadillo_INCLUDE_DIR})
 
 # -- Compiler flags
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
@@ -76,7 +74,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 install (DIRECTORY include/          DESTINATION include)
 
 # -- Output binaries in directory
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
 # -- Rules for every target
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
