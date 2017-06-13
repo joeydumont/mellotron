@@ -73,14 +73,19 @@ set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # -- Install mellotron headers
-install (DIRECTORY include/                  DESTINATION include)
+install (DIRECTORY include/          DESTINATION include)
 
-# Output binaries in directory
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# -- Output binaries in directory
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
 
-add_executable("IntegrationSalamin" "simulations/IntegrationSalamin.cpp")
-target_link_libraries("IntegrationSalamin" LINK_PUBLIC ${LIBS})
-install(TARGETS IntegrationSalamin RUNTIME DESTINATION bin)
+# -- Rules for every target
+add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
+target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
+install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
+
+add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
+install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #
