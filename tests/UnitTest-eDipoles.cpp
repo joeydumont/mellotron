@@ -53,14 +53,25 @@ TEST_F(DipoleQuasiGaussianTest, q_gauss)
   uint size_plot = 100;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
-  arma::mat field_values(size_plot,size_plot);
+  arma::mat Ex(size_plot,size_plot);
+  arma::mat Ey(size_plot,size_plot);
+  arma::mat Ez(size_plot,size_plot);
+  arma::mat Bx(size_plot,size_plot);
+  arma::mat By(size_plot,size_plot);
+  arma::mat Bz(size_plot,size_plot);
 
   // Compute the field values.
   for (uint i=0; i<size_plot; i++)
   {
     for (uint j=0; j<size_plot; j++)
     {
-      field_values(i,j) = field->ComputeFieldComponents(0.0*lambda,x_field[i],y_field[j],0.0)[2];
+      auto field_value  = field->ComputeFieldComponents(0.0*lambda,x_field[i],y_field[j],0.0);
+      Ex(i,j) = field_value[0];
+      Ey(i,j) = field_value[1];
+      Ez(i,j) = field_value[2];
+      Bx(i,j) = field_value[3];
+      By(i,j) = field_value[4];
+      Bz(i,j) = field_value[5];
     }
   }
 
@@ -72,7 +83,12 @@ TEST_F(DipoleQuasiGaussianTest, q_gauss)
 
   x_field.save("x_field_qgauss.txt", arma::raw_ascii);
   y_field.save("y_field_qgauss.txt", arma::raw_ascii);
-  field_values.save("QuasiGaussianField.txt", arma::raw_ascii);
+  Ex.save("QuasiGaussianField_Ex.txt", arma::raw_ascii);
+  Ey.save("QuasiGaussianField_Ey.txt", arma::raw_ascii);
+  Ez.save("QuasiGaussianField_Ez.txt", arma::raw_ascii);
+  Bx.save("QuasiGaussianField_Bx.txt", arma::raw_ascii);
+  By.save("QuasiGaussianField_By.txt", arma::raw_ascii);
+  Bz.save("QuasiGaussianField_Bz.txt", arma::raw_ascii);
 
   // Compute the field in time at the focal spot.
   size_plot = 200;
@@ -151,8 +167,8 @@ TEST_F(DipoleQuasiGaussianQEDTest, q_gauss)
   x_field *= UNIT_LENGTH;
   y_field *= UNIT_LENGTH;
 
-  x_field.save("x_field_qgauss.txt", arma::raw_ascii);
-  y_field.save("y_field_qgauss.txt", arma::raw_ascii);
+  x_field.save("x_field_qgauss_qed.txt", arma::raw_ascii);
+  y_field.save("y_field_qgauss_qed.txt", arma::raw_ascii);
   field_values.save("QuasiGaussianField_qed.txt", arma::raw_ascii);
 
   // Compute the field in time at the focal spot.
@@ -181,3 +197,4 @@ GTEST_API_ int main(int argc, char **argv)
 
   return result;
 }
+
