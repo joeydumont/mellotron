@@ -68,14 +68,17 @@ set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
 # --                  Compilation Instructions                   -- #
 # ----------------------------------------------------------------- #
 # -- Included files
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include external/Cubature/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# -- Install mellotron headers
 install (DIRECTORY include/                  DESTINATION include)
-install (DIRECTORY external/Cuba             DESTINATION include/mellotron_bits/external)
-install (DIRECTORY external/Cubature         DESTINATION include/mellotron_bits/external)
+
+# Output binaries in directory
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable("IntegrationSalamin" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin" LINK_PUBLIC ${LIBS})
+install(TARGETS IntegrationSalamin RUNTIME DESTINATION bin)
 
 # ----------------------------------------------------------------- #
 # --                   Generate Documentation                    -- #
