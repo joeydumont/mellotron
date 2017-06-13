@@ -446,7 +446,7 @@ is based on the \texttt{Cubature} package.
 	\includegraphics[width=\textwidth]{figs/SalaminComponentsExample.pdf}
 	\caption{Field components in the Salamin model. Here we used the tuple
 	$(\lambda_c=800.0\,\si{\nano\metre},w_0=0.7\lambda_c, L=0.8\lambda_c)$
-	with an energy of $15\,\si{\joule}$.}
+	with an energy of $15\,\si{\joule}$ at $t=\lambda/4$ and $z=\lambda/2$.}
 \end{figure}
 
 \section{Quasi-Gaussian e-dipoles}
@@ -460,6 +460,14 @@ to the pulse duration.
 The normalization factor can be determined analytically, as is done
 in the original article \cite{GON2012}. It is computed in the \texttt{SetD0()}
 member function of the \texttt{DipoleQuasiGaussian} class.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figs/QuasiGaussianExample.pdf}
+	\caption{Field components in the e-dipole model. Here we used the tuple
+	$(\lambda_c=800.0\,\si{\nano\metre},a=0.1\omega_c)$
+	with an energy of $15\,\si{\joule}$ at $t=z=0$.}
+\end{figure}
 
 \appendix
 

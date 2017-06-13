@@ -52,6 +52,7 @@ public:
 
     // Derivatives of the driving function.
     double my_g0m = g0m(t,R);
+    double my_g1m = g1m(t,R);
     double my_g1p = g1p(t,R);
     double my_g2m = g2m(t,R);
     double my_g2p = g2p(t,R);
@@ -72,7 +73,7 @@ public:
     double Ez = d*((-x*x-y*y)*rm2*E1+(3.0*z*z*rm2-1.0)*E2);
 
     // Auxiliary magnetic field.
-    double B1 = my_g2p*rm1+my_g2m*rm2;
+    double B1 = my_g2p*rm1+my_g1m*rm2;
 
     // Actual fields.
     double Bx = -d*y*rm1*B1;

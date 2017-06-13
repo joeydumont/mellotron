@@ -41,12 +41,12 @@ y_salamin = np.loadtxt("y_field_salamin.txt")/800e-9
 X_salamin, Y_salamin = np.meshgrid(x_salamin,y_salamin)
 
 # -- Load the data.
-Ex_salamin = np.transpose(np.loadtxt("SalaminField_Ex.txt"))**2
-Ey_salamin = np.transpose(np.loadtxt("SalaminField_Ey.txt"))**2
-Ez_salamin = np.transpose(np.loadtxt("SalaminField_Ez.txt"))**2
-Bx_salamin = np.transpose(np.loadtxt("SalaminField_Bx.txt"))**2
-By_salamin = np.transpose(np.loadtxt("SalaminField_By.txt"))**2
-Bz_salamin = np.transpose(np.loadtxt("SalaminField_Bz.txt"))**2
+Ex_salamin = np.transpose(np.loadtxt("SalaminField_Ex.txt"))
+Ey_salamin = np.transpose(np.loadtxt("SalaminField_Ey.txt"))
+Ez_salamin = np.transpose(np.loadtxt("SalaminField_Ez.txt"))
+Bx_salamin = np.transpose(np.loadtxt("SalaminField_Bx.txt"))
+By_salamin = np.transpose(np.loadtxt("SalaminField_By.txt"))
+Bz_salamin = np.transpose(np.loadtxt("SalaminField_Bz.txt"))
 
 # -- Plot the field.
 fig  = plt.figure(figsize=(7,4))
@@ -58,7 +58,7 @@ axEx = plt.subplot2grid((2,3), (0,0))
 im   = plt.pcolormesh(X_salamin,Y_salamin,Ex_salamin, **plotOptions)
 axEx.set_aspect('equal')
 axEx.set_title(r"$E_x$")
-axEx.set_ylabel(r"$y\,[\mu\si{\micro\metre}]")
+axEx.set_ylabel(r"$y/\lambda$")
 
 
 divider = make_axes_locatable(axEx)
@@ -90,8 +90,8 @@ axEx = plt.subplot2grid((2,3), (1,0))
 im   = plt.pcolormesh(X_salamin,Y_salamin,Bx_salamin, **plotOptions)
 axEx.set_aspect('equal')
 axEx.set_title(r"$B_x$")
-axEx.set_ylabel(r"$y\,[\mu\si{\micro\metre}]")
-axEx.set_xlabel(r"$x\,[\mu\si{\metre}]")
+axEx.set_ylabel(r"$y/\lambda$")
+axEx.set_xlabel(r"$x/\lambda$")
 
 divider = make_axes_locatable(axEx)
 cax     = divider.append_axes("right", size="5%", pad=0.05)
@@ -102,7 +102,7 @@ axEx = plt.subplot2grid((2,3), (1,1))
 im   = plt.pcolormesh(X_salamin,Y_salamin,By_salamin, **plotOptions)
 axEx.set_aspect('equal')
 axEx.set_title(r"$B_y$")
-axEx.set_xlabel(r"$x\,[\mu\si{\metre}]")
+axEx.set_xlabel(r"$x/\lambda$")
 
 divider = make_axes_locatable(axEx)
 cax     = divider.append_axes("right", size="5%", pad=0.05)
@@ -113,7 +113,7 @@ axEx = plt.subplot2grid((2,3), (1,2))
 im   = plt.pcolormesh(X_salamin,Y_salamin,Bz_salamin, **plotOptions)
 axEx.set_aspect('equal')
 axEx.set_title(r"$B_z$")
-axEx.set_xlabel(r"$x\,[\mu\si{\metre}]")
+axEx.set_xlabel(r"$x/\lambda$")
 
 divider = make_axes_locatable(axEx)
 cax     = divider.append_axes("right", size="5%", pad=0.05)
@@ -121,29 +121,88 @@ plt.colorbar(im, cax)
 
 plt.savefig("SalaminComponents.pdf", bbox_inches='tight', dpi=500)
 
-x_qgauss = np.loadtxt("x_field_qgauss.txt")/1e-6
-y_qgauss = np.loadtxt("y_field_qgauss.txt")/1e-6
+# -------------------------------- E-DIPOLES -------------------------------- #
+x_qgauss = np.loadtxt("x_field_qgauss.txt")/800.0e-9
+y_qgauss = np.loadtxt("y_field_qgauss.txt")/800.0e-9
 X_qgauss, Y_qgauss = np.meshgrid(x_qgauss, y_qgauss)
-field = np.loadtxt("QuasiGaussianField.txt")
-fieldQED=np.loadtxt("QuasiGaussianField_qed.txt")
+
+# -- Load the data.
+Ex_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_Ex.txt"))
+Ey_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_Ey.txt"))
+Ez_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_Ez.txt"))
+Bx_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_Bx.txt"))
+By_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_By.txt"))
+Bz_qgauss = np.transpose(np.loadtxt("QuasiGaussianField_Bz.txt"))
 
 # -- Plot the field.
-fig = plt.figure()
-plt.pcolormesh(X_qgauss,Y_qgauss,field)
-plt.gca().set_aspect('equal')
-plt.colorbar()
+fig  = plt.figure(figsize=(7,4))
+fig.subplots_adjust(wspace=0.5,hspace=0.5)
+plotOptions = {'rasterized':True, 'cmap': 'inferno'}
 
-fig = plt.figure()
-plt.pcolormesh(X_qgauss,Y_qgauss,(field-fieldQED)/field)
-plt.gca().set_aspect('equal')
-plt.colorbar()
+# ----------- Ex ------------- #
+axEx = plt.subplot2grid((2,3), (0,0))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,Ex_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$E_x$")
+axEx.set_ylabel(r"$y/\lambda$")
 
-t_data = np.loadtxt("t_data_qgauss.txt")
-t_field = np.loadtxt("t_field_qgauss.txt")
-t_field_qed= np.loadtxt("t_field_qgauss_qed.txt")
 
-fig = plt.figure()
-plt.plot(t_data,t_field)
-plt.plot(t_data,t_field_qed)
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
 
-plt.show()
+# ----------- Ey ------------- #
+axEx = plt.subplot2grid((2,3), (0,1))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,Ey_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$E_y$")
+
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
+
+# ----------- Ez ------------- #
+axEx = plt.subplot2grid((2,3), (0,2))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,Ez_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$E_z$")
+
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
+
+# ----------- Bx ------------- #
+axEx = plt.subplot2grid((2,3), (1,0))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,Bx_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$B_x$")
+axEx.set_ylabel(r"$y/\lambda$")
+axEx.set_xlabel(r"$x/\lambda$")
+
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
+
+# ----------- By ------------- #
+axEx = plt.subplot2grid((2,3), (1,1))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,By_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$B_y$")
+axEx.set_xlabel(r"$x/\lambda$")
+
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
+
+# ----------- Bz ------------- #
+axEx = plt.subplot2grid((2,3), (1,2))
+im   = plt.pcolormesh(X_qgauss,Y_qgauss,Bz_qgauss, **plotOptions)
+axEx.set_aspect('equal')
+axEx.set_title(r"$B_z$")
+axEx.set_xlabel(r"$x/\lambda$")
+
+divider = make_axes_locatable(axEx)
+cax     = divider.append_axes("right", size="5%", pad=0.05)
+plt.colorbar(im, cax)
+
+plt.savefig("QuasiGaussianComponents.pdf", bbox_inches='tight', dpi=500)
