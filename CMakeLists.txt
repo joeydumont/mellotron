@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------- #
-# Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
-# Date created: 2016-09-29                                                    #
-# Description:  CMake compilation instructions for MELLOTRON.                 #
+# Author:       Denis Gagnon                  <denis.gagnon@emt.inrs.ca>      #
+# Date created: 2017-06-13                                                    #
+# Description:  CMake compilation instructions for MELLOTRON                  #
 # ----------------------------------------------------------------------------#
 
 # ----------------------------------------------------------------- #
@@ -19,7 +19,7 @@ set (mellotron_VERSION_RELEASE 0)
 # CMake version
 cmake_minimum_required(VERSION 3.1)
 
-# C++11 Standard required
+# C++14 Standard required
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -45,14 +45,14 @@ find_package(armadillo REQUIRED)
 include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
-# -- Required dependency: Cubature (should be in submodules)
+# -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
 find_package(Cubature REQUIRED)
 include_directories(${Cubature_INCLUDE_DIRS})
 set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
 message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
 message(STATUS "Cubature library: " ${Cubature_LIBRARY})
 
-# -- Required dependency: cuba (should be in submodules)
+# -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
 set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})

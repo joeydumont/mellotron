@@ -1,7 +1,8 @@
 # --------------------------------------------------------------------------- #
-# Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
-# Date:         2016-10-26                                                    #
-# Description:  Attempts to find the cuba library.                        #
+# Author:       Denis Gagnon                  <denis.gagnon@emt.inrs.ca>      #
+# Date created: 2017-06-13                                                    #
+# Description:  Attempts to find the cuba library.                            #
+# ----------------------------------------------------------------------------#
 
 # -- LibFindMacros for convenience
 # https://github.com/Tronic/cmake-modules/blob/master/LibFindMacros.cmake
