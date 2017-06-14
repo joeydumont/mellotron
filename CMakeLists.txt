@@ -12,6 +12,9 @@ set (mellotron_VERSION_MAJOR 0)
 set (mellotron_VERSION_MINOR 0)
 set (mellotron_VERSION_RELEASE 0)
 
+add_subdirectory (external/Cubature/)
+include_directories (external/Cubature/include)
+
 # ----------------------------------------------------------------- #
 # --               Configuration and Dependencies                -- #
 # ----------------------------------------------------------------- #
@@ -46,11 +49,11 @@ include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
-find_package(Cubature REQUIRED)
-include_directories(${Cubature_INCLUDE_DIRS})
-set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
-message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
-message(STATUS "Cubature library: " ${Cubature_LIBRARY})
+#find_package(Cubature REQUIRED)
+#include_directories(${Cubature_INCLUDE_DIRS})
+#set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
+#message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
+#message(STATUS "Cubature library: " ${Cubature_LIBRARY})
 
 # -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
 find_package(cuba REQUIRED)
@@ -77,11 +80,14 @@ install (DIRECTORY include/          DESTINATION include)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
 # -- Rules for every target
+
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationSalamin.o" Cubature)
 install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
 
 add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
