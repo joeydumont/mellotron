@@ -1,4 +1,4 @@
-#ifndef PARTICLE_MEAT_HP
+#ifndef PARTICLE_MEAT_HPP
 #define PARTICLE_MEAT_HPP
 
 namespace mellotron {
