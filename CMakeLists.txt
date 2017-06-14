@@ -12,9 +12,6 @@ set (mellotron_VERSION_MAJOR 0)
 set (mellotron_VERSION_MINOR 0)
 set (mellotron_VERSION_RELEASE 0)
 
-add_subdirectory (external/Cubature/)
-include_directories (external/Cubature/include)
-
 # ----------------------------------------------------------------- #
 # --               Configuration and Dependencies                -- #
 # ----------------------------------------------------------------- #
@@ -49,6 +46,9 @@ include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
+add_subdirectory (external/Cubature/)
+include_directories (external/Cubature/include)
+
 #find_package(Cubature REQUIRED)
 #include_directories(${Cubature_INCLUDE_DIRS})
 #set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
