@@ -11,39 +11,107 @@
 #include <mellotron>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <boost/program_options.hpp>
 #include <boost/numeric/odeint.hpp>
 
 #include <boost/math/special_functions/relative_difference.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/foreach.hpp>
 
 using boost::math::relative_difference;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
+
+struct IntegrationSalaminConfig
+{
+    double lam_;
+    double w0_;
+    double L_;
+    double energy_;
+    double mass_;
+    double Q_;
+    double t_init_;
+    double dt_;
+    double nsteps_;
+    void read(std::ifstream& file, IntegrationSalaminConfig*& config);
+};
+
+void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfig*& config)
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+    read_xml(file, pt);
+    bool configIsEmpty = true;
+    bool hasFoundParticle = false;
+    bool hasFoundIntegSala = false;
+    BOOST_FOREACH(ptree::value_type const& v, pt.get_child("config"))
+    {
+        if(v.first == "integration_salamin")
+        {
+            if(configIsEmpty)
+            {
+                config = new IntegrationSalaminConfig();
+                configIsEmpty = false;
+            }
+            hasFoundIntegSala = true;
+            config->lam_ = v.second.get<double>("lambda");
+            config->w0_ = v.second.get<double>("w0");
+            config->L_ = v.second.get<double>("L");
+            config->energy_ = v.second.get<double>("energy");
+            config->t_init_ = v.second.get<double>("t_init");
+            config->dt_ = v.second.get<double>("dt");
+            config->nsteps_ = v.second.get<double>("nsteps");
+        }
+        if(v.first == "particle")
+        {
+            if(configIsEmpty)
+            {
+                config = new IntegrationSalaminConfig();
+                configIsEmpty = false;
+            }
+            hasFoundParticle = true;
+            config->mass_ = v.second.get<double>("mass");
+            config->Q_ = v.second.get<double>("Q");
+        }
+    }
+    
+    if(config == nullptr || !hasFoundParticle || !hasFoundIntegSala)
+    {
+        throw std::runtime_error("Missing integration_salamin or particle config.");
+    }
+}
+
 int main(int argc, char* argv[])
 {
-
     // Declare the supported options.
     po::options_description desc("Allowed options");
     desc.add_options()
-    ("help",                                                                "produce help message")
+    ("help",                                                                   "produce help message"                                   )
     ("init_conds",         po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, electronic units (6-vector)")
-    ("norm_constant_file", po::value<std::string>()->required(),            "File that contains the normalization constant.")
-    ("energy",             po::value<double>()->default_value(10.0),        "Pulse energy, in joules"                                   )
-    ("lam",                po::value<double>()->default_value(8.0e-07),     "Wavelength in meters"                                      )
-    ("w0",                 po::value<double>()->default_value(1.0),         "Beam waist in units of lambda"                             )
-    ("L",                  po::value<double>()->default_value(1.0),         "Axial length of beam in units of lambda"                   )
-    ("mass",               po::value<double>()->default_value(1.0),         "Particle mass in units of electron mass"                   )
-    ("Q",                  po::value<double>()->default_value(-1.0),        "Particle charge in units of electron charge"               )
-    ("t_init",             po::value<double>()->default_value(-5.0e-12),    "Initial time in simulation in seconds"                     )
-    ("dt",                 po::value<double>()->default_value(1e-13),       "Duration of a time step in seconds"                        )
-    ("nsteps",             po::value<int>()->default_value(100),            "Number of time steps"                                      )
     ;
 
     // Parse command line and store in variable map
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::store(parse_command_line(argc, argv, desc, po::command_line_style::unix_style ^ po::command_line_style::allow_short), vm);
     po::notify(vm);
+
+    // Open config file
+    std::ifstream conf_file;
+    conf_file.open("config.xml");
+    if(!conf_file.is_open())
+    {
+        std::cout
+                << "the config file must be in the same directory... Exiting."
+                << std::endl;
+        return 0;
+    }
+
+    // Read config file
+    IntegrationSalaminConfig* config = nullptr;
+    config->IntegrationSalaminConfig::read(conf_file, config);
 
     // Control the number of components in initial conditions vector
     std::vector<double> init_conds;
@@ -61,7 +129,7 @@ int main(int argc, char* argv[])
     }
 
     // Parse lambda from command line
-    double lam     = vm["lam"].as<double>();
+    double lam     = config->lam_;
 
     // Instantiate electron units object
     mellotron::MellotronUnits electron_units
@@ -70,19 +138,26 @@ int main(int argc, char* argv[])
     // Convert everything to electronic units (get everything from vm, except lam)
     lam /= electron_units.UNIT_LENGTH;
 
-    double energy  = vm["energy"].as<double>() / electron_units.UNIT_ENERGY ;
-    double w0      = vm["w0"].as<double>() * lam;
-    double L       = vm["L"].as<double>() * lam;
-    double mass    = vm["mass"].as<double>();
-    double Q       = vm["Q"].as<double>();
-    double t_init  = vm["t_init"].as<double>() / electron_units.UNIT_TIME ;
-    double dt      = vm["dt"].as<double>() / electron_units.UNIT_TIME ;
-    double nsteps  = vm["nsteps"].as<int>();
+    double energy  = config->energy_ / electron_units.UNIT_ENERGY ;
+    double w0      = config->w0_ * lam;
+    double L       = config->L_ * lam;
+    double mass    = config->mass_;
+    double Q       = config->Q_;
+    double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
+    double dt      = config->dt_ / electron_units.UNIT_TIME ;
+    double nsteps  = config->nsteps_;
 
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
     std::ifstream norm_constant_file;
-    norm_constant_file.open(vm["norm_constant_file"].as<std::string>().c_str());
+    norm_constant_file.open("normalization_constant.txt");
+    if(!norm_constant_file.is_open())
+    {
+        std::cout
+                << "normalization_constant.txt must be in the same directory... Exiting."
+                << std::endl;
+        return 0;
+    }
 
     std::string line;
     std::getline(norm_constant_file, line);std::getline(norm_constant_file, line);
@@ -91,9 +166,9 @@ int main(int argc, char* argv[])
     iss >> lambda_file >> w0_file >> L_file >> norm_constant;
 
     if (
-            relative_difference(vm["lam"].as<double>(), lambda_file) > 1.0e-5
-        ||  relative_difference(vm["w0"].as<double>(),  w0_file)     > 1.0e-5
-        ||  relative_difference(vm["L"].as<double>(),   L_file)      > 1.0e-5)
+            relative_difference(config->lam_, lambda_file) > 1.0e-5
+        ||  relative_difference(config->w0_,  w0_file)     > 1.0e-5
+        ||  relative_difference(config->L_,   L_file)      > 1.0e-5)
     {
         throw std::runtime_error("Wrong value of the normalization constant.");
     }
@@ -131,15 +206,10 @@ int main(int argc, char* argv[])
                        std::ref(particle_obs)
                    );
 
-    std::cout << steps << std::endl;
-
-    for (uint i=0; i<8; i++)
-    {
-        std::cout << x[i] << std::endl;
-    }
-
     particle_obs.OutputData();
 
+
+    delete config;
     return 0;
 
 }
