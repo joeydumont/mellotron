@@ -79,28 +79,15 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
 
     plt.savefig(directory + "positionsPlot.eps")
 
-def createGammaVariationInTime(graph, globalModelTimes, globalModelGamma, nParticles, nTimeSteps):
-    # Initiate arrays of good size.
-    times = np.empty((nTimeSteps))
-    dGamma = np.empty((nTimeSteps))
-    oldGammas = np.empty((nParticles))
-    for j in range(nParticles):
-        oldGammas[j] = globalModelGamma[0, 0, j]
+def calculateCOnV(r, nParticles):
+    for j in range (nParticles):
+        if r[j] == 1.0:
+            print("Division by 0... exiting.")
+            sys.exit()
+        r[j] = 1.0/np.sqrt(1.0 - 1.0/np.power(r[j], 2))
+    return r
 
-    for i in range(nTimeSteps):
-        times[i] = globalModelTimes[i]
-        delta = 0
-        for j in range(nParticles):
-            currentGamma = globalModelGamma[i, 0, j]
-            delta += np.absolute(currentGamma - oldGammas[j])
-            oldGammas[j] = currentGamma
-        dGamma[i] = delta
-
-    graph.scatter(times, dGamma)
-    graph.set_ylabel(r"gamma variation since last dt")
-    graph.set_xlabel(r"time")
-
-def createPolarGammaPlot(globalModelTimes, globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
+def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
     # Initiate arrays of good size.
     r = np.empty((nParticles))
     theta = np.empty((nParticles))
@@ -128,20 +115,27 @@ def createPolarGammaPlot(globalModelTimes, globalModelMomentums, globalModelGamm
     ax4.grid(True)
     ax1.scatter(theta, r)
     ax2.scatter(phi, r)
-    createGammaVariationInTime(ax4, globalModelTimes, globalModelGamma, nParticles, nTimeSteps)
 
     ax1.set_title(r"zx plane ($\theta$)", va='bottom')
     ax1.set_ylabel(r"gamma", labelpad=30)
     ax2.set_title(r"yx plane ($\phi$)", va='bottom')
     ax2.set_ylabel(r"gamma", labelpad=30)
 
-    # Put multicolored bands
+    # Histogram of gamma with colourful bands
     N, bins, patches = ax3.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+    for i in range(len(patches)):
+        patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+
+    # Histogram of c/v with colourful bands
+    r = calculateCOnV(r, nParticles)
+    N, bins, patches = ax4.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
     for i in range(len(patches)):
         patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
     ax3.set_xlabel(r"gamma")
     ax3.set_ylabel(r"Number of particles")
+    ax4.set_xlabel(r"c/v")
+    ax4.set_ylabel(r"Number of particles")
     plt.savefig(directory + "polarGammaPlots.eps")
 
 def main():
@@ -201,7 +195,7 @@ def main():
     # Create polar chi plot
     globalModelGamma = globalModelGroup["gamma"]
     globalModelMomentums = globalModelGroup["momentum"]
-    createPolarGammaPlot(globalModelTimes, globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
+    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
     
 
 if __name__ == "__main__":
