@@ -56,6 +56,18 @@ include_directories (external/Cubature/include)
 #message(STATUS "Cubature library: " ${Cubature_LIBRARY})
 
 # -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
+find_package(cuba)
+
+if (${cuba_FOUND})
+    # Do nothing
+else()
+    # Build cuba and then attempt to find it again
+    message(STATUS "Building cuba in submodules directory")
+    execute_process(COMMAND ./configure
+                    COMMAND make
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba)
+endif()
+
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
 set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
