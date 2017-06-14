@@ -469,6 +469,57 @@ member function of the \texttt{DipoleQuasiGaussian} class.
 	with an energy of $15\,\si{\joule}$ at $t=z=0$.}
 \end{figure}
 
+\section{Gaussian beams after passing through a focusing lens}
+\textbf{Header:}\hfill\texttt{TBD}
+\vspace{0.5cm}
+
+This model aims to represent a Gaussian beam after it has passed
+through a focusing lens. Before the lens, it takes the form
+	\begin{align}
+		E_x(\bo{r},\omega_k) &=  E_0(\omega_k)\frac{w_0}{w(z)}e^{-\frac{r^2}{w(z)^2}}\exp\left(-ikz-ik\frac{r^2}{2R(z)}+i\psi(z)-i\phi(\omega_k)\right) \\
+		B_y(\bo{r},\omega_k) &= -E_x(\bo{r},\omega_k)
+	\end{align}
+where
+	\begin{align}
+		w(z)    &= w_0\sqrt{1+\frac{z^2}{z_R^2}} \\
+		R(z)    &= z\left(1+\frac{z_R^2}{z^2}\right) \\
+		\psi(z) &= \arctan\left(\frac{z}{z_R}\right)
+	\end{align}
+are the beam waist, radius of curvature and Gouy phase. $\phi(\omega_k)$
+is a spectral phase.
+$E_0(\omega_k)$ is a constant fixed by the normalization procedure. In short,
+we rescale this value such that the power spectrum is a given function (see the
+documentation of the \texttt{StrattoCalculator} for details).
+
+In truth, the much simpler form
+	\begin{equation}
+		E_x(\bo{r},\omega_k) = E_0(\omega_k)\frac{iz_R}{q(z)}\exp\left[-ik\frac{r^2}{2q(z)}-i\phi(\omega_k)\right]
+	\end{equation}
+where $q(z) = z + i z_R$ will be preferred as it allows the easy application of the ABCD formalism which
+relates the $q_2$ parameter of the Gaussian after an optical element to that
+of the $q_1$ parameter before the optical element as
+	\begin{equation}
+		q_2 = \frac{Aq_1+B}{Cq_1+D}
+	\end{equation}
+for each frequency $\omega_k$. For a lens, this matrix reads
+	\begin{equation}
+		M_\text{lens} = \mqty*(1 & 0 \\ -1/f & 1).
+	\end{equation}
+
+In short, the works as follows:
+	\begin{enumerate}
+			\item Input: power spectrum; spectral phases; focal length of the lens; initial beam waist $w_0$.
+			\item Fields are normalized with respect to the power spectrum.
+			\item Each frequency component is transformed with $M_\text{lens}$.
+			\item The semi-discrete inverse Fourier transform is computed to get $\vb{E}(\vb{r},t)$.
+	\end{enumerate}
+
+%Specifically, this yields the new fields
+%INSERT COMPLICATED EXPRESSION HERE
+%	\begin{equation}
+%		E_x(\vb{r},\omega_k) = E_0(\omega_k)\frac
+%	\end{equation}
+
 \appendix
 
 \bibliographystyle{osajnl}
