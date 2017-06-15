@@ -87,18 +87,23 @@ def calculateCOnV(r, nParticles):
         r[j] = 1.0/np.sqrt(1.0 - 1.0/np.power(r[j], 2))
     return r
 
-def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory):
+def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory, a, b):
     # Initiate arrays of good size.
     r = np.empty((nParticles))
+    gam = np.empty((nParticles))
     theta = np.empty((nParticles))
     phi = np.empty((nParticles))
     minGamma = 1.0
+    maxGamma = 0.0
     isGammaSuperiorToOne = True
     # Stepping through the Particles.
     for j in range(nParticles):
-            r[j] = globalModelGamma[nTimeSteps - 1, 0, j]
-            if r[j] <= minGamma:
+            r[j] = a * (globalModelGamma[nTimeSteps - 1, 0, j] + b)
+            gam[j] = globalModelGamma[nTimeSteps - 1, 0, j]
+            if gam[j] <= minGamma:
                 isGammaSuperiorToOne = False
+            if r[j] > maxGamma:
+                maxGamma = r[j]
             px = globalModelMomentums[nTimeSteps - 1, 0, j]
             py = globalModelMomentums[nTimeSteps - 1, 1, j]
             pz = globalModelMomentums[nTimeSteps - 1, 2, j]
@@ -111,16 +116,19 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax3 = f.add_subplot(223)
     ax4 = f.add_subplot(224)
     ax1.grid(True)
+    ax1.set_rmax(maxGamma)
     ax2.grid(True)
+    ax2.set_rmax(maxGamma)
     ax3.grid(True)
     ax4.grid(True)
     ax1.scatter(theta, r)
     ax2.scatter(phi, r)
-
+    gammaLabel = "*(gamma + "
+    gammaLabel = "(" + str(a) + ")" + gammaLabel + "(" + str(b) + "))"
     ax1.set_title(r"zx plane ($\theta$)", va='bottom')
-    ax1.set_ylabel(r"gamma", labelpad=30)
+    ax1.set_ylabel(gammaLabel, labelpad=30)
     ax2.set_title(r"yx plane ($\phi$)", va='bottom')
-    ax2.set_ylabel(r"gamma", labelpad=30)
+    ax2.set_ylabel(gammaLabel, labelpad=30)
 
     # Histogram of gamma with colourful bands
     N, bins, patches = ax3.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
@@ -129,12 +137,12 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
 
     # Histogram of c/v with colourful bands
     if isGammaSuperiorToOne:
-        r = calculateCOnV(r, nParticles)
-        N, bins, patches = ax4.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+        gam = calculateCOnV(gam, nParticles)
+        N, bins, patches = ax4.hist(gam, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
         for i in range(len(patches)):
             patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
-    ax3.set_xlabel(r"gamma")
+    ax3.set_xlabel(gammaLabel)
     ax3.set_ylabel(r"Number of particles")
     ax4.set_xlabel(r"c/v")
     plt.savefig(directory + "polarGammaPlots.eps")
@@ -155,6 +163,10 @@ def main():
                         help=".hdf5 file with 1 particle to generate the trajectory plot with.")
     parser.add_argument("--nTimeSteps", type=int,   default=0,
                         help="Number of timeSteps to plot on. If 0, the maximal number of timeSteps will be used. Default is the maximum.")
+    parser.add_argument("--a", type=float,   default=1.0,
+                        help="a value in a*(gamma + b).")
+    parser.add_argument("--b", type=float,   default=0.0,
+                        help="b value in a*(gamma + b).")
 
     # Parse arguments
     args = parser.parse_args()
@@ -182,7 +194,7 @@ def main():
     if targetTime != 0 and targetTime < nTimeSteps:
         nTimeSteps = targetTime
 
-    # Il only one particle, no need to do rest of main 
+    # If only one particle, no need to do rest of main 
     if hdf5File != "global.hdf5":
         createOneParticleTrajectory(directory, hdf5File, nTimeSteps, globalModelGroup)
 
@@ -196,7 +208,9 @@ def main():
     # Create polar chi plot
     globalModelGamma = globalModelGroup["gamma"]
     globalModelMomentums = globalModelGroup["momentum"]
-    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory)
+    a = args.a
+    b = args.b
+    createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory, a, b)
     
 
 if __name__ == "__main__":
