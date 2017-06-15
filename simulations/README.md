@@ -8,9 +8,7 @@ Particles trajectories can be computed for any charge/mass ratio.
 
 
 STARTING THE MELLOTRON:
-1) Insure that all .o are at their latest versions by compiling all the .cpp :
-
-        ./compileAll.sh
+1) Insure the .o are present in the simulations/ directory. 
 
 2) Write your simulation parameters in the config.xml file without changing the file's layout.
 
@@ -55,34 +53,26 @@ SCRIPTS API:
         usage : ./automaticStart.sh <dirname>/
         note : you might have to do a small chmod +x automaticStart.sh before to obtain permission to use the script.
 
-2) compile.sh                                   Compiles a given .cpp file.
-        usage : ./compile.sh MyCode.cpp
-        note : you might have to do a small chmod +x compile.sh before to obtain permission to use the script.
-
-3) compileAll.sh                                Compiles the required .cpp files for the MELLOTRON.
-        usage : ./compileAll.sh
-        note : you might have to do a small chmod +x compileAll.sh before to obtain permission to use the script.
-
-4) ComputeNormalizationConstantSalaminLinear.o  Computes the normalization constant the MELLOTRON needs.
+2) ComputeNormalizationConstantSalaminLinear.o  Computes the normalization constant the MELLOTRON needs.
         usage : There is a config.xml in the same directory containing the right values of lambda, w0 and L.
                 ./ComputeNormalizationConstantSalaminLinear.o
         note : don't forget to compile the most recent version of .cpp with compile.sh script.
 
-5) GenerateInitialConditions.py                 Generates the x,y,z,px,py and pz of particles that will be simulated in the MELLOTRON
+3) GenerateInitialConditions.py                 Generates the x,y,z,px,py and pz of particles that will be simulated in the MELLOTRON
         usage : There is a config.xml in the same directory containing the right values of lambda, pz numpart and radius.
                 python GenerateInitialConditions.py
 
-6) IntegrationSalamin.o                         Calculates the trajectory of each initial condition
+4) IntegrationSalamin.o                         Calculates the trajectory of each initial condition
         usage : There is a config.xml in the same directory containing the right values of mass, Q, lambda, w0, L, energy, t_init, dt and nsteps.
                 There is a init_conds.txt file at disposition.
                 There is a normalization_constant.txt file in the same directory.
                 cat path/to/init_conds.txt | parallel -j <number of jobs> --colsep " " ./IntegrationSalamin.o --init_conds {1} {2} {3} {4} {5} {6}
 
-7) manageOutputs.py                             Generates the global.hdf5 file containing the data of all trajectories calculated in the MELLOTRON and its global.xdmf file.
+5) manageOutputs.py                             Generates the global.hdf5 file containing the data of all trajectories calculated in the MELLOTRON and its global.xdmf file.
         usage : python manageOutputs.py --nParticles <number of .hdf5 output files> --directory <dirname>/
                 paraview <dirname>/global.xdmf
 
-8) producePlots.py                              Generates the plots of trajectory and/or polar position and gamma after a given .hdf5 file.
+6) producePlots.py                              Generates the plots of trajectory and/or polar position and gamma after a given .hdf5 file.
         usage : python producePlots.py --directory <dirname>/ --file <name.hdf5> --nTimeSteps <int>
                 default value for --file option is global.hdf5.
                 default value for nTimeSteps is 0, which means all timeSteps will be used to generate the trajectory.

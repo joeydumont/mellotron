@@ -92,12 +92,13 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     r = np.empty((nParticles))
     theta = np.empty((nParticles))
     phi = np.empty((nParticles))
-    maxGamma = 0.0
+    minGamma = 1.0
+    isGammaSuperiorToOne = True
     # Stepping through the Particles.
     for j in range(nParticles):
             r[j] = globalModelGamma[nTimeSteps - 1, 0, j]
-            if r[j] > maxGamma:
-                maxGamma = r[j]
+            if r[j] <= minGamma:
+                isGammaSuperiorToOne = False
             px = globalModelMomentums[nTimeSteps - 1, 0, j]
             py = globalModelMomentums[nTimeSteps - 1, 1, j]
             pz = globalModelMomentums[nTimeSteps - 1, 2, j]
@@ -127,15 +128,15 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
         patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
     # Histogram of c/v with colourful bands
-    r = calculateCOnV(r, nParticles)
-    N, bins, patches = ax4.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
-    for i in range(len(patches)):
-        patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+    if isGammaSuperiorToOne:
+        r = calculateCOnV(r, nParticles)
+        N, bins, patches = ax4.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+        for i in range(len(patches)):
+            patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
     ax3.set_xlabel(r"gamma")
     ax3.set_ylabel(r"Number of particles")
     ax4.set_xlabel(r"c/v")
-    ax4.set_ylabel(r"Number of particles")
     plt.savefig(directory + "polarGammaPlots.eps")
 
 def main():
