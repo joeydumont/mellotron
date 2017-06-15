@@ -25,7 +25,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
   momentum.col(n_cols) = x.subvec(5,7);
-  gamma.push_back(x[4]/particle.GetMass());
+  gamma.push_back(std::sqrt(1.0+std::pow(arma::norm(momentum,2)/particle.GetMass(),2)));
   times.push_back(x[0]);
 
   // Compute the electromagnetic field and store it.
