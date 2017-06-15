@@ -58,7 +58,7 @@ class ParticleTest : public testing::Test
 public:
   ParticleTest()
   : charge(2.0)
-  , mass(3.0)
+  , mass(7344.0)
   , electron(charge,mass,field)
   , electron_obs(electron)
   {}
@@ -123,11 +123,18 @@ TEST_F(ParticleTest, TestIntegrationElectrostatic)
   // Comparison between recorded data and analytical solution.
   for (uint i=0; i<size_time; i++)
   {
-    EXPECT_NEAR(electron_obs.momentum(0,i), charge*field.Ex*electron_obs.times[i]+px_init*field.Ex, 1.0e-6);
-    EXPECT_NEAR(electron_obs.momentum(1,i), charge*field.Ey*electron_obs.times[i]+py_init*field.Ey, 1.0e-6);
-    EXPECT_NEAR(electron_obs.momentum(2,i), charge*field.Ez*electron_obs.times[i]+pz_init*field.Ez, 1.0e-6);
+    EXPECT_NEAR(electron_obs.momentum(0,i), charge*field.Ex*electron_obs.times[i]+px_init, 1.0e-6);
+    EXPECT_NEAR(electron_obs.momentum(1,i), charge*field.Ey*electron_obs.times[i]+py_init, 1.0e-6);
+    EXPECT_NEAR(electron_obs.momentum(2,i), charge*field.Ez*electron_obs.times[i]+pz_init, 1.0e-6);
 
     double field_norm_sq = std::pow(arma::norm(electron_obs.electric_field.col(i),2),2);
+    double gamma_theo    = std::sqrt(1.0
+                                + (
+                                    std::pow(charge*field.Ex*electron_obs.times[i]+px_init,2)
+                                    + std::pow(charge*field.Ey*electron_obs.times[i]+py_init,2)
+                                    + std::pow(charge*field.Ez*electron_obs.times[i]+py_init,2)
+                                  ) / std::pow(mass,2));
+    EXPECT_NEAR(electron_obs.gamma[i]     , gamma_theo                                                                             , 1.0e-6);
     EXPECT_NEAR(electron_obs.position(0,i), field.Ex/field_norm_sq*mass/charge*(electron_obs.gamma[i]-electron_obs.gamma[0])+x_init, 1.0e-6);
     EXPECT_NEAR(electron_obs.position(1,i), field.Ey/field_norm_sq*mass/charge*(electron_obs.gamma[i]-electron_obs.gamma[0])+y_init, 1.0e-6);
     EXPECT_NEAR(electron_obs.position(2,i), field.Ez/field_norm_sq*mass/charge*(electron_obs.gamma[i]-electron_obs.gamma[0])+z_init, 1.0e-6);
