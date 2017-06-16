@@ -27,10 +27,10 @@ filename=`basename $1`
 filenameNoExt="${filename%.*}"
 
 # -- We compile the test.
-CXX_FLAGS="-Wall -std=c++14 -O0 -pg -g"
+CXX_FLAGS="-Wall -std=c++14 -O3"
 g++ ${CXX_FLAGS}                          \
       -I ../include                       \
       -o ${filenameNoExt}.o               \
       ${filename}                         \
-      -lhdf5 -lgtest
+      -lhdf5 -lgtest -lCubature -lcuba -larmadillo
 exit 0

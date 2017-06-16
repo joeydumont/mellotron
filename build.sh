@@ -16,7 +16,7 @@
 # Check the number of arguments.
 if [ $# -gt 2 ]; then
   printf "Usage is\n"
-  printf "\tbash build.sh [cluster] [release OR debug]\n"
+  printf "\tbash build.sh (release OR debug) [cluster]\n"
   exit 1
 fi
 
@@ -48,7 +48,7 @@ if [ $# -gt 1 ]; then
 
     if [ $? -ne 0 ]; then
       printf "module command could not be executed. Are you sure you are on a cluster?\n"
-      exit 1
+      #exit 1
     fi
 
     module use  /home/maclean_group/modulefiles/
@@ -62,7 +62,7 @@ if [ $# -gt 1 ]; then
     export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
     export CC=gcc
     export CXX=g++
-    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/0.0.0"
+    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/0.5.0"
 
 
   else

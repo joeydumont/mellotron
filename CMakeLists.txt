@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------- #
-# Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
-# Date created: 2016-09-29                                                    #
-# Description:  CMake compilation instructions for MELLOTRON.                 #
+# Author:       Denis Gagnon                  <denis.gagnon@emt.inrs.ca>      #
+# Date created: 2017-06-13                                                    #
+# Description:  CMake compilation instructions for MELLOTRON                  #
 # ----------------------------------------------------------------------------#
 
 # ----------------------------------------------------------------- #
@@ -9,14 +9,21 @@
 # ----------------------------------------------------------------- #
 project(mellotron)
 set (mellotron_VERSION_MAJOR 0)
-set (mellotron_VERSION_MINOR 0)
+set (mellotron_VERSION_MINOR 5)
 set (mellotron_VERSION_RELEASE 0)
 
 # ----------------------------------------------------------------- #
 # --               Configuration and Dependencies                -- #
 # ----------------------------------------------------------------- #
 # -- CMake version and installation directory.
-cmake_minimum_required(VERSION 2.8)
+# CMake version
+cmake_minimum_required(VERSION 3.1)
+
+# C++14 Standard required
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
@@ -29,76 +36,70 @@ include_directories(${HDF5_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
 # -- Required dependency: Boost.
-find_package(Boost 1.48.0 REQUIRED)
-include_directories(${BOOST_INCLUDE_DIRS})
-SET (LIBS ${LIBS} ${BOOST_LIBRARIES})
+find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
+include_directories(${Boost_INCLUDE_DIRS})
+SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 
-# -- Compiler config for RELEASE build.
-# Configuration for the GCC compiler.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  MESSAGE( STATUS "We use the GNU compiler settings.")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wall -march=native -std=c++14")
-  set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3 -Wall -march=native")
+# -- Required dependency: Armadillo
+find_package(armadillo REQUIRED)
+include_directories(${armadillo_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${armadillo_LIBRARIES})
+
+# -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
+add_subdirectory (external/Cubature/)
+include_directories (external/Cubature/include)
+
+#find_package(Cubature REQUIRED)
+#include_directories(${Cubature_INCLUDE_DIRS})
+#set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
+#message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
+#message(STATUS "Cubature library: " ${Cubature_LIBRARY})
+
+# -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
+find_package(cuba)
+
+if (${cuba_FOUND})
+    # Do nothing
+else()
+    # Build cuba and then attempt to find it again
+    message(STATUS "Building cuba in submodules directory")
+    execute_process(COMMAND ./configure
+                    COMMAND make
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba)
 endif()
 
-# Configuration for the Intel compiler.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++14")
-  set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -O3")
-endif()
+find_package(cuba REQUIRED)
+include_directories(${cuba_INCLUDE_DIRS})
+set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
+message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
+message(STATUS "cuba library: " ${cuba_LIBRARY})
 
-# -- Compiler config for DEBUG build.
-# Configuration for the GCC compiler.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  MESSAGE( STATUS "We use the GNU compiler settings.")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -O0 -pg -g -Wall -march=native -std=c++14")
-  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -fPIC -O0 -pg -g -Wall -march=native")
-endif()
+# -- Compiler flags
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
+set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
 
-# Configuration for the Intel compiler.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -debug all -std=c++14")
-  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS}   -O0 -g -debug all")
-endif()
 
 # ----------------------------------------------------------------- #
 # --                  Compilation Instructions                   -- #
 # ----------------------------------------------------------------- #
 # -- Included files
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include INC_LIST)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# -- Source files
-aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR}/src SRC_LIST)
+# -- Install mellotron headers
+install (DIRECTORY include/          DESTINATION include)
 
-# -- Build a shared library
-#add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
+# -- Output binaries in directory
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
-# Define the properties of the library to
-# be built (version and other stuff).
-#set_target_properties (
-#  ${PROJECT_NAME}
-#  PROPERTIES
-#    VERSION   ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-#    SOVERSION ${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE}
-#)
+# -- Rules for every target
 
-# Link dependencies
-#target_link_libraries (${PROJECT_NAME} ${LIBS})
+add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
+target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationSalamin.o" Cubature)
+install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
 
-# Install directories
-#install (TARGETS ${PROJECT_NAME} DESTINATION lib)
-install (DIRECTORY include/ DESTINATION include)
+add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
+install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
-# ----------------------------------------------------------------- #
-# --                   Generate Documentation                    -- #
-# ----------------------------------------------------------------- #
-# add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-add_custom_target(
-  doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen" VERBATIM
-)
-endif(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8)

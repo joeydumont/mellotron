@@ -6,6 +6,8 @@
 #include <cmath>
 #include <hdf5.h>
 
+namespace mellotron {
+
 /*!
  *  \class  ParticleObserver
  *  \author Joey Dumont      <joey.dumont@gmail.com>
@@ -30,8 +32,6 @@ public:
   /// Outputs in a pair of HDF5 and XDMF files.
   void OutputData();
 
-protected:
-
   /// Creates the HDF5 and outputs the data.
   void  GenerateHDF5();
 
@@ -49,5 +49,7 @@ protected:
         arma::mat                electric_field;        ///< Record of the electric field along the particle's trajectory.
         arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
 };
+
+} // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_BONES_H

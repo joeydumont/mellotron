@@ -1,6 +1,8 @@
 #ifndef PARTICLE_OBSERVER_MEAT_HPP
 #define PARTICLE_OBSERVER_MEAT_HPP
 
+namespace mellotron {
+
 template <class FieldModel>
 inline
 ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle)
@@ -23,7 +25,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
   momentum.col(n_cols) = x.subvec(5,7);
-  gamma.push_back(x[4]);
+  gamma.push_back(std::sqrt(1.0+std::pow(arma::norm(momentum.col(n_cols),2)/particle.GetMass(),2)));
   times.push_back(x[0]);
 
   // Compute the electromagnetic field and store it.
@@ -33,12 +35,10 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
 
   // Compute chi.
   double pdotE         = arma::dot(momentum.col(n_cols),electric_field.col(n_cols));
-  arma::colvec lorentz = x[4]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
-  double chi_sq        = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
+  arma::colvec lorentz = gamma[n_cols]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
+  double chi_prefac    = constants::physics::hbar*particle.GetUnitSystem().omega_0_SI/(particle.GetMass()*constants::physics::electron_mass*std::pow(constants::physics::c,2));
+  double chi_sq        = std::pow(chi_prefac,2)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
   chi.push_back(std::sqrt(chi_sq));
-  std::cout << "Lorentz norm: " << std::pow(arma::norm(lorentz,2),2) << std:: endl;
-  std::cout << "p dot E: " << pdotE << std::endl;
-  std::cout << "chi_sq: " << chi_sq << std::endl;
 }
 
 template <class FieldModel>
@@ -94,6 +94,9 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   hsize_t size_dataspace[1];size_dataspace[0] = times.size();
   dataspace_id = H5Screate_simple(1, size_dataspace, NULL);
   plist_id     = H5Pcreate(H5P_DATASET_CREATE);
+  hsize_t chunk_size_1d = 5;
+  H5Pset_chunk(plist_id,1,&chunk_size_1d);
+  H5Pset_deflate(plist_id,5);
   dataset_id   = H5Dcreate(group_id,
                            "times",
                            H5T_NATIVE_DOUBLE,
@@ -151,6 +154,9 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   size_dataspace_position[0] = position.n_cols;
   size_dataspace_position[1] = position.n_rows;
   dataspace_id               = H5Screate_simple(2, size_dataspace_position, NULL);
+  hsize_t chunk_size[2]; chunk_size[0] = 50; chunk_size[1]=3;
+  H5Pset_chunk(plist_id,2,chunk_size);
+  H5Pset_deflate(plist_id,5);
   dataset_id                 = H5Dcreate(group_id,
                                          "position",
                                          H5T_NATIVE_DOUBLE,
@@ -224,5 +230,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
   H5Gclose(group_id);
   H5Fclose(file_id);
 }
+
+} // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_MEAT_HPP

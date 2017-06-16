@@ -1,0 +1,7 @@
+[submodule "external/Cubature"]
+	path = external/Cubature
+	url = https://github.com/McNoggins/Cubature
+	branch = master
+[submodule "external/Cuba"]
+	path = external/Cuba
+	url = https://github.com/valandil/Cuba
