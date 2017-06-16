@@ -73,13 +73,15 @@ SCRIPTS API:
                 paraview <dirname>/global.xdmf
 
 6) producePlots.py                              Generates the plots of trajectory and/or polar position and gamma after a given .hdf5 file.
-        usage : python producePlots.py --directory <dirname>/ --file <name.hdf5> --nTimeSteps <int>
+        usage : python producePlots.py --directory <dirname>/ --file <name.hdf5> --nTimeSteps <int> --a <float> --b <float>
                 default value for --file option is global.hdf5.
-                default value for nTimeSteps is 0, which means all timeSteps will be used to generate the trajectory.
+                default value for --nTimeSteps option is 0, which means all timeSteps will be used to generate the trajectory.
+                default value for --a option is 1.0
+                default value for --b option is 0.0.
                 epstopdf <dirname>/<NameOfGeneratedPlot>.eps <dirname>/<NameOfGeneratedPlot>.pdf
                 xdg-open <dirname>/<NameOfGeneratedPlot>.pdf
         note : If given a global.hdf5 file, with python producePlots.py --directory <dirname>/, it will produce a positions plot with all the trajectories on.
-               It will also produce a polar positions and gamma plot.
+               It will also produce a polar positions and gamma plot. The gamma can be modified with this formula : a*(gamma+b), where a and b are facultative options.
                If given a single particle .hdf5 file (e.g. 14595196478285746701.hdf5), it will only produce a positions plot with the single trajectory on.
 
 
