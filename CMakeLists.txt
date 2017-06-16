@@ -46,13 +46,28 @@ include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
-find_package(Cubature REQUIRED)
-include_directories(${Cubature_INCLUDE_DIRS})
-set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
-message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
-message(STATUS "Cubature library: " ${Cubature_LIBRARY})
+add_subdirectory (external/Cubature/)
+include_directories (external/Cubature/include)
+
+#find_package(Cubature REQUIRED)
+#include_directories(${Cubature_INCLUDE_DIRS})
+#set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
+#message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
+#message(STATUS "Cubature library: " ${Cubature_LIBRARY})
 
 # -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
+find_package(cuba)
+
+if (${cuba_FOUND})
+    # Do nothing
+else()
+    # Build cuba and then attempt to find it again
+    message(STATUS "Building cuba in submodules directory")
+    execute_process(COMMAND ./configure
+                    COMMAND make
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba)
+endif()
+
 find_package(cuba REQUIRED)
 include_directories(${cuba_INCLUDE_DIRS})
 set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
@@ -77,11 +92,14 @@ install (DIRECTORY include/          DESTINATION include)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
 # -- Rules for every target
+
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationSalamin.o" Cubature)
 install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
 
 add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
