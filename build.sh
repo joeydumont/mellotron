@@ -62,7 +62,7 @@ if [ $# -gt 1 ]; then
     export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
     export CC=gcc
     export CXX=g++
-    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/0.0.0"
+    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/0.5.0"
 
 
   else
