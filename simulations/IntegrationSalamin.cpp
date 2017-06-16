@@ -77,7 +77,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->Q_ = v.second.get<double>("Q");
         }
     }
-    
+
     if(config == nullptr || !hasFoundParticle || !hasFoundIntegSala)
     {
         throw std::runtime_error("Missing integration_salamin or particle config.");
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     // Declare the supported options.
     po::options_description desc("Allowed options");
     desc.add_options()
-    ("help",                                                                   "produce help message"                                   )
+    ("help",                                                                "produce help message"                                   )
     ("init_conds",         po::value<std::vector<double> >()->multitoken(), "Initial position and momentum, electronic units (6-vector)")
     ;
 
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
-    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field);
+    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units);
     mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
 
     // Define the initial conditions.

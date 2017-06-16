@@ -42,7 +42,7 @@ struct ConstantField
   , Bz(0.0)
   {}
 
-  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
+  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z) const
   {
     std::array<double,6> constant = {Ex,Ey,Ez,Bx,By,Bz};
     return constant;
@@ -59,7 +59,8 @@ public:
   ParticleTest()
   : charge(2.0)
   , mass(3.0)
-  , electron(charge,mass,field)
+  , electron_units(1.0)
+  , electron(charge,mass,field,electron_units)
   , electron_obs(electron)
   {}
 
@@ -67,6 +68,7 @@ public:
   const double mass;
 
   ConstantField                                     field;
+  MellotronUnits                                    electron_units;
   Particle<ConstantField>                           electron;
   ParticleObserver<ConstantField>                   electron_obs;
 
