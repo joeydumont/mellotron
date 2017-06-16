@@ -36,7 +36,7 @@ public:
   }
 
   /// Computes the field components.
-  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
+  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z) const
   {
     // Prepare return value.
     std::array<double,6> field = {0.0,0.0,0.0,0.0,0.0,0.0};
@@ -119,59 +119,59 @@ protected:
   }
 
   /// Retarted form of the driving function.
-  double g0_ret(double t, double R)
+  double g0_ret(double t, double R) const
   {
     return std::exp(-a*a*std::pow(t-R,2))*std::sin(omega*(t-R));
   }
 
   /// Advanced form of the driving function.
-  double g0_adv(double t, double R)
+  double g0_adv(double t, double R) const
   {
     return std::exp(-a*a*std::pow(t+R,2))*std::sin(omega*(t+R));
   }
 
   /// Feynman form of the driving function.
-  double g0p(double t, double R)
+  double g0p(double t, double R) const
   {
     return g0_ret(t,R)+g0_adv(t,R);
   }
 
   /// Anti-Feynman form of the driving function.
-  double g0m(double t, double R)
+  double g0m(double t, double R) const
   {
     return g0_ret(t,R)-g0_adv(t,R);
   }
 
   /// First derivative of the Feynman driving function.
-  double g1p(double t, double R)
+  double g1p(double t, double R) const
   {
     return (-2.0*a*a*(t+R)*std::sin(omega*(t+R))+std::cos(omega*(t+R))*omega)*std::exp(-std::pow(a*(t+R),2))
           +(-2.0*a*a*(t-R)*std::sin(omega*(t-R))+std::cos(omega*(t-R))*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
   /// First derivative of the anti-Feynman driving function.
-  double g1m(double t, double R)
+  double g1m(double t, double R) const
   {
     return (2.0*a*a*(t+R)*std::sin(omega*(t+R))-std::cos(omega*(t+R))*omega)*std::exp(-std::pow(a*(t+R),2))
          +(-2.0*a*a*(t-R)*std::sin(omega*(t-R))+std::cos(omega*(t-R))*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
   /// Second derivative of the Feynman driving function.
-  double g2p(double t, double R)
+  double g2p(double t, double R) const
   {
     return (-2.0*a*a*std::sin(omega*(t+R))+4.0*std::pow(a*a*(t+R),2)*std::sin(omega*(t+R))-4.0*a*a*(t+R)*std::cos(omega*(t+R))*omega-std::sin(omega*(t+R))*omega*omega)*std::exp(-std::pow(a*(t+R),2))
           +(-2.0*a*a*std::sin(omega*(t-R))+4.0*std::pow(a*a*(t-R),2)*std::sin(omega*(t-R))-4.0*a*a*(t-R)*std::cos(omega*(t-R))*omega-std::sin(omega*(t-R))*omega*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
   /// Second derivative of the anti-Feynman driving function.
-  double g2m(double t, double R)
+  double g2m(double t, double R) const
   {
     return (2.0*a*a*std::sin(omega*(t+R))-4.0*std::pow(a*a*(t+R),2)*std::sin(omega*(t+R))+4.0*a*a*(t+R)*std::cos(omega*(t+R))*omega+std::sin(omega*(t+R))*omega*omega)*std::exp(-std::pow(a*(t+R),2))
          +(-2.0*a*a*std::sin(omega*(t-R))+4.0*std::pow(a*a*(t-R),2)*std::sin(omega*(t-R))-4.0*a*a*(t-R)*std::cos(omega*(t-R))*omega-std::sin(omega*(t-R))*omega*omega)*std::exp(-std::pow(a*(t-R),2));
   }
 
   /// Third derivative of the driving function, evaluated at R=0..
-  double g3(double t)
+  double g3(double t) const
   {
     double exp_prefac = std::exp(-a*a*t*t);
     double cos_prefac = -6.0*a*a*omega+12*std::pow(a,4)*omega*t*t-std::pow(omega,3);

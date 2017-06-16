@@ -6,6 +6,9 @@
 
 namespace mellotron {
 
+/// enum to choose the radiation reaction model.
+enum RadiationReactionModel {NoRR, LandauLifshitz, LandauLifshitzQuantumCorrection};
+
 /*!
  *  \class  Particle
  *  \author Joey Dumont      <joey.dumont@gmail.com>
@@ -23,9 +26,10 @@ class Particle
 public:
 
   /// Constructor sets the physical properties of the particle.
-  Particle(const double my_charge, const double my_mass, FieldModel& my_field_model, const std::string my_radiation_reaction = std::string("no_rr"));
+  /// RR makes it so the unit system must be passed to the Particle.
+  Particle(const double my_charge, const double my_ass, FieldModel& my_field_model, MellotronUnits& my_units, const RadiationReactionModel my_radiation_reaction = NoRR);
 
-  /// Computation of the field tensor at a given point in spacetime.
+  /// Computation of the field tensor at a given point in space-time.
   void ComputeFieldTensor(const double t, const double x, const double y, const double z);
 
   // Accessor functions of the electromagnetic fields.
@@ -35,6 +39,9 @@ public:
   // Accessor functions of the particle parameters.
   double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
   double GetMass(){return mass;}                                    ///< Returns the mass of the particle.
+
+  /// Accessor function of the unit system.
+  MellotronUnits & GetUnitSystem(){return unit_system;}
 
   // Utility function to set the initial conditions.
   void SetInitConditions(arma::colvec::fixed<8>& x, double x_init, double y_init, double z_init, double px_init, double py_init, double pz_init, double t_init);
@@ -53,9 +60,8 @@ protected:
         arma::colvec::fixed<3>      magnetic_field;        ///< Magnetic field at a given point in spacetime.
 
 
-  const std::string                 radiation_reaction;    ///< Determines the model of radiation reaction we employ, if at all.
-
-  const double                      alpha;                 ///< Fine-structure constant.
+        MellotronUnits           &  unit_system;           ///< Contains information about the unit system used. Useful for RR.
+  const RadiationReactionModel      radiation_reaction;    ///< Determines the model of radiation reaction we employ, if at all.
 
         double                      chi_sq;                ///< Lorentz invariant along the trajectory, squared.
         double                      chi;                   ///< Lorentz invariant along the trajectory.

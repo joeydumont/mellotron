@@ -1,19 +1,20 @@
-#ifndef PARTICLE_MEAT_HP
+#ifndef PARTICLE_MEAT_HPP
 #define PARTICLE_MEAT_HPP
 
 namespace mellotron {
 
 template <class FieldModel>
 inline
-Particle<FieldModel>::Particle(const double          my_charge,
-                               const double          my_mass,
-                               FieldModel         &  my_field_model,
-                               const std::string     my_radiation_reaction)
+Particle<FieldModel>::Particle(const double                     my_charge,
+                               const double                     my_mass,
+                                     FieldModel              &  my_field_model,
+                                     MellotronUnits          &  my_units,
+                               const RadiationReactionModel     my_radiation_reaction)
 : charge(my_charge)
 , mass(my_mass)
 , field_model(my_field_model)
+, unit_system(my_units)
 , radiation_reaction(my_radiation_reaction)
-, alpha(7.2973525664e-3)
 {}
 
 template <class FieldModel>
@@ -84,24 +85,28 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
 
   // Compute the force.
   double pdotE         = arma::dot(momentum,electric_field);
-  arma::colvec lorentz = gamma*electric_field + arma::cross(momentum,magnetic_field);
-  chi_sq               = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
-  chi                  = std::sqrt(chi_sq);
 
   // Set the momentum differentials.
   dxdt(4)              = charge_to_rel_mass*arma::dot(momentum,electric_field);
   dxdt.subvec(5,7)     = charge*electric_field+charge_to_rel_mass*arma::cross(momentum,magnetic_field);
 
-  // Radiation reaction effects. TODO: CORRECT CHI VALUE.
-  if (radiation_reaction == std::string("ll_first_term"))
+  if (radiation_reaction != NoRR)
   {
-    dxdt.subvec(4,7) -= 2.0*alpha*std::pow(charge,4)/(3.0*gamma*std::pow(mass,5))*chi_sq*x.subvec(4,7);
-  }
+    arma::colvec lorentz = gamma*electric_field + arma::cross(momentum,magnetic_field);
+    double chi_prefac    = constants::physics::hbar*unit_system.omega_0_SI/(mass*constants::physics::electron_mass*std::pow(constants::physics::c,2));
+    chi_sq               = std::pow(chi_prefac,2)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
 
-  if (radiation_reaction == std::string("ll_first_term_quantum_correction"))
-  {
-    double quantum_factor = std::pow(1+18.0*chi+69.0*chi_sq*73.0*std::pow(chi,3)+5.806*std::pow(chi_sq,2),-1.0/3.0);
-    dxdt.subvec(4,7) -= quantum_factor*2.0*alpha*std::pow(charge,4)/(3.0*gamma*std::pow(mass,5))*chi_sq*x.subvec(4,7);
+    // Radiation reaction effects. TODO: CORRECT CHI VALUE.
+    if (radiation_reaction == LandauLifshitz)
+    {
+      dxdt.subvec(4,7) -= 2.0*constants::physics::alpha*std::pow(charge/mass,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
+    }
+
+    else if (radiation_reaction == LandauLifshitzQuantumCorrection)
+    {
+      double quantum_factor = std::pow(1+18.0*chi+69.0*chi_sq*73.0*std::pow(chi,3)+5.806*std::pow(chi_sq,2),-1.0/3.0);
+      dxdt.subvec(4,7) -= quantum_factor*2.0*constants::physics::alpha*std::pow(charge/mass,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
+    }
   }
 }
 

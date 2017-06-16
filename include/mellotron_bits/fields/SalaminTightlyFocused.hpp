@@ -89,7 +89,7 @@ public:
   }
 
   /// Computes the field components.
-  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z)
+  std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z) const
   {
     double pi    = cst::pi<double>();
     // Define the beam coordinates.

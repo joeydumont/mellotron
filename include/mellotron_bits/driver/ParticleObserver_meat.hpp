@@ -25,7 +25,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
   momentum.col(n_cols) = x.subvec(5,7);
-  gamma.push_back(x[4]/particle.GetMass());
+  gamma.push_back(std::sqrt(1.0+std::pow(arma::norm(momentum.col(n_cols),2)/particle.GetMass(),2)));
   times.push_back(x[0]);
 
   // Compute the electromagnetic field and store it.
@@ -35,8 +35,9 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
 
   // Compute chi.
   double pdotE         = arma::dot(momentum.col(n_cols),electric_field.col(n_cols));
-  arma::colvec lorentz = x[4]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
-  double chi_sq        = std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2);
+  arma::colvec lorentz = gamma[n_cols]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
+  double chi_prefac    = constants::physics::hbar*particle.GetUnitSystem().omega_0_SI/(particle.GetMass()*constants::physics::electron_mass*std::pow(constants::physics::c,2));
+  double chi_sq        = std::pow(chi_prefac,2)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
   chi.push_back(std::sqrt(chi_sq));
 }
 
