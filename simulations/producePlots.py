@@ -94,6 +94,7 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     gam = np.empty((nParticles))
     theta = np.empty((nParticles))
     phi = np.empty((nParticles))
+    px_list = np.empty((nParticles))
     minGamma = 1.0
     maxGamma = 0.0
     isGammaSuperiorToOne = True
@@ -105,19 +106,26 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
         b = - 1.0
         a = ionmass * constants.physical_constants['atomic mass unit-electron volt relationship'][0]
     
+    # Ion mass in electron mass units
+    Mass = ionmass/constants.physical_constants['electron mass in u'][0]
+    
     # Stepping through the Particles
     for j in range(nParticles):
-            r[j] = a * (globalModelGamma[nTimeSteps - 1, 0, j] + b)
-            gam[j] = globalModelGamma[nTimeSteps - 1, 0, j]
+            px = globalModelMomentums[nTimeSteps - 1, 0, j]
+            py = globalModelMomentums[nTimeSteps - 1, 1, j]
+            pz = globalModelMomentums[nTimeSteps - 1, 2, j]
+            #gam[j] = np.sqrt(1 + (px**2 + py**2 + pz**2)/Mass**2 ) # Calculate gamma
+            gam[j] = globalModelGamma[nTimeSteps - 1, 0, j] # Take value in file
             if gam[j] <= minGamma:
                 isGammaSuperiorToOne = False
             if r[j] > maxGamma:
                 maxGamma = r[j]
-            px = globalModelMomentums[nTimeSteps - 1, 0, j]
-            py = globalModelMomentums[nTimeSteps - 1, 1, j]
-            pz = globalModelMomentums[nTimeSteps - 1, 2, j]
+            
+            r[j] = a * (gam[j] + b)
             theta[j] = np.arctan2(px,pz)
             phi[j] = np.arctan2(px,py)
+
+            px_list[j] = px 
 
     f = plt.figure()
     ax1 = f.add_subplot(221, projection='polar')
@@ -145,29 +153,32 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     
 
     # Histogram of gamma with colourful bands
-    N, bins, patches = ax3.hist(r, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+    N, bins, patches = ax3.hist(r,  bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
     for i in range(len(patches)):
         patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
     ax3.set_ylabel(r"Number of particles")
 
 
     # Time of flight histogram
-    tx = np.zeros_like(gam)
+    tx = np.zeros_like(gam[px_list>0])
     if ionmode:
-        tx = (ionmass*L*gam)/(px*constants.c*constants.physical_constants['electron mass in u'][0])
+        tx = (Mass*L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
         ax3.set_xlabel(r'$E_k$ [eV]')
     else:
-        tx = (L*gam)/(px*constants.c)
+        tx = (L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
         ax3.set_xlabel(r'$\gamma$')
-        
-    N, bins, patches = ax4.hist(tx, bins=int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+    
+    N, bins, patches = ax4.hist(tx, bins = 10 ** np.linspace(np.log10(tx.min()), np.log10(tx.max()), int(np.ceil(1.5*np.sqrt(nParticles))) ), color=[0.8, 0.8, 0.2])
     for i in range(len(patches)):
         patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
+    ax4.set_xscale('log')
     ax4.set_xlabel(r"$t_x$ [s]")
+    f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
+    #f.text(0.5, 0, "Detector distance: %.5f m" % L, ha='center', fontdict=None)
     
     if ionmode:
-        f.text(0, 0, "Ion mass is %.5f a.m.u." % ionmass, fontdict=None)
+        f.text(0, 0, "Particle mass is %.5f u" % ionmass, fontdict=None)
         
     plt.savefig(directory + "polarGammaPlots.eps")
 
@@ -190,7 +201,7 @@ def main():
     parser.add_argument("--ion", type=bool,   default=False,
                         help="Switch for 'ion' mode in plots")
     parser.add_argument("--ionmass", type=float,   default=4.0,
-                        help="Ion mass in atomic mass units")
+                        help="Ion mass in atomic mass units (u)")
     parser.add_argument("--L", type=float,   default=0.03,
                         help="Distance of detector placed in x direction, in meters")
 
