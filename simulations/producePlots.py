@@ -123,8 +123,8 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax4.grid(True)
     ax1.scatter(theta, r)
     ax2.scatter(phi, r)
-    gammaLabel = "*(gamma + "
-    gammaLabel = "(" + str(a) + ")" + gammaLabel + "(" + str(b) + "))"
+    gammaLabel = r"($\gamma$"
+    gammaLabel = "a*" + gammaLabel + " + b)"
     ax1.set_title(r"zx plane ($\theta$)", va='bottom')
     ax1.set_ylabel(gammaLabel, labelpad=30)
     ax2.set_title(r"yx plane ($\phi$)", va='bottom')
@@ -144,6 +144,8 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
 
     ax3.set_xlabel(gammaLabel)
     ax3.set_ylabel(r"Number of particles")
+    stringAB = "a=" + str(a) + " b=" + str(b)
+    f.text(0, 0, stringAB, fontdict=None)
     ax4.set_xlabel(r"c/v")
     plt.savefig(directory + "polarGammaPlots.eps")
 
