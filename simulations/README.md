@@ -73,15 +73,20 @@ SCRIPTS API:
                 paraview <dirname>/global.xdmf
 
 6) producePlots.py                              Generates the plots of trajectory and/or polar position and gamma after a given .hdf5 file.
-        usage : python producePlots.py --directory <dirname>/ --file <name.hdf5> --nTimeSteps <int> --a <float> --b <float>
+        usage : python producePlots.py --directory <dirname>/ --file <name.hdf5> --nTimeSteps <int> --ion <bool> --ionmass <float> --L <float>
                 default value for --file option is global.hdf5.
                 default value for --nTimeSteps option is 0, which means all timeSteps will be used to generate the trajectory.
-                default value for --a option is 1.0
-                default value for --b option is 0.0.
+                default value for --ion option is False
+                default value for --ionmass option is 4.0.
+                default value for --L option is 0.03.
                 epstopdf <dirname>/<NameOfGeneratedPlot>.eps <dirname>/<NameOfGeneratedPlot>.pdf
                 xdg-open <dirname>/<NameOfGeneratedPlot>.pdf
         note : If given a global.hdf5 file, with python producePlots.py --directory <dirname>/, it will produce a positions plot with all the trajectories on.
-               It will also produce a polar positions and gamma plot. The gamma can be modified with this formula : a*(gamma+b), where a and b are facultative options.
+               It will also produce a polar positions and gamma plot.
+               If the `ion` flag is set to False, the gamma factor will be plotted.
+               If the `ion` flag is set to True, the kinetic energy will be plotted instead of the gamma factor. This kinetic energy value will depend
+               on the `ionmass` value, which should be in atomic mass units (u). The value of `L` is used in the time of flight plot. It corresponds to the
+               distance (in meters) between an imaginary detector placed parallel to the x-axis and the origin of the coordinate system.
                If given a single particle .hdf5 file (e.g. 14595196478285746701.hdf5), it will only produce a positions plot with the single trajectory on.
 
 
