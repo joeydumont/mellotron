@@ -123,7 +123,7 @@ plt.savefig("SalaminComponents.pdf", bbox_inches='tight', dpi=500)
 
 
 # --- Plot Salamin in time.  ----- #
-salamin_time_times     = np.loadtxt("SalaminTimeField_time.txt")
+salamin_time_times     = np.loadtxt("SalaminTimeField_time.txt")/1e-15
 salamin_time_intensity = np.loadtxt("SalaminTimeField_intensity.txt")
 
 fig = plt.figure()

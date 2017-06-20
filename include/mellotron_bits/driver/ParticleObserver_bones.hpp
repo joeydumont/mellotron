@@ -33,21 +33,19 @@ public:
   void OutputData();
 
   /// Creates the HDF5 and outputs the data.
-  void  GenerateHDF5();
+  void GenerateHDF5();
 
-  /// Create the XDMF metadata.
-  void  GenerateXDMF();
 
-        Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
+       Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
 
-        arma::mat                position;              ///< Record of the particle's position.
-        arma::mat                momentum;              ///< Record of the particle's momentum.
-        std::vector<double>      gamma;                 ///< Record of the particle's gamma factor.
-        std::vector<double>      chi;                   ///< Record of the particle's Lorentz invariant.
-        std::vector<double>      times;                 ///< Record of the time values.
+       arma::mat                position;              ///< Record of the particle's position.
+       arma::mat                momentum;              ///< Record of the particle's momentum.
+       std::vector<double>      gamma;                 ///< Record of the particle's gamma factor.
+       std::vector<double>      chi;                   ///< Record of the particle's Lorentz invariant.
+       std::vector<double>      times;                 ///< Record of the time values.
 
-        arma::mat                electric_field;        ///< Record of the electric field along the particle's trajectory.
-        arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
+       arma::mat                electric_field;        ///< Record of the electric field along the particle's trajectory.
+       arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
 };
 
 } // namespace mellotron

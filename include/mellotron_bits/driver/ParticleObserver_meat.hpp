@@ -53,14 +53,6 @@ ParticleObserver<FieldModel>::OutputData()
 template <class FieldModel>
 inline
 void
-ParticleObserver<FieldModel>::GenerateXDMF()
-{
-
-}
-
-template <class FieldModel>
-inline
-void
 ParticleObserver<FieldModel>::GenerateHDF5()
 {
   // We create a hash of the initial conditions to be used

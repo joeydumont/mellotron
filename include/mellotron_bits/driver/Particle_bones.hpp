@@ -14,7 +14,7 @@ enum RadiationReactionModel {NoRR, LandauLifshitz, LandauLifshitzQuantumCorrecti
  *  \author Joey Dumont      <joey.dumont@gmail.com>
  *  \since  2016-09-30
  *  \brief  Defines the Lorentz force equation acting on a particle with given
- *         properties.
+ *          properties.
  *
  * This class defines the properties of a charged particle. We also define
  * its equation of motion, i.e. the Lorentz equation plus, possibly, radiation
@@ -27,7 +27,11 @@ public:
 
   /// Constructor sets the physical properties of the particle.
   /// RR makes it so the unit system must be passed to the Particle.
-  Particle(const double my_charge, const double my_ass, FieldModel& my_field_model, MellotronUnits& my_units, const RadiationReactionModel my_radiation_reaction = NoRR);
+  Particle(const double                    my_charge,
+           const double                    my_mass,
+                 FieldModel             &  my_field_model,
+                 MellotronUnits         &  my_units,
+           const RadiationReactionModel    my_radiation_reaction = NoRR);
 
   /// Computation of the field tensor at a given point in space-time.
   void ComputeFieldTensor(const double t, const double x, const double y, const double z);
@@ -49,6 +53,9 @@ public:
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
 
+  /// Function that computes the Lorentz force.
+  void ComputeLorentzForce(const arma::colvec::fixed<8> & x, arma::colvec::fixed<8> & dxdt, const double t);
+
 protected:
 
   const double                      charge;                ///< Charge of the particle, multiple of the elementary charge.
@@ -67,8 +74,45 @@ protected:
         double                      chi;                   ///< Lorentz invariant along the trajectory.
 };
 
-}
+/*!
+ *  \class  ParticleIonized
+ *  \author Joey Dumont      <joey.dumont@gmail.com>
+ *  \since  2017-06-20
+ *  \brief  Defines the Lorentz force equation acting on a particle with given
+ *          properties. Includes a field threshold below which to Lorentz force
+ *          is applied.
+ *
+ * This class defines the properties of a charged particle. We also define
+ * its equation of motion, i.e. the Lorentz equation plus, possibly, radiation
+ * reaction terms. A field threshold below which the Lorentz force is assumed
+ * is vanish is also implemented. This simulates, in some approximate way,
+ * the ionization process.
+ */
+template <class FieldModel>
+class ParticleIonized : public Particle<FieldModel>
+{
+public:
 
-// namespace mellotron
+  /// Constructor sets the physical properties of the particle.
+  /// It also sets the field threshold above which we apply the Lorentz force.
+  /// To have no threshold, use Particle, of a negative value of field_threshold.
+  /// RR makes it so the unit system must be passed to the Particle.
+  ParticleIonized(const double                     my_charge,
+                  const double                     my_mass,
+                        FieldModel              &  my_field_model,
+                        MellotronUnits          &  my_units,
+                        double                     my_field_threshold,
+                  const RadiationReactionModel     my_radiation_reaction = NoRR);
+
+  /// Overloading of the () operator for use with Boost.odeint.
+  void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
+
+protected:
+        double                      field_threshold;       ///< Field strength above which we apply the Lorentz force.
+        bool                        ApplyLorentzForce;     ///< Flag to determine if the particle has been ionized yet, and to apply the Lorentz force if so.
+
+};
+
+} // namespace mellotron
 
 #endif // PARTICLE_BONES_HPP
