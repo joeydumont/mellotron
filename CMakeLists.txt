@@ -98,6 +98,11 @@ target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin.o" Cubature)
 install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
 
+add_executable("IntegrationSalaminIonized.o" "simulations/IntegrationSalaminIonized.cpp")
+target_link_libraries("IntegrationSalaminIonized.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationSalaminIonized.o" Cubature)
+install(TARGETS "IntegrationSalaminIonized.o" RUNTIME DESTINATION bin)
+
 add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
