@@ -46,15 +46,6 @@ inline
 void
 ParticleObserver<FieldModel>::OutputData()
 {
-  GenerateXDMF();
-  GenerateHDF5();
-}
-
-template <class FieldModel>
-inline
-void
-ParticleObserver<FieldModel>::GenerateHDF5()
-{
   // We create a hash of the initial conditions to be used
   // for the HDF5 filename and main group.
   std::size_t hash_seed = 0;

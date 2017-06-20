@@ -29,11 +29,9 @@ public:
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, double t);
 
-  /// Outputs in a pair of HDF5 and XDMF files.
+  /// Outputs in a HDF5 file.
   void OutputData();
 
-  /// Creates the HDF5 and outputs the data.
-  void GenerateHDF5();
 
 
        Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
