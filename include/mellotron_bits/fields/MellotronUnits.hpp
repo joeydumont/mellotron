@@ -46,6 +46,8 @@ public:
     UNIT_MOMENTUM = constants::physics::electron_mass*constants::physics::c;
     UNIT_TIME     = 1.0/omega_0_SI;
     UNIT_ENERGY   = constants::physics::epsilon_0*std::pow(constants::physics::electron_mass,2)*std::pow(constants::physics::c,5)/(std::pow(constants::physics::electron_charge,2)*omega_0_SI);
+    UNIT_E_FIELD  = constants::physics::electron_mass*omega_0_SI*constants::physics::c/constants::physics::electron_charge;
+    UNIT_B_FIELD  = constants::physics::electron_mass*omega_0_SI/constants::physics::electron_charge;
   }
 
   // Variable data.
@@ -54,6 +56,8 @@ public:
   double UNIT_MOMENTUM;    ///< Unit momentum in Mellotron units.
   double UNIT_TIME;        ///< Unit time in Mellotron units.
   double UNIT_ENERGY;      ///< Unit energy in Mellotron units.
+  double UNIT_E_FIELD;     ///< Unit electric field in Mellotron units.
+  double UNIT_B_FIELD;     ///< Unit magnetic field in Mellotron units.
 };
 
 } // namespace mellotron
