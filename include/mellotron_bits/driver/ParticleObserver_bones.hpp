@@ -46,6 +46,31 @@ public:
        arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
 };
 
+/*!
+ *  \class  ParticleObserverIonized
+ *  \author Joey Dumont      <joey.dumont@gmail.com>
+ *  \since  2017-06-21
+ *  \brief  Observes and outputs the trajectory of an "ionized" particle in an electromagnetic field.
+ *
+ * This class observes a single particle as it moves through
+ * space. Contains a reference to a ParticleIonized object as to query the value of the electric and
+ * magnetic field. It only outputs the data if the particle has been "ionized" during the simulation,
+ * i.e. that the field surpassed the threshold at some point during the simulation.
+ */
+template <class FieldModel>
+class ParticleObserverIonized : public ParticleObserver<FieldModel>
+{
+public:
+
+  /// Sets the particle to follow.
+  ParticleObserverIonized(ParticleIonized<FieldModel>& my_particle);
+
+  /// Outputs in a HDF5 file.
+  void OutputData();
+
+       ParticleIonized<FieldModel>  &  particle_ion;              ///< Particle object that moves through spacetime.
+};
+
 } // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_BONES_H

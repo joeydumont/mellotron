@@ -23,6 +23,7 @@ using namespace mellotron;
 
 struct ConstantField
 {
+  // Constructor to manually set the components of the static field.
   ConstantField(double my_Ex, double my_Ey, double my_Ez, double my_Bx, double my_By, double my_Bz)
   : Ex(my_Ex)
   , Ey(my_Ey)
@@ -32,6 +33,7 @@ struct ConstantField
   , Bz(my_Bz)
   {}
 
+  // Default constructor sets an electrostatic field.
   ConstantField()
   : Ex(0.0)
   , Ey(0.0)
@@ -41,6 +43,7 @@ struct ConstantField
   , Bz(0.0)
   {}
 
+  // Return the field components in an array.
   std::array<double,6> ComputeFieldComponents(double t, double x, double y, double z) const
   {
     std::array<double,6> constant = {Ex,Ey,Ez,Bx,By,Bz};
@@ -52,6 +55,8 @@ struct ConstantField
 
 // We declare a test fixture to test a specific instance
 // of Particle.
+// This tests the standard Particle and ParticleObserver classes and compares
+// their output to analytical solutions.
 class ParticleTest : public testing::Test
 {
 public:
@@ -80,6 +85,7 @@ protected:
 };
 
 // We test that we compute the proper coordinates.
+// Analytical solution in an electrostatic field.
 TEST_F(ParticleTest, TestIntegrationElectrostatic)
 {
   // Define the initial conditions.
@@ -203,7 +209,10 @@ TEST_F(ParticleTest, TestIntegratinoMagnetostatic)
 }
 
 // We declare a test fixture to test a specific instance
-// of ParticleIonized.
+// of ParticleIonized. This tests ParticleIonized and the relevant
+// ParticleObserverIonized. This test should generate a single
+// HDF5 file, as the second particle (electron_below), is always below
+// threshold and should therefore not output data.
 class ParticleIonizedTest : public testing::Test
 {
 public:
@@ -223,9 +232,9 @@ public:
   ConstantField                                     field;
   MellotronUnits                                    electron_units;
   ParticleIonized<ConstantField>                    electron;
-  ParticleObserver<ConstantField>                   electron_obs;
+  ParticleObserverIonized<ConstantField>            electron_obs;
   ParticleIonized<ConstantField>                    electron_below;
-  ParticleObserver<ConstantField>                   electron_obs_below;
+  ParticleObserverIonized<ConstantField>            electron_obs_below;
 
 protected:
 
@@ -236,6 +245,7 @@ protected:
 };
 
 // We test that we compute the proper coordinates.
+// Should output 8503784799965847432.hdf5.
 TEST_F(ParticleIonizedTest, TestIntegrationElectrostatic)
 {
   // Define the initial conditions.
@@ -294,12 +304,14 @@ TEST_F(ParticleIonizedTest, TestIntegrationElectrostatic)
   electron_obs.OutputData();
 }
 
-// We test that we compute the proper coordinates.
+// Test a below threshold integration with ParticleIonized. Should
+// not output anything. The different initial condition makes sure
+// that any output would be unique.
 TEST_F(ParticleIonizedTest, TestIntegrationElectrostaticBelowThreshold)
 {
   // Define the initial conditions.
   arma::colvec::fixed<8> x           = arma::zeros<arma::colvec>(8);
-  double x_init                      = 0.0;
+  double x_init                      = 0.1;
   double y_init                      = 0.0;
   double z_init                      = 0.0;
   double px_init                     = 0.0;
@@ -349,9 +361,12 @@ TEST_F(ParticleIonizedTest, TestIntegrationElectrostaticBelowThreshold)
     EXPECT_NEAR(electron_obs_below.position(2,i), pz_init*times[i]+z_init, 1.0e-6);
 
   }
+
+  electron_obs_below.OutputData();
 }
 
-// We test that we compute the right solution for a uniform magnetostatic field.
+// We test that we compute the right solution for a uniform magnetostatic field
+// with the ParticleIonized class.
 TEST_F(ParticleIonizedTest, TestIntegratinoMagnetostatic)
 {
  // Define the initial conditions.

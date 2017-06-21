@@ -104,6 +104,9 @@ public:
                         double                     my_field_threshold,
                   const RadiationReactionModel     my_radiation_reaction = NoRR);
 
+  /// Accessor function to check whether the particle has been "ionized".
+  bool GetIonized(){return ApplyLorentzForce;}
+
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, arma::colvec::fixed<8> &dxdt, const double t);
 

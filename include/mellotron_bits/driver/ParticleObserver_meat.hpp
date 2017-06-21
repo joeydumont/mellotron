@@ -214,6 +214,25 @@ ParticleObserver<FieldModel>::OutputData()
   H5Fclose(file_id);
 }
 
+template <class FieldModel>
+inline
+ParticleObserverIonized<FieldModel>::ParticleObserverIonized(ParticleIonized<FieldModel> & my_particle)
+: ParticleObserver<FieldModel>(my_particle)
+, particle_ion(my_particle)
+{}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverIonized<FieldModel>::OutputData()
+{
+  // Output only if the particle has been "ionized".
+  if (this->particle_ion.GetIonized())
+  {
+    ParticleObserver<FieldModel>::OutputData();
+  }
+}
+
 } // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_MEAT_HPP
