@@ -122,29 +122,25 @@ def main():
 
     # Command line arguments
     parser = ap.ArgumentParser(description="Manage the .hdf5 output files.")
-    parser.add_argument("--nParticles",  type=int, default=0,
-                        help="Number of initial conditions")
     parser.add_argument("--directory", type=str,   default="./",
                         help="Target directory containing output files")
 
     # Parse arguments
     args = parser.parse_args()
 
-    # Number of particles
-    nParticles = args.nParticles
-
     # Target directory
     directory = args.directory
     if( not directory.endswith("/")):
         directory += "/"
 
-    # Find a times model
+    # Find a times model and calculate the number of particles
     timesModel = ""
+    nParticles = 0
     for file in os.listdir(directory):
         if file.endswith(".hdf5"):
             if file != "global.hdf5":
+                nParticles += 1
                 timesModel = file
-                break
 
     if nParticles == 0 or timesModel == "":
         print("It seems like the folder you gave doesn\'t have hdf5 files in it.")
