@@ -56,7 +56,7 @@ fi
 
 # -- Calculate particles behavior
 echo -e " \e[32m--- Starting to calculate particles behavior. ---\e[39m"
-cat $OUTINITCONDS | parallel -j 2 --colsep " " ./IntegrationSalamin.o --init_conds {1} {2} {3} {4} {5} {6}
+cat $OUTINITCONDS | parallel -j 2 --colsep " " ./$INTEGSAL --init_conds {1} {2} {3} {4} {5} {6}
 echo "Done: calculate particles behavior."
 
 # -- Manage outputs
