@@ -37,7 +37,7 @@ struct IntegrationSalaminConfig
     double t_init_;
     double dt_;
     unsigned int nsteps_;
-    double threshold_; 
+    double threshold_;
     void read(std::ifstream& file, IntegrationSalaminConfig*& config);
 };
 
@@ -67,7 +67,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->dt_ = v.second.get<double>("dt");
             config->nsteps_ = v.second.get<unsigned int>("nsteps");
             config->threshold_ = v.second.get<double>("threshold");
-            
+
         }
         if(v.first == "particle")
         {
@@ -150,8 +150,8 @@ int main(int argc, char* argv[])
     double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
     unsigned int nsteps  = config->nsteps_;
-    double threshold = sqrt(config->threshold_ / electron_units.UNIT_E_INTENSITY );
-  
+    double threshold = sqrt(1.0e-04 * config->threshold_ / electron_units.UNIT_E_INTENSITY );
+
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
     std::ifstream norm_constant_file;
@@ -165,13 +165,14 @@ int main(int argc, char* argv[])
     }
 
     std::string line;
-    std::getline(norm_constant_file, line);std::getline(norm_constant_file, line);
+    std::getline(norm_constant_file, line);
+    std::getline(norm_constant_file, line);
     std::istringstream iss(line);
     double lambda_file,w0_file,L_file,norm_constant;
     iss >> lambda_file >> w0_file >> L_file >> norm_constant;
 
     if (
-            relative_difference(config->lam_, lambda_file) > 1.0e-5
+        relative_difference(config->lam_, lambda_file) > 1.0e-5
         ||  relative_difference(config->w0_,  w0_file)     > 1.0e-5
         ||  relative_difference(config->L_,   L_file)      > 1.0e-5)
     {
@@ -181,7 +182,7 @@ int main(int argc, char* argv[])
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
     mellotron::ParticleIonized<mellotron::SalaminTightlyFocusedLinear>  particle(Q,mass,field,electron_units,threshold);
-    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
+    mellotron::ParticleObserverIonized<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);
