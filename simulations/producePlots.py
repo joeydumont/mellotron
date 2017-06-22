@@ -80,14 +80,6 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
 
     plt.savefig(directory + "positionsPlot.eps")
 
-def calculateCOnV(r, nParticles):
-    for j in range (nParticles):
-        if r[j] == 1.0:
-            print("Division by 0... exiting.")
-            sys.exit()
-        r[j] = 1.0/np.sqrt(1.0 - 1.0/np.power(r[j], 2))
-    return r
-
 def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory, ionmode, ionmass, L):
     # Initiate arrays of good size.
     r = np.empty((nParticles))
