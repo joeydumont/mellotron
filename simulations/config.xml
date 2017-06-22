@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<config>
+    <particle>
+        <mass>7344.0</mass>
+        <Q>2.0</Q>
+    </particle>
+    <integration_salamin>
+        <lambda>8.0e-7</lambda>
+        <w0>1.6</w0>
+        <L>13.5</L>
+        <energy>8.5</energy>
+        <t_init>-6.8e-12</t_init>
+        <dt>6.8e-14</dt>
+        <nsteps>200</nsteps>
+        <threshold>2.0e14</threshold>
+    </integration_salamin>
+    <generate_initial_conditions>
+        <pz>0.0</pz>
+        <numpart>360</numpart>
+        <radius>2.24e-06</radius>
+    </generate_initial_conditions>
+    <comments_and_units>
+    <!-- mass: Particle mass in units of electron mass ex: 1.0 -->
+    <!-- Q: Particle charge in units of electron charge ex: -1.0 -->
+    <!-- lambda: Wavelength of the beam in SI units (meters) ex: 800.0e-9 -->
+    <!-- w0: Beam waist as a multiple of lambda ex: 0.8 -->
+    <!-- L: Axial length as a multiple of lambda ex: 0.7 -->
+    <!-- energy: Pulse energy, in joules ex: 10.0 -->
+    <!-- t_init: Initial time in simulation in seconds ex: -5.0e-12 -->
+    <!-- dt: Duration of a time step in seconds ex: 1e-13 -->
+    <!-- nsteps: Number of time steps ex: 100 -->
+    <!-- threshold: Ionization threshold of particle in W/cm^2 ex: 1.0e14 -->
+    <!-- pz: Initial value of momentum in z in eV/c ex: 0.0 -->
+    <!-- numpart: Number of initial conditions ex: 10 -->
+    <!-- radius: Sphere radius in SI units (meters) ex: 1.0e-06 -->
+    </comments_and_units>
+</config>
