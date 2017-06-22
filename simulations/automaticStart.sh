@@ -61,7 +61,7 @@ echo "Done: calculate particles behavior."
 
 # -- Manage outputs
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"
-NUMBER=$(wc -l < ./$OUTINITCONDS)
+NUMBER=$(ls -d *.hdf5 | wc -l)
 python $MANAGEOUT --nParticles $NUMBER --directory ./
 echo "Done: manage outputs."
 
