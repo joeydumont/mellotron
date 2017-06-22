@@ -35,7 +35,7 @@ struct IntegrationSalaminConfig
     double Q_;
     double t_init_;
     double dt_;
-    double nsteps_;
+    int nsteps_;
     void read(std::ifstream& file, IntegrationSalaminConfig*& config);
 };
 
@@ -63,7 +63,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->energy_ = v.second.get<double>("energy");
             config->t_init_ = v.second.get<double>("t_init");
             config->dt_ = v.second.get<double>("dt");
-            config->nsteps_ = v.second.get<double>("nsteps");
+            config->nsteps_ = v.second.get<int>("nsteps");
         }
         if(v.first == "particle")
         {
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     double Q       = config->Q_;
     double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
-    double nsteps  = config->nsteps_;
+    int nsteps  = config->nsteps_;
 
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
