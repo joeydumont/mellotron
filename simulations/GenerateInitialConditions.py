@@ -1,6 +1,7 @@
 import sys as sys
 import numpy as np
 import argparse as ap
+from scipy.constants import codata
 from numpy import sin as sin
 from numpy import cos as cos
 from math import pow as pow
@@ -36,7 +37,6 @@ def placeParticlesInCylinder(base_radius, half_height, wavelength, numpart):
     B = 2.0 * np.pi * base_radius / wavelength
     # half height in electronic units
     H = 2.0 * np.pi * half_height / wavelength
-    print("I am in cylinder")
     # Generate uniformly distributed values of cos theta, position in z and radius (in
     # cylindrical coordinates. radius is between 0 and 1)
     theta = np.random.uniform(low=0.0,high=2.0*np.pi,size=numpart)
@@ -52,7 +52,7 @@ def placeParticlesInCylinder(base_radius, half_height, wavelength, numpart):
 
         x[pid] = r * cos(theta[pid])
         y[pid] = r * sin(theta[pid])
-        z[pid] = 0.0
+        z[pid] = h
 
     return x, y, z
 
@@ -155,7 +155,7 @@ def main():
     px = 0.0 
     py = 0.0
     # Momentum value for pz in electronic units (converted from eV/c)
-    pz = pz / 0.5109989461e06 # Denominator is electron mass in eV/c^2
+    pz = pz / codata.value('electron mass energy equivalent in MeV') # Denominator is electron mass in eV/c^2
 
     if shape == "cylinder":
         x, y, z = placeParticlesInCylinder(base_radius, half_height, wavelength, numpart)
