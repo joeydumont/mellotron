@@ -67,9 +67,9 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
     # Stepping through the Particles and the TimeSteps.
     for j in range(nParticles):
         for i in range(nTimeSteps):
-            xp[j, i] = globalModelPositions[i, 0, j]
-            yp[j, i] = globalModelPositions[i, 1, j]
-            zp[j, i] = globalModelPositions[i, 2, j]
+            xp[j, i] = globalModelPositions[i, j, 0]
+            yp[j, i] = globalModelPositions[i, j, 1]
+            zp[j, i] = globalModelPositions[i, j, 2]
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -103,11 +103,11 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     
     # Stepping through the Particles
     for j in range(nParticles):
-            px = globalModelMomentums[nTimeSteps - 1, 0, j]
-            py = globalModelMomentums[nTimeSteps - 1, 1, j]
-            pz = globalModelMomentums[nTimeSteps - 1, 2, j]
+            px = globalModelMomentums[nTimeSteps - 1, j, 0]
+            py = globalModelMomentums[nTimeSteps - 1, j, 1]
+            pz = globalModelMomentums[nTimeSteps - 1, j, 2]
             #gam[j] = np.sqrt(1 + (px**2 + py**2 + pz**2)/Mass**2 ) # Calculate gamma
-            gam[j] = globalModelGamma[nTimeSteps - 1, 0, j] # Take value in file
+            gam[j] = globalModelGamma[nTimeSteps - 1, j] # Take value in file
             if gam[j] <= minGamma:
                 isGammaSuperiorToOne = False
             if r[j] > maxGamma:
@@ -214,7 +214,7 @@ def main():
 
     # Determine exactly how many TimeSteps there are.
     globalModelFile = hp.File(directory + globalModel, "r")
-    globalModelGroup = globalModelFile.require_group(globalModel)
+    globalModelGroup = globalModelFile.require_group("/")
     globalModelTimes = globalModelGroup["times"]
     nTimeSteps = globalModelTimes.len()
 
@@ -229,7 +229,7 @@ def main():
 
     # Determine exactly how many Particles there are.
     globalModelPositions = globalModelGroup["position"]
-    nParticles = globalModelPositions.shape[2]
+    nParticles = globalModelPositions.shape[1]
 
     # Create positions plot
     createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
