@@ -44,7 +44,7 @@ def generateXMF(directory, nParticles, nTimeSteps):
     for n in range(0, nTimeSteps):
         # Declare a grid of points
         of.write('<Grid Name="timestep' + str(n) + '" GridType="Uniform">\n')
-        of.write('<Topology TopologyType="Polyvertex" NumberOfElements="' + str(nParticles) + '"/>\n')
+        of.write('<Topology TopologyType="Polyvertex" NodesPerElement="1" NumberOfElements="' + str(nParticles) + '"/>\n')
         of.write('<Geometry GeometryType="XYZ">\n')
         of.write('<DataItem ItemType="HyperSlab" Dimensions="1 3 ' + str(nParticles) + '">\n')
         of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
