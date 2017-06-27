@@ -155,7 +155,7 @@ def main():
     px = 0.0 
     py = 0.0
     # Momentum value for pz in electronic units (converted from eV/c)
-    pz = pz / codata.value('electron mass energy equivalent in MeV') # Denominator is electron mass in eV/c^2
+    pz = pz / (codata.value('electron mass energy equivalent in MeV') * 1e6) # Denominator is electron mass in eV/c^2
 
     if shape == "cylinder":
         x, y, z = placeParticlesInCylinder(base_radius, half_height, wavelength, numpart)
