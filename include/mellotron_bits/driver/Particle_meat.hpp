@@ -94,7 +94,7 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   {
     arma::colvec lorentz = gamma*electric_field + arma::cross(momentum,magnetic_field);
     double chi_prefac    = constants::physics::hbar*unit_system.omega_0_SI/(mass*constants::physics::electron_mass*std::pow(constants::physics::c,2));
-    chi_sq               = std::pow(chi_prefac,2)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
+    chi_sq               = std::pow(chi_prefac,2)*std::pow(mass,-4)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
 
     // Radiation reaction effects. TODO: CORRECT CHI VALUE.
     if (radiation_reaction == LandauLifshitz)
@@ -105,7 +105,7 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
     else if (radiation_reaction == LandauLifshitzQuantumCorrection)
     {
       double quantum_factor = std::pow(1+18.0*chi+69.0*chi_sq*73.0*std::pow(chi,3)+5.806*std::pow(chi_sq,2),-1.0/3.0);
-      dxdt.subvec(4,7) -= quantum_factor*2.0*constants::physics::alpha*std::pow(charge/mass,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
+      dxdt.subvec(4,7) -= quantum_factor*2.0*constants::physics::alpha*std::pow(charge,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
     }
   }
 }
