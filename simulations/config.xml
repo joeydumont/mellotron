@@ -7,14 +7,14 @@
     <integration_salamin>
         <lambda>8.0e-7</lambda>
         <w0>1.6</w0>
-        <L>1.6</L>
-        <energy>8.5</energy>
-        <t_init>-6.8e-12</t_init>
-        <dt>6.8e-14</dt>
+        <L>13.5</L>
+        <energy>20.0</energy>
+        <t_init>-1.0e-14</t_init>
+        <dt>1.0e-16</dt>
         <nsteps>200</nsteps>
     </integration_salamin>
     <generate_initial_conditions>
-        <pz>0.0</pz>
+        <pz>5109989.461</pz>
         <numpart>360</numpart>
         <sphere>
             <sphere_radius>2.24e-06</sphere_radius>
@@ -24,8 +24,8 @@
             <half_height>7e-06</half_height>
         </cylinder>
         <line>
-            <initial_z>2.24e-07</initial_z>
-            <half_length>1.12e-06</half_length>
+            <initial_z>-2.99792458e-6</initial_z>
+            <half_length>5e-07</half_length>
         </line>
     </generate_initial_conditions>
     <comments_and_units>
