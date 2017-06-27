@@ -152,19 +152,22 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
 
 
     # Time of flight histogram
-    tx = np.zeros_like(gam[px_list>0])
     if ionmode:
+        tx = np.zeros_like(gam[px_list>0])
         tx = (Mass*L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
         ax3.set_xlabel(r'$E_k$ [eV]')
+        N, bins, patches = ax4.hist(tx, bins = 10 ** np.linspace(np.log10(tx.min()), np.log10(tx.max()), int(np.ceil(1.5*np.sqrt(nParticles))) ), color=[0.8, 0.8, 0.2])
+        for i in range(len(patches)):
+            patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+        ax4.set_xscale('log')
     else:
-        tx = (L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
+        tx = np.zeros_like(gam[px_list<0])
+        tx = (L*gam[px_list<0])/(px_list[px_list<0]*constants.c) 
         ax3.set_xlabel(r'$\gamma$')
-    
-    N, bins, patches = ax4.hist(tx, bins = 10 ** np.linspace(np.log10(tx.min()), np.log10(tx.max()), int(np.ceil(1.5*np.sqrt(nParticles))) ), color=[0.8, 0.8, 0.2])
-    for i in range(len(patches)):
-        patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+        N, bins, patches = ax4.hist(tx, bins =int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+        for i in range(len(patches)):
+            patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
-    ax4.set_xscale('log')
     ax4.set_xlabel(r"$t_x$ [s]")
     f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
     #f.text(0.5, 0, "Detector distance: %.5f m" % L, ha='center', fontdict=None)
