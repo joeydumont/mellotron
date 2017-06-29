@@ -169,7 +169,8 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
             patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
     ax4.set_xlabel(r"$t_x$ [s]")
-    f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
+    if len(tx) != 0:
+        f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
     #f.text(0.5, 0, "Detector distance: %.5f m" % L, ha='center', fontdict=None)
     
     if ionmode:
