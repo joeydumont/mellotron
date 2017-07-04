@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# --------------------------------------------------------------------------- #
-#  \file automaticStart.sh                                                    #
-#  \author Justine Pepin                  <justine.pepin@emt.inrs.ca>         #
-#  \since 2017-05-19                                                          #
-#                                                                             #
-# This bash file start automatically the simulation of the MELLOTRON.         #
-#                                                                             #
-# Usage: ./automaticStart.sh <dirname>                                        #
-#        Where dirname is the name of the directory containing a config.xml   #
-# --------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------------- #
+#  \file automaticStart.sh                                                           #
+#  \author Justine Pepin                  <justine.pepin@emt.inrs.ca>                #
+#  \since 2017-05-19                                                                 #
+#                                                                                    #
+# This bash file start automatically the simulation of the MELLOTRON.                #
+#                                                                                    #
+# Usage: ./automaticStart.sh <dirname>                                               #
+#        Where dirname is the name of the directory containing a configSalamin.xml   #
+# ---------------------------------------------------------------------------------- #
 
 echo -e " \e[95m--- MELLOTRON SIMULATION AUTOMATIC START ---\e[39m"
 DIR=$1
@@ -24,7 +24,7 @@ cp $INTEGSAL ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
 cd ./$DIR
-CONFIG="config.xml"
+CONFIG="configSalamin.xml"
 OUTINITCONDS="init_conds.txt"
 OUTNORMCONST="normalization_constant.txt"
 

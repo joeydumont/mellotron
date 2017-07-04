@@ -98,7 +98,7 @@ def main():
     shape = args.shape
 
     # Parse arguments
-    tree = ET.parse('config.xml')
+    tree = ET.parse('configSalamin.xml')
     config = tree.getroot()
     wavelength = ""
     pz = ""
