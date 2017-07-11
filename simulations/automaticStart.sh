@@ -68,7 +68,7 @@ else
 fi
 
 CONFIGDEFAULT="configSalamin.xml"
-if [$CONFIG=$CONFIGDEFAULT]; then
+if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
     # Compute normalization constant
     if [ -f  ./$OUTNORMCONST ]; then
         echo -e " \e[32m--- Normalization constant has been found. ---\e[39m"
