@@ -90,15 +90,18 @@ def main():
     parser = ap.ArgumentParser(description="Generate the initial conditions for the simulation.")
     parser.add_argument("--shape",  type=str, default="sphere",
                         help="Shape the initial conditions will be generated as.")
+    parser.add_argument("--config",  type=str, default="configSalamin.xml",
+                        help="Name of the config file to parse.")
 
     # Parse arguments
     args = parser.parse_args()
 
     # Choosen shape for the simulation
     shape = args.shape
+    configFile = args.config
 
     # Parse arguments
-    tree = ET.parse('configSalamin.xml')
+    tree = ET.parse(configFile)
     config = tree.getroot()
     wavelength = ""
     pz = ""
@@ -145,10 +148,16 @@ def main():
             else:
                 print("Wrong order of arguments in integration_salamin tag")
                 sys.exit()
+        if child.tag == "spectrum":
+            if child[1].tag == "lambda_c":
+                wavelength = float(child[1].text)
+            else:
+                print("Wrong order of arguments in spectrum tag")
+                sys.exit()
     if wavelength == "" or pz == "" or numpart == "" \
     or sphere_radius == "" or base_radius == "" \
     or half_height == "" or initial_z == "" or half_length == "":
-        print("Can't find generate_initial_conditions tag, integration_salamin tag or missing/empty argument")
+        print("Can't find generate_initial_conditions tag, integration_salamin tag, spectrum tag or missing/empty argument")
         sys.exit()
 
     # Momentum values for px and py
