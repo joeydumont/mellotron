@@ -36,14 +36,14 @@ include_directories(${HDF5_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
 # -- Required dependency: MeshPI.
-#find_package(MeshPI REQUIRED)
-#include_directories(${MeshPI_INCLUDE_DIR})
-#set (LIBS ${LIBS} ${MeshPI_LIBRARY})
+find_package(MeshPI REQUIRED)
+include_directories(${MeshPI_INCLUDE_DIR})
+set (LIBS ${LIBS} ${MeshPI_LIBRARY})
 
 # -- Required dependency: StrattoCalculator.
-#find_package(StrattoCalculator REQUIRED)
-#include_directories(${StrattoCalculator_INCLUDE_DIR})
-#set (LIBS ${LIBS} ${StrattoCalculator_LIBRARY})
+find_package(StrattoCalculator REQUIRED)
+include_directories(${StrattoCalculator_INCLUDE_DIR})
+set (STRATTOLIBS ${STRATTOLIBS} ${StrattoCalculator_LIBRARIES})
 
 # -- Required dependency: Boost.
 find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
@@ -114,6 +114,6 @@ target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinear.o" "simulations/IntegrationStrattoLinear.cpp")
-target_link_libraries("IntegrationStrattoLinear.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationStrattoLinear.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinear.o"  Cubature)
 install(TARGETS "IntegrationStrattoLinear.o" RUNTIME DESTINATION bin)
