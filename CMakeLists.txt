@@ -37,13 +37,15 @@ set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
 # -- Required dependency: MeshPI.
 find_package(MeshPI REQUIRED)
-include_directories(${MeshPI_INCLUDE_DIR})
-set (LIBS ${LIBS} ${MeshPI_LIBRARY})
+include_directories(${meshpi_INCLUDE_DIR})
+set (LIBS ${LIBS} ${meshpi_LIBRARY})
+message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
 
 # -- Required dependency: StrattoCalculator.
 find_package(StrattoCalculator REQUIRED)
-include_directories(${StrattoCalculator_INCLUDE_DIR})
-set (STRATTOLIBS ${STRATTOLIBS} ${StrattoCalculator_LIBRARIES})
+include_directories(${strattocalculator_INCLUDE_DIR})
+set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
+
 
 # -- Required dependency: Boost.
 find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
@@ -54,6 +56,10 @@ SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 find_package(armadillo REQUIRED)
 include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
+
+# -- Required dependency: MPI
+find_package(MPI REQUIRED)
+set(LIBS ${LIBS} ${MPI_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
 add_subdirectory (external/Cubature/)
