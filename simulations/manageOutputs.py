@@ -3,16 +3,30 @@ import argparse as ap
 import h5py as hp
 import sys as sys
 
-def writeAttribute(of, n, nTimeSteps, nParticles, nDimensions, nameOfAttribute):
+def writeAttribute1(of, n, nTimeSteps, nParticles,nameOfAttribute):
     of.write('<Attribute Name="' + str(nameOfAttribute) + '" Center="Node">\n')
-    of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nDimensions) + ' ' + str(nParticles) + '">\n')
+    of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nParticles) + '">\n')
+    of.write('<DataItem Dimensions="3 2" NumberType="Int">\n')
+    of.write(str(n) + ' 0\n')
+    of.write('1 1\n')
+    of.write('1 ' + str(nParticles) + '\n')
+    of.write('</DataItem>\n')
+    of.write('<DataItem Name="' + str(nameOfAttribute) + '" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' ' + str(nParticles) + '">\n')
+    of.write('global.hdf5:/' + str(nameOfAttribute) + '\n')
+    of.write('</DataItem>\n')
+    of.write('</DataItem>\n')
+    of.write('</Attribute>\n')
+
+def writeAttribute3(of, n, nTimeSteps, nParticles, nameOfAttribute):
+    of.write('<Attribute Name="' + str(nameOfAttribute) + '" Center="Node">\n')
+    of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nParticles) + ' 3">\n')
     of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
     of.write(str(n) + ' 0 0\n')
     of.write('1 1 1\n')
-    of.write('1 ' + str(nDimensions) + ' ' + str(nParticles) + '\n')
+    of.write('1 ' + str(nParticles) + ' 3\n')
     of.write('</DataItem>\n')
-    of.write('<DataItem Name="' + str(nameOfAttribute) + '" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' ' + str(nDimensions) + ' ' + str(nParticles) + '">\n')
-    of.write('global.hdf5:/global.hdf5/' + str(nameOfAttribute) + '\n')
+    of.write('<DataItem Name="' + str(nameOfAttribute) + '" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' ' + str(nParticles) + ' 3">\n')
+    of.write('global.hdf5:/' + str(nameOfAttribute) + '\n')
     of.write('</DataItem>\n')
     of.write('</DataItem>\n')
     of.write('</Attribute>\n')
@@ -35,7 +49,7 @@ def generateXMF(directory, nParticles, nTimeSteps):
     of.write(str(nTimeSteps) + '\n')
     of.write('</DataItem>\n')
     of.write('<DataItem Name="times" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + '">\n')
-    of.write('global.hdf5:/global.hdf5/times\n')
+    of.write('global.hdf5:/times\n')
     of.write('</DataItem>\n')
     of.write('</DataItem>\n')
     of.write('</Time>\n')
@@ -44,31 +58,31 @@ def generateXMF(directory, nParticles, nTimeSteps):
     for n in range(0, nTimeSteps):
         # Declare a grid of points
         of.write('<Grid Name="timestep' + str(n) + '" GridType="Uniform">\n')
-        of.write('<Topology TopologyType="Polyvertex" NumberOfElements="' + str(nParticles) + '"/>\n')
+        of.write('<Topology TopologyType="Polyvertex" NodesPerElement="1" NumberOfElements="' + str(nParticles) + '"/>\n')
         of.write('<Geometry GeometryType="XYZ">\n')
-        of.write('<DataItem ItemType="HyperSlab" Dimensions="1 3 ' + str(nParticles) + '">\n')
+        of.write('<DataItem ItemType="HyperSlab" Dimensions="1 ' + str(nParticles) + ' 3">\n')
         of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
         of.write(str(n) + ' 0 0\n')
         of.write('1 1 1\n')
-        of.write('1 3 ' + str(nParticles) + '\n')
+        of.write('1 ' + str(nParticles) + ' 3\n')
         of.write('</DataItem>\n')
-        of.write('<DataItem Name="position" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' 3 ' + str(nParticles) + '">\n')
-        of.write('global.hdf5:/global.hdf5/position\n')
+        of.write('<DataItem Name="position" Format="HDF" NumberType="Float" Dimensions="' + str(nTimeSteps) + ' ' + str(nParticles) + ' 3">\n')
+        of.write('global.hdf5:/position\n')
         of.write('</DataItem>\n')
         of.write('</DataItem>\n')
         of.write('</Geometry>\n')
         
         # Write attributes
         # -- chi
-        writeAttribute(of, n, nTimeSteps, nParticles, 1, "chi")
+        writeAttribute1(of, n, nTimeSteps, nParticles, "chi")
         # -- gamma
-        writeAttribute(of, n, nTimeSteps, nParticles, 1, "gamma")
+        writeAttribute1(of, n, nTimeSteps, nParticles, "gamma")
         # -- magnetic_field
-        writeAttribute(of, n, nTimeSteps, nParticles, 3, "magnetic_field")
+        writeAttribute3(of, n, nTimeSteps, nParticles, "magnetic_field")
         # -- electric_field
-        writeAttribute(of, n, nTimeSteps, nParticles, 3, "electric_field")
+        writeAttribute3(of, n, nTimeSteps, nParticles, "electric_field")
         # -- momentum
-        writeAttribute(of, n, nTimeSteps, nParticles, 3, "momentum")
+        writeAttribute3(of, n, nTimeSteps, nParticles, "momentum")
 
         # Close grid after writing attributes
         of.write('</Grid>\n')
@@ -87,27 +101,27 @@ def addToGlobal(directory, partialfile, globalGroup, nTimeSteps, n):
     # -- chi
     partialData = partialGroup["chi"]
     globalData = globalGroup["chi"]
-    globalData[0:nTimeSteps, 0, n] = partialData[0:nTimeSteps]
+    globalData[0:nTimeSteps, n] = partialData[0:nTimeSteps]
     # -- gamma
     partialData = partialGroup["gamma"]
     globalData = globalGroup["gamma"]
-    globalData[0:nTimeSteps, 0, n] = partialData[0:nTimeSteps]
+    globalData[0:nTimeSteps, n] = partialData[0:nTimeSteps]
     # -- magnetic_field
     partialData = partialGroup["magnetic_field"]
     globalData = globalGroup["magnetic_field"]
-    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
+    globalData[0:nTimeSteps, n, 0:3] = partialData[0:nTimeSteps, 0:3]
     # -- electric_field
     partialData = partialGroup["electric_field"]
     globalData = globalGroup["electric_field"]
-    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
+    globalData[0:nTimeSteps, n, 0:3] = partialData[0:nTimeSteps, 0:3]
     # -- momentum
     partialData = partialGroup["momentum"]
     globalData = globalGroup["momentum"]
-    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
+    globalData[0:nTimeSteps, n, 0:3] = partialData[0:nTimeSteps, 0:3]
     # -- position
     partialData = partialGroup["position"]
     globalData = globalGroup["position"]
-    globalData[0:nTimeSteps, 0:3, n] = partialData[0:nTimeSteps, 0:3]
+    globalData[0:nTimeSteps, n, 0:3] = partialData[0:nTimeSteps, 0:3]
 
     # -- close partial hdf5 file
     partialFile.close()
@@ -122,29 +136,25 @@ def main():
 
     # Command line arguments
     parser = ap.ArgumentParser(description="Manage the .hdf5 output files.")
-    parser.add_argument("--nParticles",  type=int, default=0,
-                        help="Number of initial conditions")
     parser.add_argument("--directory", type=str,   default="./",
                         help="Target directory containing output files")
 
     # Parse arguments
     args = parser.parse_args()
 
-    # Number of particles
-    nParticles = args.nParticles
-
     # Target directory
     directory = args.directory
     if( not directory.endswith("/")):
         directory += "/"
 
-    # Find a times model
+    # Find a times model and calculate the number of particles
     timesModel = ""
+    nParticles = 0
     for file in os.listdir(directory):
         if file.endswith(".hdf5"):
             if file != "global.hdf5":
+                nParticles += 1
                 timesModel = file
-                break
 
     if nParticles == 0 or timesModel == "":
         print("It seems like the folder you gave doesn\'t have hdf5 files in it.")
@@ -158,24 +168,24 @@ def main():
 
     # Create canvas of global hdf5 file 
     globalFile = hp.File(directory + "global.hdf5", "w")
-    globalGroup = globalFile.create_group("global.hdf5")
+    globalGroup = globalFile.require_group("/")
 
     # -- times
     globalGroup.copy(timesModelTimes, "times", "times", False, False, False, False, False)
     timesModelFile.close()
 
     # -- chi
-    globalGroup.create_dataset("chi", (nTimeSteps, 1, nParticles), dtype="f8")
+    globalGroup.create_dataset("chi", (nTimeSteps, nParticles), dtype="f8")
     # -- gamma
-    globalGroup.create_dataset("gamma", (nTimeSteps, 1, nParticles), dtype="f8")
+    globalGroup.create_dataset("gamma", (nTimeSteps, nParticles), dtype="f8")
     # -- magnetic_field
-    globalGroup.create_dataset("magnetic_field", (nTimeSteps, 3, nParticles), dtype="f8")
+    globalGroup.create_dataset("magnetic_field", (nTimeSteps, nParticles, 3), dtype="f8")
     # -- electric_field
-    globalGroup.create_dataset("electric_field", (nTimeSteps, 3, nParticles), dtype="f8")
+    globalGroup.create_dataset("electric_field", (nTimeSteps, nParticles, 3), dtype="f8")
     # -- momentum
-    globalGroup.create_dataset("momentum", (nTimeSteps, 3, nParticles), dtype="f8")
+    globalGroup.create_dataset("momentum", (nTimeSteps, nParticles, 3), dtype="f8")
     # -- position
-    globalGroup.create_dataset("position", (nTimeSteps, 3, nParticles), dtype="f8")
+    globalGroup.create_dataset("position", (nTimeSteps, nParticles, 3), dtype="f8")
 
     # Find all .hdf5 files in given directory
     n = -1

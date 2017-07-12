@@ -67,9 +67,9 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
     # Stepping through the Particles and the TimeSteps.
     for j in range(nParticles):
         for i in range(nTimeSteps):
-            xp[j, i] = globalModelPositions[i, 0, j]
-            yp[j, i] = globalModelPositions[i, 1, j]
-            zp[j, i] = globalModelPositions[i, 2, j]
+            xp[j, i] = globalModelPositions[i, j, 0]
+            yp[j, i] = globalModelPositions[i, j, 1]
+            zp[j, i] = globalModelPositions[i, j, 2]
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -79,14 +79,6 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
     setPositionsPlotLabels(ax)
 
     plt.savefig(directory + "positionsPlot.eps")
-
-def calculateCOnV(r, nParticles):
-    for j in range (nParticles):
-        if r[j] == 1.0:
-            print("Division by 0... exiting.")
-            sys.exit()
-        r[j] = 1.0/np.sqrt(1.0 - 1.0/np.power(r[j], 2))
-    return r
 
 def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory, ionmode, ionmass, L):
     # Initiate arrays of good size.
@@ -111,11 +103,11 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     
     # Stepping through the Particles
     for j in range(nParticles):
-            px = globalModelMomentums[nTimeSteps - 1, 0, j]
-            py = globalModelMomentums[nTimeSteps - 1, 1, j]
-            pz = globalModelMomentums[nTimeSteps - 1, 2, j]
+            px = globalModelMomentums[nTimeSteps - 1, j, 0]
+            py = globalModelMomentums[nTimeSteps - 1, j, 1]
+            pz = globalModelMomentums[nTimeSteps - 1, j, 2]
             #gam[j] = np.sqrt(1 + (px**2 + py**2 + pz**2)/Mass**2 ) # Calculate gamma
-            gam[j] = globalModelGamma[nTimeSteps - 1, 0, j] # Take value in file
+            gam[j] = globalModelGamma[nTimeSteps - 1, j] # Take value in file
             if gam[j] <= minGamma:
                 isGammaSuperiorToOne = False
             if r[j] > maxGamma:
@@ -133,9 +125,9 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax3 = f.add_subplot(223)
     ax4 = f.add_subplot(224)
     ax1.grid(True)
-    ax1.set_rmax(maxGamma)
+    ax1.set_rmax(r.max())
     ax2.grid(True)
-    ax2.set_rmax(maxGamma)
+    ax2.set_rmax(r.max())
     ax3.grid(True)
     ax4.grid(True)
     ax1.scatter(theta, r)
@@ -160,21 +152,25 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
 
 
     # Time of flight histogram
-    tx = np.zeros_like(gam[px_list>0])
     if ionmode:
+        tx = np.zeros_like(gam[px_list>0])
         tx = (Mass*L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
         ax3.set_xlabel(r'$E_k$ [eV]')
+        N, bins, patches = ax4.hist(tx, bins = 10 ** np.linspace(np.log10(tx.min()), np.log10(tx.max()), int(np.ceil(1.5*np.sqrt(nParticles))) ), color=[0.8, 0.8, 0.2])
+        for i in range(len(patches)):
+            patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+        ax4.set_xscale('log')
     else:
-        tx = (L*gam[px_list>0])/(px_list[px_list>0]*constants.c) 
+        tx = np.zeros_like(gam[px_list<0])
+        tx = (L*gam[px_list<0])/(px_list[px_list<0]*constants.c) 
         ax3.set_xlabel(r'$\gamma$')
-    
-    N, bins, patches = ax4.hist(tx, bins = 10 ** np.linspace(np.log10(tx.min()), np.log10(tx.max()), int(np.ceil(1.5*np.sqrt(nParticles))) ), color=[0.8, 0.8, 0.2])
-    for i in range(len(patches)):
-        patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
+        N, bins, patches = ax4.hist(tx, bins =int(np.ceil(1.5*np.sqrt(nParticles))), color=[0.8, 0.8, 0.2])
+        for i in range(len(patches)):
+            patches[i].set_facecolor((np.random.random(1)[0], np.random.random(1)[0], np.random.random(1)[0]))
 
-    ax4.set_xscale('log')
     ax4.set_xlabel(r"$t_x$ [s]")
-    f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
+    if len(tx) != 0:
+        f.text(1, 0, "Fastest time of flight: %.5e s" % tx.min(), ha='right', fontdict=None)
     #f.text(0.5, 0, "Detector distance: %.5f m" % L, ha='center', fontdict=None)
     
     if ionmode:
@@ -222,7 +218,7 @@ def main():
 
     # Determine exactly how many TimeSteps there are.
     globalModelFile = hp.File(directory + globalModel, "r")
-    globalModelGroup = globalModelFile.require_group(globalModel)
+    globalModelGroup = globalModelFile.require_group("/")
     globalModelTimes = globalModelGroup["times"]
     nTimeSteps = globalModelTimes.len()
 
@@ -237,7 +233,7 @@ def main():
 
     # Determine exactly how many Particles there are.
     globalModelPositions = globalModelGroup["position"]
-    nParticles = globalModelPositions.shape[2]
+    nParticles = globalModelPositions.shape[1]
 
     # Create positions plot
     createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)

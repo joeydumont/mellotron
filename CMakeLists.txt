@@ -8,8 +8,8 @@
 # --                 Name and version of library                 -- #
 # ----------------------------------------------------------------- #
 project(mellotron)
-set (mellotron_VERSION_MAJOR 0)
-set (mellotron_VERSION_MINOR 5)
+set (mellotron_VERSION_MAJOR 1)
+set (mellotron_VERSION_MINOR 0)
 set (mellotron_VERSION_RELEASE 0)
 
 # ----------------------------------------------------------------- #
@@ -35,6 +35,18 @@ find_package(HDF5 REQUIRED)
 include_directories(${HDF5_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${HDF5_LIBRARIES})
 
+# -- Required dependency: MeshPI.
+find_package(MeshPI REQUIRED)
+include_directories(${meshpi_INCLUDE_DIR})
+set (LIBS ${LIBS} ${meshpi_LIBRARY})
+message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
+
+# -- Required dependency: StrattoCalculator.
+find_package(StrattoCalculator REQUIRED)
+include_directories(${strattocalculator_INCLUDE_DIR})
+set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
+
+
 # -- Required dependency: Boost.
 find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
@@ -44,6 +56,10 @@ SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 find_package(armadillo REQUIRED)
 include_directories(${armadillo_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${armadillo_LIBRARIES})
+
+# -- Required dependency: MPI
+find_package(MPI REQUIRED)
+set(LIBS ${LIBS} ${MPI_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
 add_subdirectory (external/Cubature/)
@@ -103,3 +119,7 @@ target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CU
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
+add_executable("IntegrationStrattoLinear.o" "simulations/IntegrationStrattoLinear.cpp")
+target_link_libraries("IntegrationStrattoLinear.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoLinear.o"  Cubature)
+install(TARGETS "IntegrationStrattoLinear.o" RUNTIME DESTINATION bin)

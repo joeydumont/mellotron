@@ -10,7 +10,7 @@ Particles trajectories can be computed for any charge/mass ratio.
 STARTING THE MELLOTRON:
 1) Insure the .o are present in the simulations/ directory. 
 
-2) Write your simulation parameters in the config.xml file without changing the file's layout.
+2) Write your simulation parameters in the configSalamin.xml file without changing the file's layout.
 
 3) Create a new directory that will contain your simulation results :
 
@@ -20,9 +20,9 @@ STARTING THE MELLOTRON:
 
         mkdir $(date +%F--%T)
 
-4) Copy the config.xml file into your new directory without changing the name of the file :
+4) Copy the configSalamin.xml file into your new directory without changing the name of the file :
 
-        cp config.xml <dirname>/
+        cp configSalamin.xml <dirname>/
 
 4.a) OPTIONAL add pre-calculated initial conditions and/or normalization constant to your new directory.
      They will be considered by the MELLOTRON and used instead of re-calculated. They must be named either
@@ -49,21 +49,27 @@ STARTING THE MELLOTRON:
 
 
 SCRIPTS API:
-1) automaticStart.sh                            Launches the MELLOTRON if provided at least a dirname containing a config.xml file.
-        usage : ./automaticStart.sh <dirname>/
-        note : you might have to do a small chmod +x automaticStart.sh before to obtain permission to use the script.
+1) automaticStart.sh                            Launches the MELLOTRON if provided at least a dirname containing a configSalamin.xml file.
+        usage : ./automaticStart.sh <dirname>/ <number of jobs> <shape>
+                default value for <dirname> is current directory.
+                default value for <number of jobs> is two. The value will be passed to the line in 4) for the -j <number of jobs> parameter.
+                default value for <shape> is sphere. The value will be passed to the line in 3) for the --shape <shape> parameter.
+        note :  you might have to do a small chmod +x automaticStart.sh before to obtain permission to use the script.
+                The <shape> parameter takes a string that can be chosen between sphere, cylinder or line. If given something else, sphere will be used.
 
 2) ComputeNormalizationConstantSalaminLinear.o  Computes the normalization constant the MELLOTRON needs.
-        usage : There is a config.xml in the same directory containing the right values of lambda, w0 and L.
+        usage : There is a configSalamin.xml in the same directory containing the right values of lambda, w0 and L.
                 ./ComputeNormalizationConstantSalaminLinear.o
-        note : don't forget to compile the most recent version of .cpp with compile.sh script.
+        note :  don't forget to compile the most recent version of .cpp with compile.sh script or cmake . in parent directory called mellotron/.
 
 3) GenerateInitialConditions.py                 Generates the x,y,z,px,py and pz of particles that will be simulated in the MELLOTRON
-        usage : There is a config.xml in the same directory containing the right values of lambda, pz numpart and radius.
-                python GenerateInitialConditions.py
+        usage : There is a configSalamin.xml in the same directory containing the right values of lambda, pz numpart and radius.
+                python GenerateInitialConditions.py --shape <shape>
+                default value for <shape> is sphere. Also, cylinder and line are valid strings that can be passed.
+
 
 4) IntegrationSalamin.o                         Calculates the trajectory of each initial condition
-        usage : There is a config.xml in the same directory containing the right values of mass, Q, lambda, w0, L, energy, t_init, dt and nsteps.
+        usage : There is a configSalamin.xml in the same directory containing the right values of mass, Q, lambda, w0, L, energy, t_init, dt and nsteps.
                 There is a init_conds.txt file at disposition.
                 There is a normalization_constant.txt file in the same directory.
                 cat path/to/init_conds.txt | parallel -j <number of jobs> --colsep " " ./IntegrationSalamin.o --init_conds {1} {2} {3} {4} {5} {6}
@@ -81,12 +87,12 @@ SCRIPTS API:
                 default value for --L option is 0.03.
                 epstopdf <dirname>/<NameOfGeneratedPlot>.eps <dirname>/<NameOfGeneratedPlot>.pdf
                 xdg-open <dirname>/<NameOfGeneratedPlot>.pdf
-        note : If given a global.hdf5 file, with python producePlots.py --directory <dirname>/, it will produce a positions plot with all the trajectories on.
-               It will also produce a polar positions and gamma plot.
-               If the `ion` flag is set to False, the gamma factor will be plotted.
-               If the `ion` flag is set to True, the kinetic energy will be plotted instead of the gamma factor. This kinetic energy value will depend
-               on the `ionmass` value, which should be in atomic mass units (u). The value of `L` is used in the time of flight plot. It corresponds to the
-               distance (in meters) between an imaginary detector placed parallel to the x-axis and the origin of the coordinate system.
+        note :  If given a global.hdf5 file, with python producePlots.py --directory <dirname>/, it will produce a positions plot with all the trajectories on.
+                It will also produce a polar positions and gamma plot.
+                If the `ion` flag is set to False, the gamma factor will be plotted.
+                If the `ion` flag is set to True, the kinetic energy will be plotted instead of the gamma factor. This kinetic energy value will depend
+                on the `ionmass` value, which should be in atomic mass units (u). The value of `L` is used in the time of flight plot. It corresponds to the
+                distance (in meters) between an imaginary detector placed parallel to the x-axis and the origin of the coordinate system.
 
 
 
