@@ -37,7 +37,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   double pdotE         = arma::dot(momentum.col(n_cols),electric_field.col(n_cols));
   arma::colvec lorentz = gamma[n_cols]*electric_field.col(n_cols) + arma::cross(momentum.col(n_cols),magnetic_field.col(n_cols));
   double chi_prefac    = constants::physics::hbar*particle.GetUnitSystem().omega_0_SI/(particle.GetMass()*constants::physics::electron_mass*std::pow(constants::physics::c,2));
-  double chi_sq        = std::pow(chi_prefac,2)*std::pow(mass,-4)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
+  double chi_sq        = std::pow(chi_prefac,2)*std::pow(particle.GetMass(),-4)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
   chi.push_back(std::sqrt(chi_sq));
 }
 
