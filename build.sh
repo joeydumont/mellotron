@@ -57,12 +57,17 @@ if [ $# -gt 1 ]; then
     module load openmpi/1.10.0_gcc
     module load hdf5/1.8.15p1_openmpi_gcc5
     module load cmake/3.3.1
+    module load muparser/2.2.3
+    module load meshpi/1.1.0
+    module load jsoncpp/1.6.2
+    module load zernike/0.0.1
+    module load strattocalculator/3.0.2
 
     export CMAKE_LIBRARY_PATH=$LIBRARY_PATH
     export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
     export CC=gcc
     export CXX=g++
-    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/1.0.0"
+    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/1.0.1"
 
 
   else
