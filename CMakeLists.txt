@@ -79,10 +79,13 @@ ExternalProject_Get_Property(libcuba.a install_dir)
 set (cuba_dir ${install_dir})
 include_directories(${cuba_dir}/include)
 
-# -- Compiler flags
+# -- Compiler flags (Release)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
 set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
 
+# -- Compiler flags (RelWithDebInfo)
+set (CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO}    -pg -fPIC -O3")
+set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}  -pg -fPIC -O3")
 
 # ----------------------------------------------------------------- #
 # --                  Compilation Instructions                   -- #
