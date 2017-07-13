@@ -48,7 +48,7 @@ set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
 
 
 # -- Required dependency: Boost.
-find_package(Boost 1.48.0 COMPONENTS program_options REQUIRED )
+find_package(Boost 1.58.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
 SET (LIBS ${LIBS} ${Boost_LIBRARIES} )
 

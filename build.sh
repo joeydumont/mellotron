@@ -53,7 +53,7 @@ if [ $# -gt 1 ]; then
 
     module use  /home/maclean_group/modulefiles/
     module load gcc/5.2.0
-    module load boost64/1.55.0
+    module load boost64
     module load openmpi/1.10.0_gcc
     module load hdf5/1.8.15p1_openmpi_gcc5
     module load cmake/3.3.1
@@ -62,6 +62,7 @@ if [ $# -gt 1 ]; then
     module load jsoncpp/1.6.2
     module load zernike/0.0.1
     module load strattocalculator/3.0.2
+    module load armadillo
 
     export CMAKE_LIBRARY_PATH=$LIBRARY_PATH
     export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
