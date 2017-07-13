@@ -46,7 +46,6 @@ find_package(StrattoCalculator REQUIRED)
 include_directories(${strattocalculator_INCLUDE_DIR})
 set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
 
-
 # -- Required dependency: Boost.
 find_package(Boost 1.58.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
@@ -65,30 +64,20 @@ set(LIBS ${LIBS} ${MPI_LIBRARIES})
 add_subdirectory (external/Cubature/)
 include_directories (external/Cubature/include)
 
-#find_package(Cubature REQUIRED)
-#include_directories(${Cubature_INCLUDE_DIRS})
-#set (CUBALIBS ${CUBALIBS} ${Cubature_LIBRARIES})
-#message(STATUS "Cubature include directory: " ${Cubature_INCLUDE_DIR})
-#message(STATUS "Cubature library: " ${Cubature_LIBRARY})
+# -- Required dependency: cuba (MUST be in submodules, i.e. external/Cuba)
+include(ExternalProject)
+ExternalProject_Add(
+  libcuba.a
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  BUILD_COMMAND make
+  BUILD_IN_SOURCE 1
+)
 
-# -- Required dependency: cuba (can be in submodules, i.e. external/Cuba)
-find_package(cuba)
-
-if (${cuba_FOUND})
-    # Do nothing
-else()
-    # Build cuba and then attempt to find it again
-    message(STATUS "Building cuba in submodules directory")
-    execute_process(COMMAND ./configure
-                    COMMAND make
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba)
-endif()
-
-find_package(cuba REQUIRED)
-include_directories(${cuba_INCLUDE_DIRS})
-set (CUBALIBS ${CUBALIBS} ${cuba_LIBRARIES})
-message(STATUS "cuba.h include directory: " ${cuba_INCLUDE_DIR})
-message(STATUS "cuba library: " ${cuba_LIBRARY})
+ExternalProject_Get_Property(libcuba.a install_dir)
+set (cuba_dir ${install_dir})
+include_directories(${cuba_dir}/include)
 
 # -- Compiler flags
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
@@ -112,14 +101,17 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin.o" Cubature)
+target_link_libraries("IntegrationSalamin.o" ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
 
 add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  Cubature)
+target_link_libraries("ComputeNormalizationConstantSalaminLinear.o"  ${cuba_dir}/libcuba.a)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear.o" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinear.o" "simulations/IntegrationStrattoLinear.cpp")
 target_link_libraries("IntegrationStrattoLinear.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinear.o"  Cubature)
+target_link_libraries("IntegrationStrattoLinear.o"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationStrattoLinear.o" RUNTIME DESTINATION bin)
