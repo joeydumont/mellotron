@@ -61,8 +61,8 @@ find_package(MPI REQUIRED)
 set(LIBS ${LIBS} ${MPI_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
-add_subdirectory (external/Cubature/)
-include_directories (external/Cubature/include)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
 
 # -- Required dependency: cuba (MUST be in submodules, i.e. external/Cuba)
 include(ExternalProject)
