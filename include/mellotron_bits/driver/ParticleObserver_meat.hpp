@@ -5,9 +5,16 @@ namespace mellotron {
 
 template <class FieldModel>
 inline
-ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle)
+ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle, const int my_init_size)
 : particle(my_particle)
-{}
+, init_size(my_init_size)
+, step_counter(0)
+{
+  position.set_size(3,init_size);
+  momentum.set_size(3,init_size);
+  electric_field.set_size(3,init_size);
+  magnetic_field.set_size(3,init_size);
+}
 
 template <class FieldModel>
 inline
@@ -16,11 +23,15 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
                                                 double                  t)
 {
   // Resize the matrices.
-  const int n_cols = position.n_cols;
-  position.resize(3,n_cols+1);
-  momentum.resize(3,n_cols+1);
-  electric_field.resize(3,n_cols+1);
-  magnetic_field.resize(3,n_cols+1);
+  const int n_cols = step_counter;step_counter++;
+
+  if (n_cols > init_size)
+  {
+    position.resize(3,n_cols+1);
+    momentum.resize(3,n_cols+1);
+    electric_field.resize(3,n_cols+1);
+    magnetic_field.resize(3,n_cols+1);
+  }
 
   // Push the data to the appropriate containers.
   position.col(n_cols) = x.subvec(1,3);
@@ -46,16 +57,7 @@ inline
 void
 ParticleObserver<FieldModel>::OutputData()
 {
-  GenerateXDMF();
   GenerateHDF5();
-}
-
-template <class FieldModel>
-inline
-void
-ParticleObserver<FieldModel>::GenerateXDMF()
-{
-
 }
 
 template <class FieldModel>

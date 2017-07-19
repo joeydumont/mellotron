@@ -24,7 +24,9 @@ class ParticleObserver
 public:
 
   /// Sets the particle to follow.
-  ParticleObserver(Particle<FieldModel>& my_particle);
+  /// Also sets an initial size for the data structures that hold information
+  /// about the particle.
+  ParticleObserver(Particle<FieldModel>& my_particle, const int my_init_size = 100);
 
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, double t);
@@ -35,10 +37,9 @@ public:
   /// Creates the HDF5 and outputs the data.
   void  GenerateHDF5();
 
-  /// Create the XDMF metadata.
-  void  GenerateXDMF();
-
         Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
+
+  const int                      init_size;             ///< Initial size of the data structures. Removes some unnecessary arma::resize() calls.
 
         arma::mat                position;              ///< Record of the particle's position.
         arma::mat                momentum;              ///< Record of the particle's momentum.
@@ -48,6 +49,8 @@ public:
 
         arma::mat                electric_field;        ///< Record of the electric field along the particle's trajectory.
         arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
+
+        uint                     step_counter;          ///< Counts the number of steps that were taken.
 };
 
 } // namespace mellotron

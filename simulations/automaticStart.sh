@@ -39,11 +39,13 @@ INTEGSAL="IntegrationSalamin.o"
 INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
 MANAGEOUT="manageOutputs.py"
+PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
+cp $PRODUCEPLOTS ./$DIR
 cd ./$DIR
 OUTINITCONDS="init_conds.txt"
 OUTNORMCONST="normalization_constant.txt"
@@ -91,6 +93,11 @@ echo "Done: calculate particles behavior."
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"
 python $MANAGEOUT --directory ./
 echo "Done: manage outputs."
+
+# -- Generate plots
+echo -e " \e[32m--- Starting to produce the plots ---\e[39m"
+python $PRODUCEPLOTS --directory ./
+echo "Done: produce plots."
 
 # Clean dir
 rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT

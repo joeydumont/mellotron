@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     double Q       = config->Q_;
     double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
-    int nsteps  = config->nsteps_;
+    int nsteps     = config->nsteps_;
 
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
     mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units);
-    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
+    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,nsteps);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);

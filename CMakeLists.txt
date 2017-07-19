@@ -24,6 +24,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# -- Compiler flags
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
+set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
@@ -69,7 +73,7 @@ include(ExternalProject)
 ExternalProject_Add(
   libcuba.a
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   BUILD_COMMAND make
   BUILD_IN_SOURCE 1
