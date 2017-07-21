@@ -136,7 +136,6 @@ TEST_F(ParticleTest, TestIntegrationElectrostatic)
 
   }
 
-
   electron_obs.OutputData();
 }
 

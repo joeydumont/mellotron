@@ -330,6 +330,60 @@ ParticleObserver<FieldModel>::SetHDF5Properties(       hid_t    &  dataspace_id,
   H5Pset_deflate(plist_id,compression_level);
 }
 
+template <class FieldModel>
+inline
+ParticleObserverLienardWiechert<FieldModel>::ParticleObserverLienardWiechert(       Particle<FieldModel>  &   my_particle,
+                                                                             const  double                    my_radius,
+                                                                             const  unsigned int              my_number_points_theta,
+                                                                             const  unsigned int              my_number_points_phi,
+                                                                             const  unsigned int              my_init_size)
+: ParticleObserver<FieldModel>(my_particle,my_init_size)
+, radius(my_radius)
+, number_points_theta(my_number_points_theta)
+, number_points_phi(my_number_points_phi)
+{
+  // Set the sizes of the containers that will store the Liénard-Wiechert fields.
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
+                                                double                   t)
+{
+  // We compute the usual stuff.
+  ParticleObserver<FieldModel>::operator(x,t);
+
+  // We compute the Liénard-Wichert fields.
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverLienardWiechert::WriteAllData(hid_t group_id)
+{
+  // We write the usual stuff.
+  ParticleObserver<FieldModel>::WriteAllData(group_id);
+
+  // We write the Liénard-Wiechert fields.
+  WriteLienardWiechertFields(group_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverLienardWiechert::WriteLienardWiechertFields(hid_t group_id)
+{
+  // IDs used for the datasets.
+  hid_t dataspace_id, plist_id, dataset_id;
+  herr_t status;
+
+  // Properties of the datasets.
+  // hsize_t size_dataspace[2] = ???;
+  // hsize_t chunk_size[2]     = {50,3};
+  // SetHDF5Properties(dataspace_id, plist_id, 2, size_dataspace, chunk_size, 5);
+}
+
 } // namespace mellotron
 
 #endif // PARTICLE_OBSERVER_MEAT_HPP
