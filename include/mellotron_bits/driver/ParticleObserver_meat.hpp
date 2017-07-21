@@ -5,7 +5,7 @@ namespace mellotron {
 
 template <class FieldModel>
 inline
-ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle, const int my_init_size)
+ParticleObserver<FieldModel>::ParticleObserver(Particle<FieldModel> & my_particle, const uint my_init_size)
 : particle(my_particle)
 , init_size(my_init_size)
 , step_counter(0)
@@ -25,7 +25,7 @@ ParticleObserver<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   // Resize the matrices.
   const int n_cols = step_counter;step_counter++;
 
-  if (n_cols > init_size)
+  if (n_cols >= init_size)
   {
     position.resize(3,n_cols+1);
     momentum.resize(3,n_cols+1);
@@ -57,14 +57,7 @@ inline
 void
 ParticleObserver<FieldModel>::OutputData()
 {
-  GenerateHDF5();
-}
 
-template <class FieldModel>
-inline
-void
-ParticleObserver<FieldModel>::GenerateHDF5()
-{
   // We create a hash of the initial conditions to be used
   // for the HDF5 filename and main group.
   std::size_t hash_seed = 0;
@@ -88,17 +81,40 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                              H5P_DEFAULT,
                              H5P_DEFAULT);
 
+  WriteAllData(group_id);
+
+  // We close the HDF5 objects.
+  H5Gclose(group_id);
+  H5Fclose(file_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteAllData(hid_t group_id)
+{
+  WriteTimes(group_id);
+  WriteGamma(group_id);
+  WriteChi(group_id);
+  WriteStateVector(group_id);
+  WriteElectromagneticField(group_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteTimes(hid_t group_id)
+{
   // IDs used for the datasets.
   hid_t dataspace_id, plist_id, dataset_id;
   herr_t status;
 
   // Creation of the temporal dataset.
-  hsize_t size_dataspace[1];size_dataspace[0] = times.size();
-  dataspace_id = H5Screate_simple(1, size_dataspace, NULL);
-  plist_id     = H5Pcreate(H5P_DATASET_CREATE);
   hsize_t chunk_size_1d = 5;
-  H5Pset_chunk(plist_id,1,&chunk_size_1d);
-  H5Pset_deflate(plist_id,5);
+  hsize_t size_dataspace = times.size();
+  SetHDF5Properties(dataspace_id,plist_id, 1, &size_dataspace, &chunk_size_1d, 5u);
+
+  // Create the group and output the data.
   dataset_id   = H5Dcreate(group_id,
                            "times",
                            H5T_NATIVE_DOUBLE,
@@ -106,6 +122,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                            H5P_DEFAULT,
                            plist_id,
                            H5P_DEFAULT);
+
   status       = H5Dwrite(dataset_id,
                           H5T_NATIVE_DOUBLE,
                           H5S_ALL,
@@ -114,6 +131,23 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                           times.data());
 
   H5Dclose(dataset_id);
+  H5Pclose(plist_id);
+  H5Sclose(dataspace_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteGamma(hid_t group_id)
+{
+  // IDs used for the datasets.
+  hid_t dataspace_id, plist_id, dataset_id;
+  herr_t status;
+
+  // Creation of the gamma dataset.
+  hsize_t chunk_size_1d = 5;
+  hsize_t size_dataspace = gamma.size();
+  SetHDF5Properties(dataspace_id, plist_id, 1, &size_dataspace, &chunk_size_1d, 5u);
 
   // Creation of the gamma dataset.
   dataset_id   = H5Dcreate(group_id,
@@ -123,6 +157,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                            H5P_DEFAULT,
                            plist_id,
                            H5P_DEFAULT);
+
   status       = H5Dwrite(dataset_id,
                           H5T_NATIVE_DOUBLE,
                           H5S_ALL,
@@ -131,7 +166,23 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                           gamma.data());
 
   H5Dclose(dataset_id);
+  H5Pclose(plist_id);
+  H5Sclose(dataspace_id);
+}
 
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteChi(hid_t group_id)
+{
+  // IDs used for the datasets.
+  hid_t dataspace_id, plist_id, dataset_id;
+  herr_t status;
+
+  // Creation of the gamma dataset.
+  hsize_t chunk_size_1d = 5;
+  hsize_t size_dataspace = chi.size();
+  SetHDF5Properties(dataspace_id, plist_id, 1, &size_dataspace, &chunk_size_1d, 5u);
 
   // Creation of the chi dataset.
   dataset_id   = H5Dcreate(group_id,
@@ -141,6 +192,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                            H5P_DEFAULT,
                            plist_id,
                            H5P_DEFAULT);
+
   status       = H5Dwrite(dataset_id,
                           H5T_NATIVE_DOUBLE,
                           H5S_ALL,
@@ -148,17 +200,26 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                           H5P_DEFAULT,
                           chi.data());
 
+  H5Pclose(plist_id);
   H5Dclose(dataset_id);
   H5Sclose(dataspace_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteStateVector(hid_t group_id)
+{
+  // IDs used for the datasets.
+  hid_t dataspace_id, plist_id, dataset_id;
+  herr_t status;
 
   // Creation of the position dataset.
-  hsize_t size_dataspace_position[2];
-  size_dataspace_position[0] = position.n_cols;
-  size_dataspace_position[1] = position.n_rows;
-  dataspace_id               = H5Screate_simple(2, size_dataspace_position, NULL);
-  hsize_t chunk_size[2]; chunk_size[0] = 50; chunk_size[1]=3;
-  H5Pset_chunk(plist_id,2,chunk_size);
-  H5Pset_deflate(plist_id,5);
+  hsize_t size_dataspace[2] = {position.n_cols, position.n_rows};
+  hsize_t chunk_size[2]     = {50,3};
+  SetHDF5Properties(dataspace_id, plist_id, 2, size_dataspace, chunk_size, 5u);
+
+  // Creation and output.
   dataset_id                 = H5Dcreate(group_id,
                                          "position",
                                          H5T_NATIVE_DOUBLE,
@@ -166,6 +227,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                          H5P_DEFAULT,
                                          plist_id,
                                          H5P_DEFAULT);
+
   status                     = H5Dwrite(dataset_id,
                                         H5T_NATIVE_DOUBLE,
                                         H5S_ALL,
@@ -183,6 +245,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                          H5P_DEFAULT,
                                          plist_id,
                                          H5P_DEFAULT);
+
   status                     = H5Dwrite(dataset_id,
                                         H5T_NATIVE_DOUBLE,
                                         H5S_ALL,
@@ -191,6 +254,22 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                         momentum.memptr());
 
   H5Dclose(dataset_id);
+  H5Pclose(plist_id);
+  H5Sclose(dataspace_id);
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::WriteElectromagneticField(hid_t group_id)
+{
+  // IDs used for the datasets.
+  hid_t dataspace_id, plist_id, dataset_id;
+  herr_t status;
+
+  hsize_t size_dataspace[2] = {electric_field.n_cols, electric_field.n_rows};
+  hsize_t chunk_size[2]     = {50,3};
+  SetHDF5Properties(dataspace_id, plist_id, 2, size_dataspace, chunk_size, 5);
 
   // Creation of the electric field dataset.
   dataset_id                 = H5Dcreate(group_id,
@@ -200,6 +279,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                          H5P_DEFAULT,
                                          plist_id,
                                          H5P_DEFAULT);
+
   status                     = H5Dwrite(dataset_id,
                                         H5T_NATIVE_DOUBLE,
                                         H5S_ALL,
@@ -217,6 +297,7 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                          H5P_DEFAULT,
                                          plist_id,
                                          H5P_DEFAULT);
+
   status                     = H5Dwrite(dataset_id,
                                         H5T_NATIVE_DOUBLE,
                                         H5S_ALL,
@@ -225,12 +306,28 @@ ParticleObserver<FieldModel>::GenerateHDF5()
                                         magnetic_field.memptr());
 
   H5Dclose(dataset_id);
-
-  // We close the HDF5 objects.
   H5Pclose(plist_id);
   H5Sclose(dataspace_id);
-  H5Gclose(group_id);
-  H5Fclose(file_id);
+
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserver<FieldModel>::SetHDF5Properties(       hid_t    &  dataspace_id,
+                                                       hid_t    &  plist_id,
+                                                const  int         dim,
+                                                const  hsize_t  *  size,
+                                                const  hsize_t  *  chunk_size,
+                                                const  uint        compression_level)
+{
+  // We set a simple dataspace id.
+  dataspace_id = H5Screate_simple(dim, size, NULL);
+
+  // We create a property list id, then enable chunking and compression.
+  plist_id     = H5Pcreate(H5P_DATASET_CREATE);
+  H5Pset_chunk(plist_id,dim,chunk_size);
+  H5Pset_deflate(plist_id,compression_level);
 }
 
 } // namespace mellotron

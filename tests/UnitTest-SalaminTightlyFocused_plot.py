@@ -124,12 +124,12 @@ plt.colorbar(im, cax)
 plt.savefig("SalaminComponents.pdf", bbox_inches='tight', dpi=500)
 
 # ----------------------------- Salamin in Time ----------------------------- #
-time = =800e-9/(2*cst.pi*cst.c)*np.loadtxt("SalaminFieldIe_time.txt")*1.0e15 # Time in femtoseconds.
+time = 800e-9/(2*cst.pi*cst.c)*np.loadtxt("SalaminFieldIe_time.txt")*1.0e15 # Time in femtoseconds  .
 salaminTimeField = np.loadtxt("SalaminFieldIe.txt")
 
 fig = plt.figure()
-plt.plot(800e-9/(2*cst.pi*cst.c)*time*1.0e15, np.abs(sig.hilbert(salaminTimeField)))
-plt.plot(800e-9/(2*cst.pi*cst.c)*time*1.0e15, salaminTimeField)
+plt.plot(time, salaminTimeField/np.amax(salaminTimeField))
+#plt.plot(time, np.abs(sig.hilbert(salaminTimeField))/np.amax(salaminTimeField))
 
 plt.xlabel("Time [fs]")
 plt.ylabel("Field")

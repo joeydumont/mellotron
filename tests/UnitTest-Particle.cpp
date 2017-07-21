@@ -106,7 +106,7 @@ TEST_F(ParticleTest, TestIntegrationElectrostatic)
   }
   std::cout << std::endl;
 
-  size_t steps = integrate_times(make_dense_output(1.0e-6,1.0e-6, runge_kutta_dopri5<arma::colvec::fixed<8> >() ),
+  size_t steps = integrate_times(make_dense_output(1.0e-8,1.0e-8, runge_kutta_dopri5<arma::colvec::fixed<8> >() ),
                                  std::ref(electron),
                                  x,
                                  boost::begin(times),
@@ -173,7 +173,7 @@ TEST_F(ParticleTest, TestIntegratinoMagnetostatic)
   }
   std::cout << std::endl;
 
-  size_t steps = integrate_times(make_dense_output(1.0e-6,1.0e-6, runge_kutta_dopri5<arma::colvec::fixed<8> >() ),
+  size_t steps = integrate_times(make_dense_output(1.0e-8,1.0e-8, runge_kutta_dopri5<arma::colvec::fixed<8> >() ),
                                  std::ref(electron),
                                  x,
                                  boost::begin(times),

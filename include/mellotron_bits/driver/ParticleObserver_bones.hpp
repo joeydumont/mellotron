@@ -26,7 +26,7 @@ public:
   /// Sets the particle to follow.
   /// Also sets an initial size for the data structures that hold information
   /// about the particle.
-  ParticleObserver(Particle<FieldModel>& my_particle, const int my_init_size = 100);
+  ParticleObserver(Particle<FieldModel>& my_particle, const uint my_init_size = 100);
 
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, double t);
@@ -34,8 +34,23 @@ public:
   /// Outputs in a pair of HDF5 and XDMF files.
   void OutputData();
 
-  /// Creates the HDF5 and outputs the data.
-  void  GenerateHDF5();
+  /// Writes all the data in a given HDF5 group. Useful to append other write functions in derived classes.
+  void WriteAllData(hid_t group_id);
+
+  /// Writes the temporal data points.
+  void WriteTimes(hid_t group_id);
+
+  /// Writes gamma.
+  void WriteGamma(hid_t group_id);
+
+  /// Writes chi.
+  void WriteChi(hid_t group_id);
+
+  /// Writes the state vector (position and momentum).
+  void WriteStateVector(hid_t group_id);
+
+  /// Write the electric and magnetic field.
+  void WriteElectromagneticField(hid_t group_id);
 
         Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
 
@@ -51,6 +66,45 @@ public:
         arma::mat                magnetic_field;        ///< Record of the magnetic field along the particle's trajectory.
 
         uint                     step_counter;          ///< Counts the number of steps that were taken.
+
+protected:
+
+  /// Utility function that sets the right properties for HDF5 output.
+  void SetHDF5Properties(hid_t & dataspace_id, hid_t & plist_id, const int dim, const hsize_t * size, const hsize_t * chunk_size, const uint compression_level);
+
+};
+
+/*!
+ *  \class  ParticleObserverLienardWiechert
+ *  \author Joey Dumont      <joey.dumont@gmail.com>
+ *  \since  2016-09-30
+ *  \brief  Observes and outputs the trajectory of a particle in an electromagnetic field.
+ *
+ * Adds the fields created by the moving charges computed via the Liénard-Wiechert potentials
+ * to ParticleObserver.
+ */
+template <class FieldModel>
+class ParticleObserverLienardWiechert : public ParticleObserver<FieldModel>
+{
+public:
+
+  /// Sets the particle to follow.
+  /// We must also declare the radius of the sphere on which
+  /// the Liénard-Wiechert field are computed, and the number of points
+  /// in theta and phi.
+  ParticleObserverLienardWiechert(       Particle<FieldModel>  &  my_particle,
+                                  const  double                   my_radius              = 1e4,
+                                  const  unsigned int             my_number_points_theta = 50,
+                                  const  unsigned int             my_number_points_phi   = 50,
+                                  const  unsigned int             my_init_size           = 100);
+
+  /// We redefine the () operator to append the calculation of the emitted radiation.
+  void operator()(const arma::colvec::fixed<8>& x, double t);
+
+
+  const double                   radius;                ///< Radius of the detection sphere.
+  const unsigned int             number_points_theta;   ///< Number of discrete points in theta.
+  const unsigned int             number_points_phi;     ///< Number of discrete points in phi.
 };
 
 } // namespace mellotron
