@@ -83,13 +83,33 @@ include_directories(${cuba_dir}/include)
 include(CTest)
 add_subdirectory(tests)
 
-# -- Compiler flags (Release)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
-set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
+# -- Default build type
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif(NOT CMAKE_BUILD_TYPE)
 
-# -- Compiler flags (RelWithDebInfo)
-set (CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO}    -pg -fPIC -O3")
-set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}  -pg -fPIC -O3")
+# -- Compiler config for RELEASE build.
+# Configuration for the GCC compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -O3")
+  set (CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}    -O3")
+
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -O3")
+  set (CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}    -O3")
+endif()
+
+# -- Compiler config for DEBUG build.
+# Configuration for the GCC compiler.
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -pg -g -Wall")
+  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}   -O0 -pg -g -Wall")
+
+# Configuration for the Intel compiler.
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -debug all")
+  set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}   -O0 -g -debug all")
+endif()
 
 # ----------------------------------------------------------------- #
 # --                  Compilation Instructions                   -- #
