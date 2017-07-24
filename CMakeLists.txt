@@ -1,5 +1,6 @@
 # --------------------------------------------------------------------------- #
 # Author:       Denis Gagnon                  <denis.gagnon@emt.inrs.ca>      #
+#               Joey Dumont                   <joey.dumontn@gmail.com>        #
 # Date created: 2017-06-13                                                    #
 # Description:  CMake compilation instructions for MELLOTRON                  #
 # ----------------------------------------------------------------------------#
@@ -27,6 +28,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # -- Compiler flags
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
 set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
+
+# -- Preprocessor macros (to be updated for Release/Debug builds).
+#add_definitions(-DBOOST_DISABLE_ASSERTS)
+#add_definitions(-DARMA_NO_DEBUG)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)

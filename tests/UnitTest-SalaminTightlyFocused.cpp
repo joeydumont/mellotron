@@ -259,16 +259,12 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
   field_values.save("SalaminField_qed.txt", arma::raw_ascii);
 }
 
-
-
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
   printf("Running main() UnitTest-Particle.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
-//  MPI_Init(&argc,&argv);
   auto result =  RUN_ALL_TESTS();
-  //MPI_Finalize();
   H5close();
 
   return result;

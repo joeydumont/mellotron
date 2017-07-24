@@ -341,8 +341,12 @@ ParticleObserverLienardWiechert<FieldModel>::ParticleObserverLienardWiechert(   
 , radius(my_radius)
 , number_points_theta(my_number_points_theta)
 , number_points_phi(my_number_points_phi)
+,  electric_field_lw(boost::extents[init_size][number_points_theta][number_points_phi][3]
+,  magnetic_field_lw(boost::extents[init_size][number_points_theta][number_points_phi][3]
 {
   // Set the sizes of the containers that will store the Liénard-Wiechert fields.
+  theta = arma::linspace<vec>(0.0,2.0*constants::math::pi, number_points_theta);
+  phi.set_size(0.0,constants::math::pi, number_points_phi);
 }
 
 template <class FieldModel>
@@ -354,7 +358,63 @@ ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
   // We compute the usual stuff.
   ParticleObserver<FieldModel>::operator(x,t);
 
-  // We compute the Liénard-Wichert fields.
+  // We check whether the cubes need to be resized.
+  // Beware, step_counter has already been incremented. Maybe
+  // provide hooks for before/after operator(), because this is
+  // really ugly.
+  const int n_cols = step_counter-1;
+
+  if (n_cols >= init_size)
+  {
+    electric_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
+    magnetic_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
+  }
+
+  // Actual computation of the fields.
+  // The LW actually depends on the instantaneous acceleration of the particle,
+  // we must compute the state of the particle at that particular instance.
+  // An economical way to compute the field and state would be to call
+  // Particle<FieldModel>::operator(&x, &dxdt, t) and extract the information
+  // from there. Because of my weird inheritance structure, this will have to be
+  // done in a future upgrade to the MELLOTRON, if necessary.
+  auto dxdt = x;
+  particle.operator(x, dxdt, t);
+
+  // Useful variables.
+  arma::colvec part_pos = x.subvec(1,3);
+  arma::colvec part_mom = x.subvec(4,7);
+  arma::colvec part_acc = dxdt.subvec(4,7)
+
+  // Computation of the electric field.
+  for (uint i=0; i<number_points_phi; i++)
+  {
+    for (uint j=0; j<number_points_theta; j++)
+    {
+      // Normal vector
+      arma::colvec sphe_pos = radius*arma::colvec({std::sin(theta[j])*std::cos(phi[i]),
+                                                   std::sin(theta[j])*std::sin(phi[i]),
+                                                   std::cos(theta[j])});
+
+      double       distance = arma::norm(sphe_pos-part_pos);
+      arma::colvec normal   = (sphe_pos-part_pos-)/distance;
+
+      // Term-by-term evaluation (from the inside out).
+      double part_gamma = gamma.back();
+      double part_mass  = particle.GetMass();
+
+      arma::colvec firstTerm  = normal-part_mom/(part_gamma*part_mass);
+      arma::colvec secondTerm = part_mom/(part_gamma*part_mass) - arma::dot(part_mom,part_acc)*part_mom/std::pow(part_gamma*part_mass,3);
+
+      arma::colvec e_field_lw = arma::cross(normal,arma::cross(firstTerm,secondTerm))/distance;
+      arma::colvec m_field_lw = arma::cross(normal,e_field_lw);
+
+      for (unsigned int k=0; k<3; k++)
+      {
+        electric_field_lw[n_cols][j][i][k] = e_field_lw(k);
+        magnetic_field_lw[n_cols][j][i][k] = m_field_lw(k);
+      }
+    }
+  }
 }
 
 template <class FieldModel>

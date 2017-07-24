@@ -3,6 +3,7 @@
 
 #include <armadillo>
 #include <boost/functional/hash.hpp>
+#include "boost/multi_array.hpp"
 #include <cmath>
 #include <hdf5.h>
 
@@ -101,10 +102,19 @@ public:
   /// We redefine the () operator to append the calculation of the emitted radiation.
   void operator()(const arma::colvec::fixed<8>& x, double t);
 
+  /// Write the Liénard-Wiechert fields to the HDF5 file.
+  void WriteLienardWichertFields(hid_t group_id);
 
-  const double                   radius;                ///< Radius of the detection sphere.
-  const unsigned int             number_points_theta;   ///< Number of discrete points in theta.
-  const unsigned int             number_points_phi;     ///< Number of discrete points in phi.
+
+  const double                           radius;                ///< Radius of the detection sphere.
+  const unsigned int                     number_points_theta;   ///< Number of discrete points in theta.
+  const unsigned int                     number_points_phi;     ///< Number of discrete points in phi.
+
+        arma::vec                        theta;                 ///< Theta values on the sphere [0,\pi).
+        arma::vec                        phi;                   ///< Phi values on the sphere [0,2\pi).
+
+        boost::multi_array<double, 4>    electric_field_lw;     ///< Value of the Lienard-Wiechert electric field on the sphere.
+        boost::multi_array<double, 4>    magnetic_field_lw;     ///< Value of the Liénard-Wiechert magnetic field on the sphere.
 };
 
 } // namespace mellotron
