@@ -36,7 +36,7 @@ public:
   void OutputData();
 
   /// Writes all the data in a given HDF5 group. Useful to append other write functions in derived classes.
-  void WriteAllData(hid_t group_id);
+  virtual void WriteAllData(hid_t group_id);
 
   /// Writes the temporal data points.
   void WriteTimes(hid_t group_id);

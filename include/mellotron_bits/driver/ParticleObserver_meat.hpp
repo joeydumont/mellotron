@@ -443,12 +443,59 @@ ParticleObserverLienardWiechert<FieldModel>::WriteLienardWiechertFields(hid_t gr
 {
   // IDs used for the datasets.
   hid_t dataspace_id, plist_id, dataset_id;
+  hid_t subgroup_id;
   herr_t status;
 
   // Properties of the datasets.
-  // hsize_t size_dataspace[2] = ???;
-  // hsize_t chunk_size[2]     = {50,3};
-  // SetHDF5Properties(dataspace_id, plist_id, 2, size_dataspace, chunk_size, 5);
+  hsize_t size_dataspace[4];
+  for (uint i=0; i<4; i++) size_dataspace[i] = electric_field_lw.shape()[i];
+  hsize_t chunk_size[4]     = {50,10,10,3};
+  this->SetHDF5Properties(dataspace_id, plist_id, 4, size_dataspace, chunk_size, 5);
+
+  // Create a subgroup containing the LW fields for that particle.
+  subgroup_id       = H5Gcreate(group_id,
+                                "lienard-wiechert-fields",
+                                H5P_DEFAULT,
+                                H5P_DEFAULT,
+                                H5P_DEFAULT);
+
+  // Create the dataset that will hold the electric field.
+  dataset_id        = H5Dcreate(subgroup_id,
+                                "electric_field",
+                                H5T_NATIVE_DOUBLE,
+                                dataspace_id,
+                                H5P_DEFAULT,
+                                plist_id,
+                                H5P_DEFAULT);
+
+  status            = H5Dwrite(dataset_id,
+                               H5T_NATIVE_DOUBLE,
+                               H5S_ALL,
+                               H5S_ALL,
+                               H5P_DEFAULT,
+                               electric_field_lw.data());
+
+  H5Dclose(dataset_id);
+
+  // Create the dataset that will hold the magnetic field.
+  dataset_id        = H5Dcreate(subgroup_id,
+                                "magnetic_field",
+                                H5T_NATIVE_DOUBLE,
+                                dataspace_id,
+                                H5P_DEFAULT,
+                                plist_id,
+                                H5P_DEFAULT);
+
+  status            = H5Dwrite(dataset_id,
+                               H5T_NATIVE_DOUBLE,
+                               H5S_ALL,
+                               H5S_ALL,
+                               H5P_DEFAULT,
+                               magnetic_field_lw.data());
+
+  H5Dclose(dataset_id);
+
+  H5Gclose(subgroup_id);
 }
 
 } // namespace mellotron
