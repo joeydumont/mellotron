@@ -54,7 +54,7 @@ def generateXMF(directory, nParticles, nTimeSteps):
     of.write('</DataItem>\n')
     of.write('</Time>\n')
 
-    # For each timestep 
+    # For each timestep
     for n in range(0, nTimeSteps):
         # Declare a grid of points
         of.write('<Grid Name="timestep' + str(n) + '" GridType="Uniform">\n')
@@ -71,7 +71,7 @@ def generateXMF(directory, nParticles, nTimeSteps):
         of.write('</DataItem>\n')
         of.write('</DataItem>\n')
         of.write('</Geometry>\n')
-        
+
         # Write attributes
         # -- chi
         writeAttribute1(of, n, nTimeSteps, nParticles, "chi")
@@ -159,14 +159,14 @@ def main():
     if nParticles == 0 or timesModel == "":
         print("It seems like the folder you gave doesn\'t have hdf5 files in it.")
         sys.exit()
-    
+
     # Determine exactly how many timesteps there are.
     timesModelFile = hp.File(directory + timesModel, "r")
     timesModelGroup = timesModelFile.require_group(timesModel)
     timesModelTimes = timesModelGroup["times"]
     nTimeSteps = timesModelTimes.len()
 
-    # Create canvas of global hdf5 file 
+    # Create canvas of global hdf5 file
     globalFile = hp.File(directory + "global.hdf5", "w")
     globalGroup = globalFile.require_group("/")
 

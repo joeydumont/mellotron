@@ -25,14 +25,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# -- Compiler flags
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
-set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC -O3")
-
-# -- Preprocessor macros (to be updated for Release/Debug builds).
-#add_definitions(-DBOOST_DISABLE_ASSERTS)
-#add_definitions(-DARMA_NO_DEBUG)
-
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
@@ -78,7 +70,7 @@ include(ExternalProject)
 ExternalProject_Add(
   libcuba.a
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
-  CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   BUILD_COMMAND make
   BUILD_IN_SOURCE 1
@@ -88,14 +80,16 @@ ExternalProject_Get_Property(libcuba.a install_dir)
 set (cuba_dir ${install_dir})
 include_directories(${cuba_dir}/include)
 
-# -- Mellotron tests
-include(CTest)
-add_subdirectory(tests)
-
 # -- Default build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
+
+# -- Remove bounds check for performance.
+if (CMAKE_BUILD_TYPE MATCHES RELEASE)
+  add_definitions(-DBOOST_DISABLE_ASSERTS)
+  add_definitions(-DARMA_NO_DEBUG)
+endif()
 
 # -- Compiler config for RELEASE build.
 # Configuration for the GCC compiler.
@@ -132,8 +126,11 @@ install (DIRECTORY include/          DESTINATION include)
 # -- Output binaries in directory
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
-# -- Rules for every target
+# -- Mellotron tests
+include(CTest)
+add_subdirectory(tests)
 
+# -- Rules for every target
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin.o" Cubature)

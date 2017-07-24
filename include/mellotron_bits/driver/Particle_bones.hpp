@@ -27,7 +27,7 @@ public:
 
   /// Constructor sets the physical properties of the particle.
   /// RR makes it so the unit system must be passed to the Particle.
-  Particle(const double my_charge, const double my_ass, FieldModel& my_field_model, MellotronUnits& my_units, const RadiationReactionModel my_radiation_reaction = NoRR);
+  Particle(const double my_charge, const double my_mass, FieldModel& my_field_model, MellotronUnits& my_units, const RadiationReactionModel my_radiation_reaction = NoRR);
 
   /// Computation of the field tensor at a given point in space-time.
   void ComputeFieldTensor(const double t, const double x, const double y, const double z);
@@ -37,8 +37,9 @@ public:
   arma::colvec::fixed<3> GetMagneticField(){return magnetic_field;} ///< Returns the stored magnetic field.
 
   // Accessor functions of the particle parameters.
-  double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
+  double GetCharge(){return charge;}                                ///< Returns the charge of the particle.
   double GetMass(){return mass;}                                    ///< Returns the mass of the particle.
+  double GetChi(){return chi;}                                      ///< Returns the dynamical quantum parameter of the particle.
 
   /// Accessor function of the unit system.
   MellotronUnits & GetUnitSystem(){return unit_system;}

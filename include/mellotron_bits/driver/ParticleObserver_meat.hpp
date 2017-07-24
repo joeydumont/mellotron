@@ -341,30 +341,30 @@ ParticleObserverLienardWiechert<FieldModel>::ParticleObserverLienardWiechert(   
 , radius(my_radius)
 , number_points_theta(my_number_points_theta)
 , number_points_phi(my_number_points_phi)
-,  electric_field_lw(boost::extents[init_size][number_points_theta][number_points_phi][3]
-,  magnetic_field_lw(boost::extents[init_size][number_points_theta][number_points_phi][3]
+,  electric_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
+,  magnetic_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
 {
   // Set the sizes of the containers that will store the Liénard-Wiechert fields.
-  theta = arma::linspace<vec>(0.0,2.0*constants::math::pi, number_points_theta);
-  phi.set_size(0.0,constants::math::pi, number_points_phi);
+  theta = arma::linspace<arma::colvec>(0.0, 2.0*constants::math::pi, number_points_theta);
+  phi   = arma::linspace<arma::colvec>(0.0,     constants::math::pi, number_points_phi);
 }
 
 template <class FieldModel>
 inline
 void
-ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
-                                                double                   t)
+ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fixed<8> & x,
+                                                               double                   t)
 {
   // We compute the usual stuff.
-  ParticleObserver<FieldModel>::operator(x,t);
+  ParticleObserver<FieldModel>::operator() (x,t);
 
   // We check whether the cubes need to be resized.
   // Beware, step_counter has already been incremented. Maybe
   // provide hooks for before/after operator(), because this is
   // really ugly.
-  const int n_cols = step_counter-1;
+  const int n_cols = this->step_counter-1;
 
-  if (n_cols >= init_size)
+  if (n_cols >= this->init_size)
   {
     electric_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
     magnetic_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
@@ -378,12 +378,12 @@ ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
   // from there. Because of my weird inheritance structure, this will have to be
   // done in a future upgrade to the MELLOTRON, if necessary.
   auto dxdt = x;
-  particle.operator(x, dxdt, t);
+  this->particle.operator() (x, dxdt, t);
 
   // Useful variables.
   arma::colvec part_pos = x.subvec(1,3);
-  arma::colvec part_mom = x.subvec(4,7);
-  arma::colvec part_acc = dxdt.subvec(4,7)
+  arma::colvec part_mom = x.subvec(5,7);
+  arma::colvec part_acc = dxdt.subvec(5,7);
 
   // Computation of the electric field.
   for (uint i=0; i<number_points_phi; i++)
@@ -396,16 +396,23 @@ ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
                                                    std::cos(theta[j])});
 
       double       distance = arma::norm(sphe_pos-part_pos);
-      arma::colvec normal   = (sphe_pos-part_pos-)/distance;
+      arma::colvec normal   = (sphe_pos-part_pos)/distance;
 
       // Term-by-term evaluation (from the inside out).
-      double part_gamma = gamma.back();
-      double part_mass  = particle.GetMass();
+      double part_gamma = this->gamma.back();
+      double part_mass  = this->particle.GetMass();
 
-      arma::colvec firstTerm  = normal-part_mom/(part_gamma*part_mass);
-      arma::colvec secondTerm = part_mom/(part_gamma*part_mass) - arma::dot(part_mom,part_acc)*part_mom/std::pow(part_gamma*part_mass,3);
+      arma::colvec firstTerm   = normal-part_mom/(part_gamma*part_mass);
+      arma::colvec secondTerm  = part_mom/(part_gamma*part_mass) - arma::dot(part_mom,part_acc)*part_mom/std::pow(part_gamma*part_mass,3);
 
-      arma::colvec e_field_lw = arma::cross(normal,arma::cross(firstTerm,secondTerm))/distance;
+      // The denominator is mostly a relativistic correction term.
+      double       denominator = std::pow(1.0-arma::dot(normal,part_mom/(part_gamma*part_mass)),3);
+
+      // The prefactor is hbar*omega_0/(m_e*c^2)*alpha*q_el.
+      double       prefactor   = constants::physics::hbar*this->particle.GetUnitSystem().omega_0_SI/(constants::physics::electron_mass*std::pow(constants::physics::c,2))
+                                     * constants::physics::alpha * this->particle.GetCharge();
+
+      arma::colvec e_field_lw = prefactor*arma::cross(normal,arma::cross(firstTerm,secondTerm))/(distance*denominator);
       arma::colvec m_field_lw = arma::cross(normal,e_field_lw);
 
       for (unsigned int k=0; k<3; k++)
@@ -420,7 +427,7 @@ ParticleObserverLienardWiechert::operator(const arma::colvec::fixed<8> & x,
 template <class FieldModel>
 inline
 void
-ParticleObserverLienardWiechert::WriteAllData(hid_t group_id)
+ParticleObserverLienardWiechert<FieldModel>::WriteAllData(hid_t group_id)
 {
   // We write the usual stuff.
   ParticleObserver<FieldModel>::WriteAllData(group_id);
@@ -432,7 +439,7 @@ ParticleObserverLienardWiechert::WriteAllData(hid_t group_id)
 template <class FieldModel>
 inline
 void
-ParticleObserverLienardWiechert::WriteLienardWiechertFields(hid_t group_id)
+ParticleObserverLienardWiechert<FieldModel>::WriteLienardWiechertFields(hid_t group_id)
 {
   // IDs used for the datasets.
   hid_t dataspace_id, plist_id, dataset_id;

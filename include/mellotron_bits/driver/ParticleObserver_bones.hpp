@@ -102,8 +102,11 @@ public:
   /// We redefine the () operator to append the calculation of the emitted radiation.
   void operator()(const arma::colvec::fixed<8>& x, double t);
 
+  /// Redeclaration of WriteAllData(hid_t group_id).
+  void WriteAllData(hid_t group_id);
+
   /// Write the Liénard-Wiechert fields to the HDF5 file.
-  void WriteLienardWichertFields(hid_t group_id);
+  void WriteLienardWiechertFields(hid_t group_id);
 
 
   const double                           radius;                ///< Radius of the detection sphere.
