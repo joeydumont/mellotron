@@ -126,6 +126,22 @@ def addToGlobal(directory, partialfile, globalGroup, nTimeSteps, n):
     # -- close partial hdf5 file
     partialFile.close()
 
+def accumulateLWInGlobal(directory, partialfile, globalGroup, nTimeSteps):
+    """
+    Reads the Liénard-Wiechert fields from the single particle HDF5 output
+    and accumulates the data in the global file.
+    """
+    # -- Open the single-particle file (group is the same as the filename).
+    partialFile  = hp.File(directory + partialfile, "r")
+    partialGroup = partialFile.require_group(partialfile+"/lienard-wiechert-fields")
+
+    # -- Accumulate the fields.
+    globalGroup["electric_field"][:] += partialGroup["electric_field"][:]
+    globalGroup["magnetic_field"][:] += partialGroup["magnetic_field"][:]
+
+    # -- Close the resources.
+    partialFile.close()
+
 def main():
     """
     Manage the .hdf5 output files to create a global .hdf5 file complemented
@@ -138,6 +154,8 @@ def main():
     parser = ap.ArgumentParser(description="Manage the .hdf5 output files.")
     parser.add_argument("--directory", type=str,   default="./",
                         help="Target directory containing output files")
+    parser.add_argument("--lw", type=bool, default=False,
+                        help="Switch whether to sum the Liénard-Wiechert fields.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -172,7 +190,6 @@ def main():
 
     # -- times
     globalGroup.copy(timesModelTimes, "times", "times", False, False, False, False, False)
-    timesModelFile.close()
 
     # -- chi
     globalGroup.create_dataset("chi", (nTimeSteps, nParticles), dtype="f8")
@@ -198,6 +215,33 @@ def main():
                     break
                 addToGlobal(directory, file, globalGroup, nTimeSteps, n)
 
+    # -- If LW is set, we create a lienard-wiechert-fields group in global.hdf5,
+    # -- copy the theta and phi datasets from a single partial HDF5 file,
+    # -- then accumulate the fields emitted by all particles.
+    if (args.lw):
+        # -- We copy the data to groups in the global hdf5 file.
+        LW_ModelGroup   = timesModelGroup["lienard-wiechert-fields"]
+        globalLWGroup = globalGroup.create_group("lienard-wiechert-fields")
+        #LW_ModelGroup.copy("phi",   globalLWGroup)
+        #LW_ModelGroup.copy("theta", globalLWGroup)
+
+        # -- We now create the field datasets in the global file.
+        globalLWGroup.create_dataset("electric_field", (nTimeSteps, 25, 25, 3), dtype=float, fillvalue=0.0)
+        globalLWGroup.create_dataset("magnetic_field", (nTimeSteps, 25, 25, 3), dtype=float, fillvalue=0.0)
+
+        n = -1
+        for file in os.listdir(directory):
+            if file.endswith(".hdf5"):
+                if file != "global.hdf5":
+                    if n < nParticles:
+                        n = n + 1
+                    else:
+                        break
+                    accumulateLWInGlobal(directory, file, globalLWGroup, nTimeSteps)
+
+
+    # -- Close remaining resources.
+    timesModelFile.close()
     globalFile.close()
 
     generateXMF(directory, nParticles, nTimeSteps)

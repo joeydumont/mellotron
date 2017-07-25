@@ -11,7 +11,6 @@
 # CMake version
 cmake_minimum_required(VERSION 3.1)
 
-
 # -- Dependency (Google Test)
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -33,4 +32,6 @@ target_link_libraries("UnitTest-SalaminTightlyFocused.o" Cubature)
 target_link_libraries("UnitTest-SalaminTightlyFocused.o" ${cuba_dir}/libcuba.a)
 add_test(NAME "UnitTest-SalaminTightlyFocused" COMMAND "UnitTest-SalaminTightlyFocused.o")
 
-
+add_executable("UnitTest-ParticleObserverLienardWiechert.o" "UnitTest-ParticleObserverLienardWiechert.cpp")
+target_link_libraries("UnitTest-ParticleObserverLienardWiechert.o" ${LIBS})
+add_test(NAME "UnitTest-ParticleObserverLienardWiechert" COMMAND "UnitTest-ParticleObserverLienardWiechert.o")
