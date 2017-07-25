@@ -292,8 +292,6 @@ def main():
                     lw_e_field_fft[:,i,j,k] = dt*(fft.rfft(globalModelLWEField[:,i,j,k], n=padded_length))
                     lw_b_field_fft[:,i,j,k] = dt*(fft.rfft(globalModelLWBField[:,i,j,k], n=padded_length))
 
-        print(lw_e_field_fft)
-
         # -- To compute dU/domega, we compute a surface integral over the observation sphere.
         # -- It is simpler to do this frequency per frequency.
         # -- We first compute the integrand.
@@ -304,35 +302,30 @@ def main():
         # -- FOR TESTING PURPOSES ONLY
         lw_theta = np.linspace(0.0,   np.pi, lw_e_field_fft.shape[1])
         lw_phi   = np.linspace(0.0, 2*np.pi, lw_e_field_fft.shape[2])
-        lw_radius= 1e4
+        lw_radius= 1e8
 
         for i in range(lw_field_power_spectrum_integrand.shape[0]):
             for j in range(lw_field_power_spectrum_integrand.shape[1]):
                 for k in range(lw_field_power_spectrum_integrand.shape[2]):
                     # -- For convenience, read the field components individually.
-                    Ex = lw_radius*lw_e_field_fft[i,j,k,0]
-                    Ey = lw_radius*lw_e_field_fft[i,j,k,1]
-                    Ez = lw_radius*lw_e_field_fft[i,j,k,2]
-                    Bx = lw_radius*np.conj(lw_e_field_fft[i,j,k,0])
-                    By = lw_radius*np.conj(lw_e_field_fft[i,j,k,1])
-                    Bz = lw_radius*np.conj(lw_e_field_fft[i,j,k,2])
+                    Ex = lw_e_field_fft[i,j,k,0]
+                    Ey = lw_e_field_fft[i,j,k,1]
+                    Ez = lw_e_field_fft[i,j,k,2]
+                    Bx = np.conj(lw_b_field_fft[i,j,k,0])
+                    By = np.conj(lw_b_field_fft[i,j,k,1])
+                    Bz = np.conj(lw_b_field_fft[i,j,k,2])
 
                     integrand_x_comp = np.real(Ey*Bz-Ez*By)*np.sin(lw_theta[j])*np.cos(lw_phi[k])
                     integrand_y_comp = np.real(Ez*Bx-Ex*Bz)*np.sin(lw_theta[j])*np.sin(lw_phi[k])
                     integrand_z_comp = np.real(Ex*By-Ey*Bx)*np.cos(lw_theta[j])
 
-                    print(integrand_x_comp)
-                    print(integrand_y_comp)
-                    print(integrand_z_comp)
-
                     lw_field_power_spectrum_integrand[i,j,k] = np.sin(lw_theta[j])*(integrand_x_comp+integrand_y_comp+integrand_z_comp)
 
-        print(lw_field_power_spectrum_integrand)
         # -- We can now perform the angular integration.
         lw_field_power_spectrum = np.zeros((lw_e_field_fft.shape[0]))
 
         for i in range(lw_field_power_spectrum.shape[0]):
-            lw_field_power_spectrum[i] = 4*np.pi*integration.simps(integration.simps(lw_field_power_spectrum_integrand[i], x=lw_phi), x=lw_theta)
+            lw_field_power_spectrum[i] = 4*np.pi*lw_radius**2*integration.simps(integration.simps(lw_field_power_spectrum_integrand[i], x=lw_phi), x=lw_theta)
 
         # -- Conversion to number of photons (requires proper units for frequencies).
 

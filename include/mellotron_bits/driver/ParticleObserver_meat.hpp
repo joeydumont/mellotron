@@ -386,14 +386,14 @@ ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fix
   arma::colvec part_acc = dxdt.subvec(5,7);
 
   // Computation of the electric field.
-  for (uint i=0; i<number_points_phi; i++)
+  for (uint i=0; i<number_points_theta; i++)
   {
-    for (uint j=0; j<number_points_theta; j++)
+    for (uint j=0; j<number_points_phi; j++)
     {
       // Normal vector
-      arma::colvec sphe_pos = radius*arma::colvec({std::sin(theta[j])*std::cos(phi[i]),
-                                                   std::sin(theta[j])*std::sin(phi[i]),
-                                                   std::cos(theta[j])});
+      arma::colvec sphe_pos = radius*arma::colvec({std::sin(theta[i])*std::cos(phi[j]),
+                                                   std::sin(theta[i])*std::sin(phi[j]),
+                                                   std::cos(theta[i])});
 
       double       distance = arma::norm(sphe_pos-part_pos);
       arma::colvec normal   = (sphe_pos-part_pos)/distance;
@@ -417,8 +417,8 @@ ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fix
 
       for (unsigned int k=0; k<3; k++)
       {
-        electric_field_lw[n_cols][j][i][k] = e_field_lw(k);
-        magnetic_field_lw[n_cols][j][i][k] = m_field_lw(k);
+        electric_field_lw[n_cols][i][j][k] = e_field_lw(k);
+        magnetic_field_lw[n_cols][i][j][k] = m_field_lw(k);
       }
     }
   }

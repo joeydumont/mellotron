@@ -226,8 +226,8 @@ def main():
         #LW_ModelGroup.copy("theta", globalLWGroup)
 
         # -- We now create the field datasets in the global file.
-        globalLWGroup.create_dataset("electric_field", (nTimeSteps, 25, 25, 3), dtype=float, fillvalue=0.0)
-        globalLWGroup.create_dataset("magnetic_field", (nTimeSteps, 25, 25, 3), dtype=float, fillvalue=0.0)
+        globalLWGroup.create_dataset("electric_field", (nTimeSteps, LW_ModelGroup["electric_field"].shape[1], LW_ModelGroup["electric_field"].shape[2], 3), dtype=float, fillvalue=0.0)
+        globalLWGroup.create_dataset("magnetic_field", (nTimeSteps, LW_ModelGroup["electric_field"].shape[1], LW_ModelGroup["electric_field"].shape[2], 3), dtype=float, fillvalue=0.0)
 
         n = -1
         for file in os.listdir(directory):
