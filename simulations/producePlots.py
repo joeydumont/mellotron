@@ -13,7 +13,6 @@ from scipy import constants
 import numpy.fft as fft
 import scipy.fftpack as weird_fft
 import scipy.integrate as integration
-
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -335,7 +334,7 @@ def main():
         # -- PLOTTING
         plt.figure()
         axPowerSpectrum = plt.subplot2grid((2,2), (0,0))
-        plt.plot(fft_freqs, lw_field_power_spectrum)
+        plt.semilogy(fft_freqs, lw_field_power_spectrum)
 
         axTimeDependence = plt.subplot2grid((2,2), (0,1))
         plt.plot(globalModelTimes[:], globalModelLWEField[:,12,6,0])

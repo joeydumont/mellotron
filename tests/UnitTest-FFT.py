@@ -66,4 +66,3 @@ plt.plot(x_fft_scipy_spliced, np.abs(y_fft_scipy_spliced), label="SciPy")
 plt.plot(x_fft_scipy_spliced, y_fft_scipy_ana,     label="SciPy - analytical")
 plt.legend(loc=0)
 plt.show()
-
