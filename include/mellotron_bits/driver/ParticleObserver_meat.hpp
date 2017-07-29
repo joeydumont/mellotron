@@ -341,8 +341,9 @@ ParticleObserverLienardWiechert<FieldModel>::ParticleObserverLienardWiechert(   
 , radius(my_radius)
 , number_points_theta(my_number_points_theta)
 , number_points_phi(my_number_points_phi)
-,  electric_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
-,  magnetic_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
+, electric_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
+, magnetic_field_lw(boost::extents[this->init_size][number_points_theta][number_points_phi][3])
+, times_lw(boost::extents[this->init_size][number_points_theta][number_points_phi])
 {
   // Set the sizes of the containers that will store the Liénard-Wiechert fields.
   theta = arma::linspace<arma::colvec>(0.0, 2.0*constants::math::pi, number_points_theta);
@@ -368,6 +369,7 @@ ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fix
   {
     electric_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
     magnetic_field_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi][3]);
+    times_lw.resize(boost::extents[n_cols+1][number_points_theta][number_points_phi]);
   }
 
   // Actual computation of the fields.
@@ -397,6 +399,7 @@ ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fix
 
       double       distance = arma::norm(sphe_pos-part_pos);
       arma::colvec normal   = (sphe_pos-part_pos)/distance;
+      times_lw[n_cols][i][j]= t+distance-radius;
 
       // Term-by-term evaluation (from the inside out).
       double part_gamma = this->gamma.back();
@@ -419,6 +422,68 @@ ParticleObserverLienardWiechert<FieldModel>::operator() (const arma::colvec::fix
       {
         electric_field_lw[n_cols][i][j][k] = e_field_lw(k);
         magnetic_field_lw[n_cols][i][j][k] = m_field_lw(k);
+      }
+    }
+  }
+}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverLienardWiechert<FieldModel>::InterpolateLWFieldsOnRetardedTime()
+{
+  // For each position on sphere, we interpolate the temporal value of the
+  // fields on the retarded time. This makes it so we have a uniform temporal
+  // grid on every point of the sphere, and also for each particle when running
+  // multi-particle simulations.
+  for (uint i=0; i<number_points_theta; i++)
+  {
+    for (uint j=0; j<number_points_phi; j++)
+    {
+      // We first create a subview of the times_lw dataset.
+      typedef boost::multi_array_types::index_range range;
+      boost::multi_array<double,3>::array_view<1>::type times_lw_subview = times_lw[ boost::indices[range()][i][j] ];
+
+      // We now sort it, and sort the relevant field values.
+      auto idx = sort_indices(times_lw_subview);
+      rearrange(times_lw_subview,idx);
+
+      // For each component of the electric and magnetic field,
+      // we create an interpolation object and evaluate the fields
+      // at retarded time values.
+      for (uint k=0; k<3; k++)
+      {
+        // Electric and magnetic field subviews.
+        boost::multi_array<double,4>::array_view<1>::type electric_field_lw_subview = electric_field_lw[ boost::indices[range()][i][j][k] ];
+        boost::multi_array<double,4>::array_view<1>::type magnetic_field_lw_subview = magnetic_field_lw[ boost::indices[range()][i][j][k] ];
+
+        rearrange(electric_field_lw_subview, idx);
+        rearrange(magnetic_field_lw_subview, idx);
+
+
+        // Spline allocations
+        gsl_interp_accel *acc_el = gsl_interp_accel_alloc();
+        gsl_spline       *spl_el = gsl_spline_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
+
+        gsl_interp_accel *acc_ma = gsl_interp_accel_alloc();
+        gsl_spline       *spl_ma = gsl_spline_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
+
+        // Initializaiton
+        gsl_spline_init(spl_el, times_lw_subview.origin(), electric_field_lw_subview.origin(), times_lw_subview.num_elements());
+        gsl_spline_init(spl_ma, times_lw_subview.origin(), magnetic_field_lw_subview.origin(), times_lw_subview.num_elements());
+
+        for (uint l=0; l<times_lw_subview.size(); l++)
+        {
+          // Evaluate the splines in the subviews.
+          electric_field_lw_subview[l] = gsl_spline_eval(spl_el, this->times[l], acc_el);
+          magnetic_field_lw_subview[l] = gsl_spline_eval(spl_ma, this->times[l], acc_ma);
+        }
+
+        gsl_spline_free(spl_ma);
+        gsl_spline_free(spl_el);
+
+        gsl_interp_accel_free(acc_ma);
+        gsl_interp_accel_free(acc_el);
       }
     }
   }

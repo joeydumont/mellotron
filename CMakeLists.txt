@@ -59,7 +59,12 @@ set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
 # -- Required dependency: MPI
 find_package(MPI REQUIRED)
-set(LIBS ${LIBS} ${MPI_LIBRARIES})
+set(LIBS ${LIBS} ${MPI_C_LIBRARIES})
+
+# -- Required dependency: GSL.
+find_package(GSL REQUIRED)
+include_directories(${GSL_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/)
@@ -85,10 +90,14 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
-# -- Remove bounds check for performance.
+# -- Macro definitions
 if (CMAKE_BUILD_TYPE MATCHES RELEASE)
+  # -- Remove bounds checking for performance.
   add_definitions(-DBOOST_DISABLE_ASSERTS)
   add_definitions(-DARMA_NO_DEBUG)
+
+  # -- Tell GSL that the compiler supports inlining.
+  add_definitions(-DHAVE_INLINE)
 endif()
 
 # -- Compiler config for RELEASE build.

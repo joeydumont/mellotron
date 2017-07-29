@@ -6,6 +6,8 @@
 #include "boost/multi_array.hpp"
 #include <cmath>
 #include <hdf5.h>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_spline.h>
 
 namespace mellotron {
 
@@ -102,6 +104,9 @@ public:
   /// We redefine the () operator to append the calculation of the emitted radiation.
   void operator()(const arma::colvec::fixed<8>& x, double t);
 
+  /// We interpolate the LW fields such that every spatial point is at the same time.
+  void InterpolateLWFieldsOnRetardedTime();
+
   /// Redeclaration of WriteAllData(hid_t group_id).
   void WriteAllData(hid_t group_id);
 
@@ -118,6 +123,7 @@ public:
 
         boost::multi_array<double, 4>    electric_field_lw;     ///< Value of the Lienard-Wiechert electric field on the sphere.
         boost::multi_array<double, 4>    magnetic_field_lw;     ///< Value of the Liénard-Wiechert magnetic field on the sphere.
+        boost::multi_array<double, 3>    times_lw;              ///< Values of the observation time at which the fields are computed.
 };
 
 } // namespace mellotron

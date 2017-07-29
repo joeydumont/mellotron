@@ -138,9 +138,14 @@ TEST_F(ParticleTest, TestIntegrationMagnetostatic)
   }
   std::cout << std::endl;
 
+  // We interpolate the LW fields.
+  electron_obs.InterpolateLWFieldsOnRetardedTime();
+
   // Comparison between recorded data and analytical solution.
   for (uint i=0; i<size_time; i++)
   {
+
+    std::cout << electron_obs.times[i] << "\t" << electron_obs.times_lw[i][0][number_points_phi/2] << "\t" << electron_obs.times[i] - electron_obs.times_lw[i][0][number_points_phi/2] << "\n";
     arma::colvec position(3);
     position(0) = -p_perp/(omega*electron_obs.gamma[i]*mass)*(cos(omega*electron_obs.times[i]+theta_0)-cos(theta_0)) + x_init;
     position(1) =  p_perp/(omega*electron_obs.gamma[i]*mass)*(sin(omega*electron_obs.times[i]+theta_0)-sin(theta_0)) + y_init;
@@ -199,6 +204,7 @@ TEST_F(ParticleTest, TestIntegrationMagnetostatic)
       }
     }
   }
+  electron_obs.OutputData();
 }
 
 GTEST_API_ int main(int argc, char **argv)
