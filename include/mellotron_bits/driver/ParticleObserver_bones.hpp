@@ -34,7 +34,7 @@ public:
   /// Overloading of the () operator for use with Boost.odeint.
   void operator()(const arma::colvec::fixed<8>& x, double t);
 
-  /// Outputs in a pair of HDF5 and XDMF files.
+  /// Outputs in a HDF5 file.
   void OutputData();
 
   /// Writes all the data in a given HDF5 group. Useful to append other write functions in derived classes.
@@ -55,7 +55,7 @@ public:
   /// Write the electric and magnetic field.
   void WriteElectromagneticField(hid_t group_id);
 
-        Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
+       Particle<FieldModel>  &  particle;              ///< Particle object that moves through spacetime.
 
   const int                      init_size;             ///< Initial size of the data structures. Removes some unnecessary arma::resize() calls.
 
@@ -124,6 +124,31 @@ public:
         boost::multi_array<double, 4>    electric_field_lw;     ///< Value of the Lienard-Wiechert electric field on the sphere.
         boost::multi_array<double, 4>    magnetic_field_lw;     ///< Value of the Liénard-Wiechert magnetic field on the sphere.
         boost::multi_array<double, 3>    times_lw;              ///< Values of the observation time at which the fields are computed.
+};
+
+/*!
+ *  \class  ParticleObserverIonized
+ *  \author Joey Dumont      <joey.dumont@gmail.com>
+ *  \since  2017-06-21
+ *  \brief  Observes and outputs the trajectory of an "ionized" particle in an electromagnetic field.
+ *
+ * This class observes a single particle as it moves through
+ * space. Contains a reference to a ParticleIonized object as to query the value of the electric and
+ * magnetic field. It only outputs the data if the particle has been "ionized" during the simulation,
+ * i.e. that the field surpassed the threshold at some point during the simulation.
+ */
+template <class FieldModel>
+class ParticleObserverIonized : public ParticleObserver<FieldModel>
+{
+public:
+  /// Sets the particle to follow.
+  ParticleObserverIonized(ParticleIonized<FieldModel>& my_particle);
+
+  /// Outputs in a HDF5 file.
+  void OutputData();
+
+        ParticleIonized<FieldModel>  &  particle_ion;           ///< Particle object that moves through spacetime.
+
 };
 
 } // namespace mellotron

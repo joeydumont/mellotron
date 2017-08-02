@@ -20,11 +20,6 @@ set (mellotron_VERSION_RELEASE 1)
 # CMake version
 cmake_minimum_required(VERSION 3.1)
 
-# C++14 Standard required
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
@@ -85,6 +80,9 @@ ExternalProject_Get_Property(libcuba.a install_dir)
 set (cuba_dir ${install_dir})
 include_directories(${cuba_dir}/include)
 
+# ----------------------------------------------------------------- #
+# --                    Compiler Configuration                   -- #
+# ----------------------------------------------------------------- #
 # -- Default build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -100,27 +98,32 @@ if (CMAKE_BUILD_TYPE MATCHES RELEASE)
   add_definitions(-DHAVE_INLINE)
 endif()
 
-# -- Compiler config for RELEASE build.
+# C++14 Standard required
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Configuration for the GCC compiler.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -O3")
   set (CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}    -O3")
 
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -O3")
-  set (CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}    -O3")
-endif()
-
-# -- Compiler config for DEBUG build.
-# Configuration for the GCC compiler.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -pg -g -Wall")
   set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}   -O0 -pg -g -Wall")
 
+  set (CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO}   -Wall -pg -O3")
+  set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -pg -O3")
+
 # Configuration for the Intel compiler.
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -O3")
+  set (CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}    -O3")
+
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -debug all")
   set (CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}   -O0 -g -debug all")
+
+  set (CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO}   -O3 -g -debug all")
+  set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -debug all")
 endif()
 
 # ----------------------------------------------------------------- #
@@ -145,6 +148,11 @@ target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin.o" Cubature)
 target_link_libraries("IntegrationSalamin.o" ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationSalamin.o" RUNTIME DESTINATION bin)
+
+add_executable("IntegrationSalaminIonized.o" "simulations/IntegrationSalaminIonized.cpp")
+target_link_libraries("IntegrationSalaminIonized.o" ${LIBS} ${CUBALIBS})
+target_link_libraries("IntegrationSalaminIonized.o" Cubature)
+install(TARGETS "IntegrationSalaminIonized.o" RUNTIME DESTINATION bin)
 
 add_executable("ComputeNormalizationConstantSalaminLinear.o" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear.o" ${LIBS} ${CUBALIBS})

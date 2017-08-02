@@ -124,18 +124,16 @@ plt.colorbar(im, cax)
 plt.savefig("SalaminComponents.pdf", bbox_inches='tight', dpi=500)
 
 # ----------------------------- Salamin in Time ----------------------------- #
-time = 800e-9/(2*cst.pi*cst.c)*np.loadtxt("SalaminFieldIe_time.txt")*1.0e15 # Time in femtoseconds  .
-salaminTimeField = np.loadtxt("SalaminFieldIe.txt")
+salamin_time_times     = np.loadtxt("SalaminTimeIe_time.txt")/1e-15
+salamin_time_intensity = np.loadtxt("SalaminTimeIe.txt")
 
 fig = plt.figure()
-plt.plot(time, salaminTimeField/np.amax(salaminTimeField))
-#plt.plot(time, np.abs(sig.hilbert(salaminTimeField))/np.amax(salaminTimeField))
+ax  = fig.add_subplot(111)
+im  = plt.semilogy(salamin_time_times,salamin_time_intensity, '--o')
+ax.set_xlabel(r"Time [fs]")
+ax.set_ylabel(r"Intensity [$\si{\watt\per\cm\squared}$]")
 
-plt.xlabel("Time [fs]")
-plt.ylabel("Field")
-#plt.xlim((-50,50))
-
-plt.savefig("SalaminTime.pdf", bbox_inches='tight')
+plt.savefig("SalaminTimeIntensity.pdf", bbox_inches='tight')
 
 x_qgauss = np.loadtxt("x_field_qgauss.txt")/1e-6
 y_qgauss = np.loadtxt("y_field_qgauss.txt")/1e-6

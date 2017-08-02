@@ -30,7 +30,7 @@ add_executable("UnitTest-SalaminTightlyFocused.o" "UnitTest-SalaminTightlyFocuse
 target_link_libraries("UnitTest-SalaminTightlyFocused.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("UnitTest-SalaminTightlyFocused.o" Cubature)
 target_link_libraries("UnitTest-SalaminTightlyFocused.o" ${cuba_dir}/libcuba.a)
-add_test(NAME "UnitTest-SalaminTightlyFocused" COMMAND "UnitTest-SalaminTightlyFocused.o")
+add_test(NAME "UnitTest-SalaminTightlyFocused" COMMAND "UnitTest-SalaminTightlyFocused.o" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/")
 
 add_executable("UnitTest-ParticleObserverLienardWiechert.o" "UnitTest-ParticleObserverLienardWiechert.cpp")
 target_link_libraries("UnitTest-ParticleObserverLienardWiechert.o" ${LIBS})

@@ -57,7 +57,6 @@ inline
 void
 ParticleObserver<FieldModel>::OutputData()
 {
-
   // We create a hash of the initial conditions to be used
   // for the HDF5 filename and main group.
   std::size_t hash_seed = 0;
@@ -576,6 +575,25 @@ ParticleObserverLienardWiechert<FieldModel>::WriteLienardWiechertFields(hid_t gr
   H5Dclose(dataset_id);
 
   H5Gclose(subgroup_id);
+}
+
+template <class FieldModel>
+inline
+ParticleObserverIonized<FieldModel>::ParticleObserverIonized(ParticleIonized<FieldModel> & my_particle)
+: ParticleObserver<FieldModel>(my_particle)
+, particle_ion(my_particle)
+{}
+
+template <class FieldModel>
+inline
+void
+ParticleObserverIonized<FieldModel>::OutputData()
+{
+  // Output only if the particle has been "ionized".
+  if (this->particle_ion.GetIonized())
+  {
+    ParticleObserver<FieldModel>::OutputData();
+  }
 }
 
 } // namespace mellotron

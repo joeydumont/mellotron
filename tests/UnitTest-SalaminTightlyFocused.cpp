@@ -110,20 +110,20 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   By.save("SalaminField_By.txt", arma::raw_ascii);
   Bz.save("SalaminField_Bz.txt", arma::raw_ascii);
 
-  // Output the data in time.
-  int size_plot_time = 1000;
-  auto time_data = arma::linspace<arma::colvec>(-L,L,size_plot_time);
-  auto t_field   = arma::colvec(size_plot_time);
+  // Compute intensity as a function of time.
+  // I = 0.5c*epsilon_0*E^2.
+  uint time_steps = 300;
+  arma::vec intensityTimes  = arma::linspace<arma::vec>(-100e-15,100e-15,time_steps);
+  arma::vec intensityValues(time_steps);
 
-  for (uint i=0; i<size_plot_time; i++)
+  for (uint i = 0; i < time_steps; i++)
   {
-    auto field_vector = field.ComputeFieldComponents(time_data[i],0.0,0.0,0.0);
-    t_field[i]        = std::pow(field_vector[0],2)+std::pow(field_vector[1],2)+std::pow(field_vector[2],2);
+    auto field_vector  = field.ComputeFieldComponents(intensityTimes[i]*omega_0, 0.0,0.0,0.0);
+    intensityValues[i] = 0.5*constants::physics::c*constants::physics::epsilon_0*std::pow(electron_units.UNIT_E_FIELD,2)*(field_vector[0]*field_vector[0]+field_vector[1]*field_vector[1]+field_vector[2]*field_vector[2])*1e-4;
   }
 
-  t_field.save("SalaminFieldIe.txt", arma::raw_ascii);
-  time_data.save("SalaminFieldIe_time.txt", arma::raw_ascii);
-
+  intensityTimes.save("SalaminTimeIe.txt", arma::raw_ascii);
+  intensityValues.save("SalaminTimeIe_time.txt", arma::raw_ascii);
 }
 
 class SalaminTightlyFocusedNormalizationTest : public testing::Test

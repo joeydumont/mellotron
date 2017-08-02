@@ -68,12 +68,22 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
                                         arma::colvec::fixed<8> &dxdt,
                                   const double t)
 {
-  // We define some auxiliary variables.
-  arma::colvec position = x.subvec(1,3);
-  arma::colvec momentum = x.subvec(5,7);
-
   // We compute the field tensor.
   ComputeFieldTensor(x[0],x[1],x[2],x[3]);
+
+  ComputeLorentzForce(x, dxdt, t);
+}
+
+template <class FieldModel>
+inline
+void
+Particle<FieldModel>::ComputeLorentzForce(const arma::colvec::fixed<8> &x,
+                                                arma::colvec::fixed<8> &dxdt,
+                                          const double t)
+{
+  // We define some auxiliary variables.
+  arma::colvec position     = x.subvec(1,3);
+  arma::colvec momentum     = x.subvec(5,7);
 
   // We compute the Lorentz gamma factor.
   double gamma              = std::sqrt(1.0+std::pow(arma::norm(momentum,2)/mass,2));
@@ -81,25 +91,28 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
   double charge_to_rel_mass = charge/rel_mass;
 
   // Set the position differentials.
-  dxdt.subvec(0,3) = x.subvec(4,7)/rel_mass;
+  dxdt.subvec(0,3)          = x.subvec(4,7)/rel_mass;
 
   // Compute the force.
-  double pdotE         = arma::dot(momentum,electric_field);
+  double pdotE              = arma::dot(momentum,electric_field);
 
   // Set the momentum differentials.
-  dxdt(4)              = charge_to_rel_mass*arma::dot(momentum,electric_field);
-  dxdt.subvec(5,7)     = charge*electric_field+charge_to_rel_mass*arma::cross(momentum,magnetic_field);
+  dxdt(4)                   = charge_to_rel_mass*arma::dot(momentum,electric_field);
+  dxdt.subvec(5,7)          = charge*electric_field+charge_to_rel_mass*arma::cross(momentum,magnetic_field);
 
+  // Model the effects of radiation reaction, if activated by the user.
   if (radiation_reaction != NoRR)
   {
+    // Lorentz vector.
     arma::colvec lorentz = gamma*electric_field + arma::cross(momentum,magnetic_field);
-    double chi_prefac    = constants::physics::hbar*unit_system.omega_0_SI/(mass*constants::physics::electron_mass*std::pow(constants::physics::c,2));
-    chi_sq               = std::pow(chi_prefac,2)*std::pow(mass,-4)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
 
-    // Radiation reaction effects. TODO: CORRECT CHI VALUE.
+    // Cheeky chi prefactor adds a dimensionful quantity to the mix.
+    double chi_prefac        = constants::physics::hbar*unit_system.omega_0_SI/(mass*constants::physics::electron_mass*std::pow(constants::physics::c,2));
+    chi_sq                   = std::pow(chi_prefac,2)*(std::pow(arma::norm(lorentz,2),2)-std::pow(pdotE,2));
+
     if (radiation_reaction == LandauLifshitz)
     {
-      dxdt.subvec(4,7) -= 2.0*constants::physics::alpha*std::pow(charge/mass,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
+      dxdt.subvec(4,7)      -= 2.0*constants::physics::alpha*std::pow(charge/mass,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
     }
 
     else if (radiation_reaction == LandauLifshitzQuantumCorrection)
@@ -108,6 +121,42 @@ Particle<FieldModel>::operator() (const arma::colvec::fixed<8> &x,
       dxdt.subvec(4,7) -= quantum_factor*2.0*constants::physics::alpha*std::pow(charge,4)/(3.0*gamma)*chi_sq/chi_prefac*x.subvec(4,7);
     }
   }
+}
+
+template <class FieldModel>
+inline
+ParticleIonized<FieldModel>::ParticleIonized(const double                     my_charge,
+                                             const double                     my_mass,
+                                                   FieldModel              &  my_field_model,
+                                                   MellotronUnits          &  my_units,
+                                                   double                     my_field_threshold,
+                                             const RadiationReactionModel     my_radiation_reaction)
+: Particle<FieldModel>(my_charge,my_mass,my_field_model,my_units,my_radiation_reaction)
+, field_threshold(my_field_threshold)
+, ApplyLorentzForce(false)
+{}
+
+template <class FieldModel>
+inline
+void
+ParticleIonized<FieldModel>::operator() (const arma::colvec::fixed<8>  &  x,
+                                               arma::colvec::fixed<8>  &  dxdt,
+                                         const double                     t)
+{
+  // We compute the field tensor.
+  this->ComputeFieldTensor(x[0],x[1],x[2],x[3]);
+
+  // We check whether the field has attained the threshold.
+  if (!ApplyLorentzForce)
+  {
+    ApplyLorentzForce = arma::norm(this->electric_field,2) > this->field_threshold;
+  }
+
+  if (ApplyLorentzForce)
+    this->ComputeLorentzForce(x, dxdt, t);
+
+  else
+    dxdt.fill(0.0);
 }
 
 } // namespace mellotron
