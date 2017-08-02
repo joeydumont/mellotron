@@ -10,8 +10,8 @@
 # ----------------------------------------------------------------- #
 project(mellotron)
 set (mellotron_VERSION_MAJOR 1)
-set (mellotron_VERSION_MINOR 0)
-set (mellotron_VERSION_RELEASE 1)
+set (mellotron_VERSION_MINOR 1)
+set (mellotron_VERSION_RELEASE 0)
 
 # ----------------------------------------------------------------- #
 # --               Configuration and Dependencies                -- #
