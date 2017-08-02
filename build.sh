@@ -8,7 +8,7 @@
 # library.                                                                    #
 #                                                                             #
 # Usage:                                                                      #
-#     bash build.sh [cluster]                                                 #
+#     bash build.sh (release OR debug) [cluster]                              #
 # where the optional argument cluster sets up the environment for compilation #
 # in a given cluster.                                                         #
 # --------------------------------------------------------------------------- #
@@ -68,7 +68,7 @@ if [ $# -gt 1 ]; then
     export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
     export CC=gcc
     export CXX=g++
-    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/1.0.1"
+    CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/1.1.0"
 
 
   else

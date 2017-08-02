@@ -1,9 +1,10 @@
 /*! ------------------------------------------------------------------------- *
  * \author Denis Gagnon 										              *
- * \since 2016-11-29                                                          *
+ * \since 2017-06-20                                                          *
  *                                                                            *
  * Simulation program for election/ion trajectory computation using           *
- * Salamin's model. Reads parameters from the command line.		              *
+ * Salamin's model. Reads parameters from `config.xml`. Uses the              *
+ * "ParticleIonized" derived class
  * --------------------------------------------------------------------------*/
 
 #include <armadillo>
@@ -35,7 +36,8 @@ struct IntegrationSalaminConfig
     double Q_;
     double t_init_;
     double dt_;
-    int nsteps_;
+    unsigned int nsteps_;
+    double threshold_;
     void read(std::ifstream& file, IntegrationSalaminConfig*& config);
 };
 
@@ -63,7 +65,9 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->energy_ = v.second.get<double>("energy");
             config->t_init_ = v.second.get<double>("t_init");
             config->dt_ = v.second.get<double>("dt");
-            config->nsteps_ = v.second.get<int>("nsteps");
+            config->nsteps_ = v.second.get<unsigned int>("nsteps");
+            config->threshold_ = v.second.get<double>("threshold");
+
         }
         if(v.first == "particle")
         {
@@ -100,7 +104,7 @@ int main(int argc, char* argv[])
 
     // Open config file
     std::ifstream conf_file;
-    conf_file.open("configSalamin.xml");
+    conf_file.open("config.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -145,7 +149,8 @@ int main(int argc, char* argv[])
     double Q       = config->Q_;
     double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
-    int nsteps     = config->nsteps_;
+    unsigned int nsteps  = config->nsteps_;
+    double threshold = sqrt(1.0e-04 * config->threshold_ / electron_units.UNIT_E_INTENSITY );
 
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
@@ -160,13 +165,14 @@ int main(int argc, char* argv[])
     }
 
     std::string line;
-    std::getline(norm_constant_file, line);std::getline(norm_constant_file, line);
+    std::getline(norm_constant_file, line);
+    std::getline(norm_constant_file, line);
     std::istringstream iss(line);
     double lambda_file,w0_file,L_file,norm_constant;
     iss >> lambda_file >> w0_file >> L_file >> norm_constant;
 
     if (
-            relative_difference(config->lam_, lambda_file) > 1.0e-5
+        relative_difference(config->lam_, lambda_file) > 1.0e-5
         ||  relative_difference(config->w0_,  w0_file)     > 1.0e-5
         ||  relative_difference(config->L_,   L_file)      > 1.0e-5)
     {
@@ -175,8 +181,8 @@ int main(int argc, char* argv[])
 
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
-    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units);
-    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,nsteps);
+    mellotron::ParticleIonized<mellotron::SalaminTightlyFocusedLinear>  particle(Q,mass,field,electron_units,threshold);
+    mellotron::ParticleObserverIonized<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);

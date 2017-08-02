@@ -39,11 +39,13 @@ INTEGSAL="IntegrationSalamin.o"
 INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
 MANAGEOUT="manageOutputs.py"
+PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
+cp $PRODUCEPLOTS ./$DIR
 cd ./$DIR
 OUTINITCONDS="init_conds.txt"
 OUTNORMCONST="normalization_constant.txt"
@@ -61,7 +63,7 @@ fi
 # Generate initial conditions
 if [ -f  ./$OUTINITCONDS ]; then
     echo -e " \e[32m--- Initial conditions has been found. ---\e[39m"
-else 
+else
     echo -e " \e[32m--- Starting to generate initial conditions. ---\e[39m"
     python $GENINIT --shape $SHAPE --config $CONFIG
     echo "Done: generate initial conditions."
@@ -72,7 +74,7 @@ if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
     # Compute normalization constant
     if [ -f  ./$OUTNORMCONST ]; then
         echo -e " \e[32m--- Normalization constant has been found. ---\e[39m"
-    else 
+    else
         echo -e " \e[32m--- Starting to generate normalization constant. ---\e[39m"
         ./$COMPNORMCONST
         echo "Done: compute normalization constant."
@@ -89,8 +91,14 @@ echo "Done: calculate particles behavior."
 
 # -- Manage outputs
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"
-python $MANAGEOUT --directory ./
+NUMBER=$(ls -d *.hdf5 | wc -l)
+python $MANAGEOUT --nParticles $NUMBER --directory ./
 echo "Done: manage outputs."
+
+# -- Generate plots
+echo -e " \e[32m--- Starting to produce the plots ---\e[39m"
+python $PRODUCEPLOTS --directory ./
+echo "Done: produce plots."
 
 # Clean dir
 rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT

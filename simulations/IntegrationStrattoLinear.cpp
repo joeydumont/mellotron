@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 
     // MELLOTRON
     mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units);
-    mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle_obs(particle);
+    mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle_obs(particle,config->nsteps_);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);

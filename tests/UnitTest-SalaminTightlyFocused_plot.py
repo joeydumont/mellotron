@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import numpy as np
+import scipy.signal as sig
+import scipy.constants as cst
 
 # ------------------------------ Configuration ------------------------------ #
 #-- We reset the LaTeX parameters to enable XeLaTeX.
@@ -120,6 +122,18 @@ cax     = divider.append_axes("right", size="5%", pad=0.05)
 plt.colorbar(im, cax)
 
 plt.savefig("SalaminComponents.pdf", bbox_inches='tight', dpi=500)
+
+# ----------------------------- Salamin in Time ----------------------------- #
+salamin_time_times     = np.loadtxt("SalaminTimeIe_time.txt")/1e-15
+salamin_time_intensity = np.loadtxt("SalaminTimeIe.txt")
+
+fig = plt.figure()
+ax  = fig.add_subplot(111)
+im  = plt.semilogy(salamin_time_times,salamin_time_intensity, '--o')
+ax.set_xlabel(r"Time [fs]")
+ax.set_ylabel(r"Intensity [$\si{\watt\per\cm\squared}$]")
+
+plt.savefig("SalaminTimeIntensity.pdf", bbox_inches='tight')
 
 x_qgauss = np.loadtxt("x_field_qgauss.txt")/1e-6
 y_qgauss = np.loadtxt("y_field_qgauss.txt")/1e-6

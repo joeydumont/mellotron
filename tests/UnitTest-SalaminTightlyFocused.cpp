@@ -109,6 +109,21 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   Bx.save("SalaminField_Bx.txt", arma::raw_ascii);
   By.save("SalaminField_By.txt", arma::raw_ascii);
   Bz.save("SalaminField_Bz.txt", arma::raw_ascii);
+
+  // Compute intensity as a function of time.
+  // I = 0.5c*epsilon_0*E^2.
+  uint time_steps = 300;
+  arma::vec intensityTimes  = arma::linspace<arma::vec>(-100e-15,100e-15,time_steps);
+  arma::vec intensityValues(time_steps);
+
+  for (uint i = 0; i < time_steps; i++)
+  {
+    auto field_vector  = field.ComputeFieldComponents(intensityTimes[i]*omega_0, 0.0,0.0,0.0);
+    intensityValues[i] = 0.5*constants::physics::c*constants::physics::epsilon_0*std::pow(electron_units.UNIT_E_FIELD,2)*(field_vector[0]*field_vector[0]+field_vector[1]*field_vector[1]+field_vector[2]*field_vector[2])*1e-4;
+  }
+
+  intensityTimes.save("SalaminTimeIe.txt", arma::raw_ascii);
+  intensityValues.save("SalaminTimeIe_time.txt", arma::raw_ascii);
 }
 
 class SalaminTightlyFocusedNormalizationTest : public testing::Test
@@ -244,16 +259,12 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
   field_values.save("SalaminField_qed.txt", arma::raw_ascii);
 }
 
-
-
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
   printf("Running main() UnitTest-Particle.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
-//  MPI_Init(&argc,&argv);
   auto result =  RUN_ALL_TESTS();
-  //MPI_Finalize();
   H5close();
 
   return result;

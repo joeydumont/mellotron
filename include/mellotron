@@ -2,6 +2,7 @@
 #define MELLOTRON_H
 
 #include <mellotron_bits/common/PhysicalConstants.hpp>
+#include <mellotron_bits/common/StandardLibraryExtensions.hpp>
 #include <mellotron_bits/fields/MellotronUnits.hpp>
 #include <mellotron_bits/fields/SalaminTightlyFocused.hpp>
 #include <mellotron_bits/fields/eDipoles.hpp>
