@@ -61,7 +61,7 @@ public:
   ParticleTest()
   : charge(2.0)
   , mass(3.0)
-  , radius(1e4)
+  , radius(1e10)
   , number_points_theta(50)
   , number_points_phi(50)
   , electron_units(1.0)
@@ -139,7 +139,7 @@ TEST_F(ParticleTest, TestIntegrationMagnetostatic)
   std::cout << std::endl;
 
   // We interpolate the LW fields.
-  electron_obs.InterpolateLWFieldsOnRetardedTime();
+  //electron_obs.InterpolateLWFieldsOnRetardedTime();
 
   // Comparison between recorded data and analytical solution.
   for (uint i=0; i<size_time; i++)
@@ -198,9 +198,9 @@ TEST_F(ParticleTest, TestIntegrationMagnetostatic)
 
         arma::colvec e_field_lw = prefactor*denominator*arma::cross(normal, arma::cross(firstTerm,secondTerm));
 
-        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][0]/max_e_field, e_field_lw(0)/max_e_field, 1.0e-4);
-        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][1]/max_e_field, e_field_lw(1)/max_e_field, 1.0e-4);
-        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][2]/max_e_field, e_field_lw(2)/max_e_field, 1.0e-4);
+        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][0]/max_e_field, e_field_lw(0)/max_e_field, 1.0e-3);
+        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][1]/max_e_field, e_field_lw(1)/max_e_field, 1.0e-3);
+        EXPECT_NEAR(electron_obs.electric_field_lw[i][j][k][2]/max_e_field, e_field_lw(2)/max_e_field, 1.0e-3);
       }
     }
   }

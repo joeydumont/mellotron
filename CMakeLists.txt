@@ -59,7 +59,7 @@ set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 
 # -- Required dependency: MPI
 find_package(MPI REQUIRED)
-set(LIBS ${LIBS} ${MPI_C_LIBRARIES})
+set(LIBS ${LIBS} ${MPI_LIBRARIES})
 
 # -- Required dependency: GSL.
 find_package(GSL REQUIRED)

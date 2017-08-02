@@ -448,6 +448,9 @@ ParticleObserverLienardWiechert<FieldModel>::InterpolateLWFieldsOnRetardedTime()
       auto idx = sort_indices(times_lw_subview);
       rearrange(times_lw_subview,idx);
 
+      // We copy the subviews in an array to pass to GSL (hack).
+      boost::multi_array<double,1> times_copy(times_lw_subview);
+
       // For each component of the electric and magnetic field,
       // we create an interpolation object and evaluate the fields
       // at retarded time values.
@@ -460,27 +463,39 @@ ParticleObserverLienardWiechert<FieldModel>::InterpolateLWFieldsOnRetardedTime()
         rearrange(electric_field_lw_subview, idx);
         rearrange(magnetic_field_lw_subview, idx);
 
+        // We copy the fields to 1D array to pass to GSL (hack)
+        boost::multi_array<double,1> electric_field_lw_copy(electric_field_lw_subview);
+        boost::multi_array<double,1> magnetic_field_lw_copy(magnetic_field_lw_subview);
 
         // Spline allocations
         gsl_interp_accel *acc_el = gsl_interp_accel_alloc();
-        gsl_spline       *spl_el = gsl_spline_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
+        gsl_interp       *spl_el = gsl_interp_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
 
         gsl_interp_accel *acc_ma = gsl_interp_accel_alloc();
-        gsl_spline       *spl_ma = gsl_spline_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
+        gsl_interp       *spl_ma = gsl_interp_alloc(gsl_interp_cspline, times_lw_subview.num_elements());
 
         // Initializaiton
-        gsl_spline_init(spl_el, times_lw_subview.origin(), electric_field_lw_subview.origin(), times_lw_subview.num_elements());
-        gsl_spline_init(spl_ma, times_lw_subview.origin(), magnetic_field_lw_subview.origin(), times_lw_subview.num_elements());
+        gsl_interp_init(spl_el, times_copy.data(), electric_field_lw_copy.data(), times_lw_subview.num_elements());
+        gsl_interp_init(spl_ma, times_copy.data(), magnetic_field_lw_copy.data(), times_lw_subview.num_elements());
 
         for (uint l=0; l<times_lw_subview.size(); l++)
         {
-          // Evaluate the splines in the subviews.
-          electric_field_lw_subview[l] = gsl_spline_eval(spl_el, this->times[l], acc_el);
-          magnetic_field_lw_subview[l] = gsl_spline_eval(spl_ma, this->times[l], acc_ma);
+          // Evaluate the splines in the subviews. We call the obscure internal function
+          // to make it extrapolate (the observation time does not vary that much from the
+          // actual retarded time anyway).
+          double retvalue;
+          int status;
+
+          status = spl_el->type->eval(spl_el->state, times_copy.data(), electric_field_lw_copy.data(), spl_el->size, this->times[l], acc_el, &retvalue);
+          electric_field_lw_subview[l] = retvalue;
+
+          status = spl_ma->type->eval(spl_ma->state, times_copy.data(), electric_field_lw_copy.data(), spl_ma->size, this->times[l], acc_ma, &retvalue);
+          magnetic_field_lw_subview[l] = retvalue;
+
         }
 
-        gsl_spline_free(spl_ma);
-        gsl_spline_free(spl_el);
+        gsl_interp_free(spl_ma);
+        gsl_interp_free(spl_el);
 
         gsl_interp_accel_free(acc_ma);
         gsl_interp_accel_free(acc_el);

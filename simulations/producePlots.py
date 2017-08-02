@@ -335,9 +335,14 @@ def main():
         plt.figure()
         axPowerSpectrum = plt.subplot2grid((2,2), (0,0))
         plt.semilogy(fft_freqs, lw_field_power_spectrum)
+        axPowerSpectrum.set_xlabel("Frequency")
+        axPowerSpectrum.set_ylabel("Spectral power")
 
         axTimeDependence = plt.subplot2grid((2,2), (0,1))
         plt.plot(globalModelTimes[:], globalModelLWEField[:,12,6,0])
+        axTimeDependence.set_xlabel("Time")
+        axTimeDependence.set_ylabel("$E_x$ along z axis")
+
         plt.savefig(directory + "Lienard-Wiechart-Fields.pdf", bbox_inches='tight')
 
 if __name__ == "__main__":

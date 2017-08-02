@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
     mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units);
-    mellotron::ParticleObserverLienardWiechert<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,1e8,50,25,nsteps);
+    mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,nsteps);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);

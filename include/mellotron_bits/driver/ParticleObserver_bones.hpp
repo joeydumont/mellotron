@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include <boost/functional/hash.hpp>
-#include "boost/multi_array.hpp"
+#include <boost/multi_array.hpp>
 #include <cmath>
 #include <hdf5.h>
 #include <gsl/gsl_errno.h>
