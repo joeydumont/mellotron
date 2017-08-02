@@ -8,7 +8,7 @@
 # library.                                                                    #
 #                                                                             #
 # Usage:                                                                      #
-#     bash build.sh [cluster]                                                 #
+#     bash build.sh (release OR debug) [cluster]                              #
 # where the optional argument cluster sets up the environment for compilation #
 # in a given cluster.                                                         #
 # --------------------------------------------------------------------------- #

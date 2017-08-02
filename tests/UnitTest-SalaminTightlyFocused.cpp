@@ -109,6 +109,21 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   Bx.save("SalaminField_Bx.txt", arma::raw_ascii);
   By.save("SalaminField_By.txt", arma::raw_ascii);
   Bz.save("SalaminField_Bz.txt", arma::raw_ascii);
+
+  // Output the data in time.
+  int size_plot_time = 1000;
+  auto time_data = arma::linspace<arma::colvec>(-L,L,size_plot_time);
+  auto t_field   = arma::colvec(size_plot_time);
+
+  for (uint i=0; i<size_plot_time; i++)
+  {
+    auto field_vector = field.ComputeFieldComponents(time_data[i],0.0,0.0,0.0);
+    t_field[i]        = std::pow(field_vector[0],2)+std::pow(field_vector[1],2)+std::pow(field_vector[2],2);
+  }
+
+  t_field.save("SalaminFieldIe.txt", arma::raw_ascii);
+  time_data.save("SalaminFieldIe_time.txt", arma::raw_ascii);
+
 }
 
 class SalaminTightlyFocusedNormalizationTest : public testing::Test
@@ -244,16 +259,12 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
   field_values.save("SalaminField_qed.txt", arma::raw_ascii);
 }
 
-
-
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
   printf("Running main() UnitTest-Particle.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
-//  MPI_Init(&argc,&argv);
   auto result =  RUN_ALL_TESTS();
-  //MPI_Finalize();
   H5close();
 
   return result;

@@ -1,5 +1,6 @@
 # --------------------------------------------------------------------------- #
 # Author:       Denis Gagnon                  <denis.gagnon@emt.inrs.ca>      #
+#               Joey Dumont                   <joey.dumontn@gmail.com>        #
 # Date created: 2017-06-13                                                    #
 # Description:  CMake compilation instructions for MELLOTRON                  #
 # ----------------------------------------------------------------------------#
@@ -60,6 +61,11 @@ set(LIBS ${LIBS} ${armadillo_LIBRARIES})
 find_package(MPI REQUIRED)
 set(LIBS ${LIBS} ${MPI_LIBRARIES})
 
+# -- Required dependency: GSL.
+find_package(GSL REQUIRED)
+include_directories(${GSL_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${GSL_LIBRARIES})
+
 # -- Required dependency: Cubature (can be in submodules, i.e. external/Cubature)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
@@ -79,14 +85,20 @@ ExternalProject_Get_Property(libcuba.a install_dir)
 set (cuba_dir ${install_dir})
 include_directories(${cuba_dir}/include)
 
-# -- Mellotron tests
-include(CTest)
-add_subdirectory(tests)
-
 # -- Default build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
+
+# -- Macro definitions
+if (CMAKE_BUILD_TYPE MATCHES RELEASE)
+  # -- Remove bounds checking for performance.
+  add_definitions(-DBOOST_DISABLE_ASSERTS)
+  add_definitions(-DARMA_NO_DEBUG)
+
+  # -- Tell GSL that the compiler supports inlining.
+  add_definitions(-DHAVE_INLINE)
+endif()
 
 # -- Compiler config for RELEASE build.
 # Configuration for the GCC compiler.
@@ -123,8 +135,11 @@ install (DIRECTORY include/          DESTINATION include)
 # -- Output binaries in directory
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/simulations)
 
-# -- Rules for every target
+# -- Mellotron tests
+include(CTest)
+add_subdirectory(tests)
 
+# -- Rules for every target
 add_executable("IntegrationSalamin.o" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin.o" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin.o" Cubature)
