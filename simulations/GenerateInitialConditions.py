@@ -96,7 +96,7 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
-    # Choosen shape for the simulation
+    # Chosen shape for the simulation
     shape = args.shape
     configFile = args.config
 
