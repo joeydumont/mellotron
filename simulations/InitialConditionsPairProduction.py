@@ -15,7 +15,7 @@ from numpy import sin as sin
 from numpy import cos as cos
 from math import pow as pow
 import xml.etree.ElementTree as ET
-
+import time
 # -- Import user modules.
 sys.path.append("strattoanalysis/")
 import GenerateInitialConditions
@@ -37,6 +37,9 @@ def main():
 
     Author: Joey Dumont     <joey.dumont@gmail.com>
     """
+
+    # Start the timer.
+    start_time = time.perf_counter()
 
     # Command line arguments
     parser = ap.ArgumentParser(description="Generate the initial conditions for the simulation.")
@@ -70,8 +73,8 @@ def main():
     numpart = int(config.find("./generate_initial_conditions/numpart").text)
 
     # We instantiate the Analysis3D object of interest and find the maximum pair density.
-    pairProductionAnalysis   = Analysis3D.Analysis3D(directory+args.fileFreq, directory+args.fileTime)
-    maxIndices, maxDensities = pairProductionAnalysis.FindMaximumValues(pairProductionAnalysis.pairProductionAnalysis)
+    pairProductionAnalysis   = Analysis3D.Analysis3D(freq_field=args.directory+args.fileFreq, time_field=args.directory+args.fileTime)
+    maxIndices, maxDensities = pairProductionAnalysis.FindMaximumValues(pairProductionAnalysis.PairDensity)
     maxDensity               = np.amax(maxDensities)
 
     # We prepare the arrays that will hold the initial positions and time values.
@@ -81,7 +84,10 @@ def main():
     t = np.empty((numpart))
 
     particle_counter = 0
+    loop_counter = 0
     while (particle_counter < numpart):
+        print("Loop count = {}".format(loop_counter))
+        loop_counter = loop_counter + 1
         for i in range(pairProductionAnalysis.size_time):
 
             # -- Uniform numbers for this temporal slice.
@@ -104,6 +110,8 @@ def main():
                     t[particle_counter] = t_si            * EL_UNITS_TIME
                     particle_counter = particle_counter + 1
 
+                    print("Allocated particle {} at x={}, y={}, z={} at t={}".format(particle_counter,x[particle_counter-1],y[particle_counter-1],z[particle_counter-1],t[particle_counter-1]))
+
     px = py = pz = 0.0
 
     # Create file
@@ -118,6 +126,11 @@ def main():
 
         # Write initial time.
         of.write(str(t[pid] + "\n"))
+
+    # -- Stop timer.
+    end_time = time.perf_counter()
+
+    print(end_time-start_time)
 
 if __name__ == "__main__":
     main()
