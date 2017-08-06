@@ -65,7 +65,7 @@ def main():
 
     # -- Electronic units.
     EL_UNITS_LENGTH = 2.0 * np.pi / wavelength
-    EL_UNITS_TIME   = 2.0 * np.pi * cst.c / wavelength
+    EL_UNITS_TIME   = 2.0 * np.pi * codata.value('speed of light in vacuum') / wavelength
 
     numpart = int(config.find("./generate_initial_conditions/numpart").text)
 
