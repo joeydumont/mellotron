@@ -70,7 +70,7 @@ def main():
     numpart = int(config.find("./generate_initial_conditions/numpart").text)
 
     # We instantiate the Analysis3D object of interest and find the maximum pair density.
-    pairProductionAnalysis   = Analysis3D.Analysis3D(args.fileFreq, args.fileTime)
+    pairProductionAnalysis   = Analysis3D.Analysis3D(directory+args.fileFreq, directory+args.fileTime)
     maxIndices, maxDensities = pairProductionAnalysis.FindMaximumValues(pairProductionAnalysis.pairProductionAnalysis)
     maxDensity               = np.amax(maxDensities)
 
@@ -102,7 +102,7 @@ def main():
                     y[particle_counter] = r*np.sin(theta) * EL_UNITS_LENGTH
                     z[particle_counter] = z_si            * EL_UNITS_LENGTH
                     t[particle_counter] = t_si            * EL_UNITS_TIME
-                    particle_counter++
+                    particle_counter = particle_counter + 1
 
     px = py = pz = 0.0
 
