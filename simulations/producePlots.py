@@ -45,12 +45,22 @@ def findFileInDir(directory, fileName):
     return globalModel
 
 def setPositionsPlotLabels(graph):
+    """
+    Write the titles of the axis for the position plot.
+    """
     graph.set_xlabel(r"X Axis")
     graph.set_ylabel(r"Y Axis")
     graph.set_zlabel(r"Z Axis")
     graph.set_title(r"Positions of Particles")
 
 def createOneParticleTrajectory(directory, hdf5File, nTimeSteps, globalModelGroup):
+    """
+    Create a position plot (trajectories in space) in one-particle situations.
+    
+    This function ends the script because there is no need for polar plots in such a case.
+
+    Trajectories are all different colors for better visualization purpose.
+    """
     # Open position hdf5 table
     globalModelPositions = globalModelGroup["position"]
     # Initiate arrays of good size.
@@ -73,6 +83,10 @@ def createOneParticleTrajectory(directory, hdf5File, nTimeSteps, globalModelGrou
     sys.exit()
 
 def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory):
+    """
+    Create a position plot (trajectories in space) in many-particles situations.
+    Trajectories are all different colors for better visualization purpose.
+    """
     # Initiate arrays of good size.
     xp = np.empty((nParticles, nTimeSteps))
     yp = np.empty((nParticles, nTimeSteps))
@@ -94,6 +108,10 @@ def createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
     plt.savefig(directory + "positionsPlot.eps")
 
 def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTimeSteps, directory, ionmode, ionmass, L):
+    """
+    Create a polar plot (gamma, times of flight and polar distributions) in many-particles situations.
+    Divisions in histograms are all different colors for better visualization purpose.
+    """
     # Initiate arrays of good size.
     r = np.empty((nParticles))
     gam = np.empty((nParticles))
@@ -253,7 +271,7 @@ def main():
     # Create positions plot
     createPositionsPlot(globalModelPositions, nParticles, nTimeSteps, directory)
 
-    # Create polar chi plot
+    # Create polar, gamma and time of flight plot
     globalModelGamma = globalModelGroup["gamma"]
     globalModelMomentums = globalModelGroup["momentum"]
     ionmode = args.ion
