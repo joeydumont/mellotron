@@ -50,6 +50,8 @@ def main():
     parser.add_argument("--fileFreq",  type=str, default="Field_reflected.hdf5")
     parser.add_argument("--config",    type=str, default="configStrattoLinear.xml",
                         help="Name of the XML configuration file.")
+    parser.add_argument("--radial",    type=bool,default=False,
+                        help="Specifies the polarization of the beam.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -73,7 +75,11 @@ def main():
     numpart = int(config.find("./generate_initial_conditions/numpart").text)
 
     # We instantiate the Analysis3D object of interest and find the maximum pair density.
-    pairProductionAnalysis   = Analysis3D.Analysis3D(freq_field=args.directory+args.fileFreq, time_field=args.directory+args.fileTime)
+    if args.radial:
+        pairProductionAnalysis = AnalysisRadial.AnalysisRadial(freq_field=args.directory+args.fileFreq, time_field=args.directory+args.fileTime)
+    else:
+        pairProductionAnalysis = Analysis3D.Analysis3D(freq_field=args.directory+args.fileFreq, time_field=args.directory+args.fileTime)
+
     maxIndices, maxDensities = pairProductionAnalysis.FindMaximumValues(pairProductionAnalysis.PairDensity)
     maxDensity               = np.amax(maxDensities)
 
@@ -97,22 +103,30 @@ def main():
 
             # -- Pair density for this slice.
             pairDensity = pairProductionAnalysis.PairDensityTime(i)/maxDensity
+            print(pairDensity)
 
             for j in range(pairProductionAnalysis.size_flat):
                 if (particle_counter >= numpart):
                     break
                 if (pairDensity.flat[j] > random_numbers[j]):
                     indices = np.unravel_index(j, pairDensity.shape)
-                    r       = pairProductionAnalysis.coord_r[indices[0]]*pairProductionAnalysis.UNIT_LENGTH
-                    theta   = pairProductionAnalysis.coord_theta[indices[1]]
-                    z_si       = pairProductionAnalysis.coord_z[indices[2]]*pairProductionAnalysis.UNIT_LENGTH
+
+                    if args.radial:
+                        r     = pairProductionAnalysis.coord_r[indices[0]]*pairProductionAnalysis.UNIT_LENGTH
+                        theta = 2.0*np.pi*np.random.random()
+                        z_si  = pairProductionAnalysis.coord_z[indices[1]]*pairProductionAnalysis.UNIT_LENGTH
+                    else:
+                        r       = pairProductionAnalysis.coord_r[indices[0]]*pairProductionAnalysis.UNIT_LENGTH
+                        theta   = pairProductionAnalysis.coord_theta[indices[1]]
+                        z_si    = pairProductionAnalysis.coord_z[indices[2]]*pairProductionAnalysis.UNIT_LENGTH
+
                     t_si = pairProductionAnalysis.time[i]*pairProductionAnalysis.UNIT_TIME
 
                     x[particle_counter] = r*np.cos(theta) * EL_UNITS_LENGTH
                     y[particle_counter] = r*np.sin(theta) * EL_UNITS_LENGTH
                     z[particle_counter] = z_si            * EL_UNITS_LENGTH
                     t[particle_counter] = t_si            * EL_UNITS_TIME
-                    particle_counter = particle_counter + 1
+                    particle_counter    = particle_counter + 1
 
                     print("Allocated particle {} at x={}, y={}, z={} at t={}".format(particle_counter,x[particle_counter-1],y[particle_counter-1],z[particle_counter-1],t[particle_counter-1]))
 

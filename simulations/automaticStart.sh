@@ -8,6 +8,7 @@
 # This bash file start automatically the simulation of the MELLOTRON.                   #
 #                                                                                       #
 # Usage: ./automaticStart.sh -d <dirname> -c <name of config.xml> -s <shape> -j <njobs> #
+#                             -t <BOOL:varInitTime>                                     #
 #        Where dirname is the name of the directory containing a configSalamin.xml      #
 # ------------------------------------------------------------------------------------- #
 
@@ -16,6 +17,7 @@ DIR="./"
 CONFIG="configSalamin.xml"
 SHAPE="sphere"
 NJOBS="8"
+VARINITTIME=false
 while getopts ":d:c:s:j:" opt; do
     case $opt in
         d)
@@ -30,6 +32,9 @@ while getopts ":d:c:s:j:" opt; do
         j)
             NJOBS=$OPTARG
             ;;
+        t)
+            VARINITTIME=$OPTARG
+            ;;
     esac
 done
 
@@ -37,12 +42,14 @@ done
 GENINIT="GenerateInitialConditions.py"
 INTEGSAL="IntegrationSalamin.o"
 INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
+INTEGSTRATTORAD="IntegrationStrattoRadial.o"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
 MANAGEOUT="manageOutputs.py"
 PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
+cp $INTEGSTRATTORAD ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
 cp $PRODUCEPLOTS ./$DIR
@@ -53,9 +60,9 @@ OUTNORMCONST="normalization_constant.txt"
 # Check if config.xml is in current dir
 if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
-else 
+else
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
-    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT
+    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTORAD $COMPNORMCONST $MANAGEOUT
     echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
@@ -80,13 +87,19 @@ if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
         echo "Done: compute normalization constant."
     fi
     INTEG=$INTEGSAL
-else
+elif [ "$CONFIG" == "configStrattoLinear.xml" ]; then
     INTEG=$INTEGSTRATTOLIN
+elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
+    INTEG=$INTEGSTRATTORAD
 fi
 
 # -- Calculate particles behavior
 echo -e " \e[32m--- Starting to calculate particles behavior. ---\e[39m"
-cat $OUTINITCONDS | parallel -j $NJOBS --colsep " " ./$INTEG --init_conds {1} {2} {3} {4} {5} {6}
+if [[ "$VARINITTIME" == true ]]; then
+    cat $OUTINITCONDS | parallel -j $NJOBS --colsep " " ./$INTEG --init_conds {1} {2} {3} {4} {5} {6}
+else
+    cat $OUTINITCONDS | parallel -j $NJOBS --colsep " " ./$INTEG --init_conds {1} {2} {3} {4} {5} {6} {7}
+fi
 echo "Done: calculate particles behavior."
 
 # -- Manage outputs

@@ -1,9 +1,9 @@
 /*! ------------------------------------------------------------------------- *
- * \author Justine Pepin										              *
- * \since 2017-07-04                                                          *
+ * \author Joey Dumont                                                        *
+ * \since 2017-08-06                                                          *
  *                                                                            *
  * Simulation program using the strattocalculator via the                     *
- * StrattoCalculatorWrapper.hpp.                        		              *
+ * StrattoCalculatorWrapper.hpp (radial polrization).                         *
  * --------------------------------------------------------------------------*/
 
 #include <cmath>
@@ -25,7 +25,7 @@ namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
 // Structure in which we store all of the data we read in the config file.
-struct StrattoLinearConfig
+struct StrattoRadialConfig
 {
     double r_min_;                // Minimum aperture
     double r_max_;                // Maximum aperture.
@@ -51,11 +51,11 @@ struct StrattoLinearConfig
     double t_init_;               // Initial time in simulation
     double dt_;                   // Duration of a time step
     int nsteps_;                  // Number of time steps
-    void read(std::ifstream& file, StrattoLinearConfig*& config);
+    void read(std::ifstream& file, StrattoRadialConfig*& config);
 };
 
 // Function used to read the data read from the config file.
-void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config)
+void StrattoRadialConfig::read(std::ifstream& file, StrattoRadialConfig*& config)
 {
     using boost::property_tree::ptree;
     ptree pt;
@@ -72,7 +72,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoRadialConfig();
                 configIsEmpty = false;
             }
             hasFoundParabola = true;
@@ -92,7 +92,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoRadialConfig();
                 configIsEmpty = false;
             }
             hasFoundSpectrum = true;
@@ -108,7 +108,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoRadialConfig();
                 configIsEmpty = false;
             }
             hasFoundModel = true;
@@ -118,7 +118,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoRadialConfig();
                 configIsEmpty = false;
             }
             hasFoundParticle = true;
@@ -129,7 +129,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoRadialConfig();
                 configIsEmpty = false;
             }
             hasFoundIntegration = true;
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinear.xml");
+    conf_file.open("configStrattoRadial.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -198,8 +198,8 @@ int main(int argc, char* argv[])
     }
 
     // Read config file.
-    StrattoLinearConfig* config = nullptr;
-    config->StrattoLinearConfig::read(conf_file, config);
+    StrattoRadialConfig* config = nullptr;
+    config->StrattoRadialConfig::read(conf_file, config);
 
     // Instantiate electron units object.
     mellotron::MellotronUnits electron_units
@@ -226,13 +226,13 @@ int main(int argc, char* argv[])
 
     std::array<unsigned int, 2> num_points_parabola        = {config->num_points_r_,config->num_points_th_};
     std::array<bool,2> boundary                            = {config->boundary_max_,config->boundary_min_};
-    SurfaceMesh<2> *mesh_parabola                          = new SurfaceMesh<2>(
+    SurfaceMesh<1> *mesh_parabola                          = new SurfaceMesh<1>(
         domain_parabola,
         num_points_parabola,
         gausslegendre_mesh,
         boundary
     );
-    EmittingSurfaceAxialSym<2> *surface                    = new EmittingSurfaceParabola<2>(
+    EmittingSurfaceAxialSym<1> *surface                    = new EmittingSurfaceParabola<1>(
         mesh_parabola,
         config->focal_length_
         );
@@ -270,31 +270,33 @@ int main(int argc, char* argv[])
 
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
-    TEM00Mode *beam = new TEM00Mode(spectrum_incident,config->beam_width_);
+    TM01Mode *beam      = new TM01Mode(spectrum_incident,config->beam_width_);
 
     // Evaluate the beam on the mirror.
-    SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1>(
+    SurfaceEMFieldManyStorage<SurfaceEMFieldAxialSym,1,1> *incident_field =
+        new SurfaceEMFieldManyStorage<SurfaceEMFieldAxialSym,1,1>
+        (
         mesh_parabola,
         spectrum_incident,
         surface,
         beam
-    );
+        );
 
     // Declare the integrator and convert it to the form the MELLOTRON expects.
     auto integrator
-        = new StrattonChuIntegrator::MeshlessAxialSurfGenField(surface,incident_field);
+        = new StrattonChuIntegrator::MeshlessAxialSym(surface,incident_field);
     auto meshless_time_field
-        = new TemporalEMFieldMeshless<StrattonChuIntegrator::MeshlessAxialSurfGenField>(integrator);
+        = new TemporalEMFieldMeshless<StrattonChuIntegrator::MeshlessAxialSym>(integrator);
     auto wrapper
-        = new StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>(*meshless_time_field);
+        = new StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSym>(*meshless_time_field);
 
     // Change the integration parameters to appropriate units.
     config->t_init_ = config->t_init_ / electron_units.UNIT_TIME;
     config->dt_ = config->dt_ / electron_units.UNIT_TIME;
 
     // MELLOTRON
-    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units);
-    mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle_obs(particle,config->nsteps_);
+    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSym>> particle(config->Q_,config->mass_,*wrapper,electron_units);
+    mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSym>> particle_obs(particle,config->nsteps_);
 
     // Define the initial conditions.
     arma::colvec::fixed<8> x = arma::zeros<arma::colvec>(8);

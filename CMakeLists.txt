@@ -165,3 +165,9 @@ target_link_libraries("IntegrationStrattoLinear.o" ${LIBS} ${CUBALIBS} ${STRATTO
 target_link_libraries("IntegrationStrattoLinear.o"  Cubature)
 target_link_libraries("IntegrationStrattoLinear.o"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationStrattoLinear.o" RUNTIME DESTINATION bin)
+
+add_executable("IntegrationStrattoRadial.o" "simulations/IntegrationStrattoRadial.cpp")
+target_link_libraries("IntegrationStrattoRadial.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoRadial.o"  Cubature)
+target_link_libraries("IntegrationStrattoRadial.o"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoRadial.o" RUNTIME DESTINATION bin)
