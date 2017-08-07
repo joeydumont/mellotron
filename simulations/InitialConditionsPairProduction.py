@@ -89,6 +89,8 @@ def main():
         print("Loop count = {}".format(loop_counter))
         loop_counter = loop_counter + 1
         for i in range(pairProductionAnalysis.size_time):
+            if (particle_counter >= numpart):
+                break
 
             # -- Uniform numbers for this temporal slice.
             random_numbers = np.random.uniform(size=pairProductionAnalysis.size_flat)
@@ -97,6 +99,8 @@ def main():
             pairDensity = pairProductionAnalysis.PairDensityTime(i)/maxDensity
 
             for j in range(pairProductionAnalysis.size_flat):
+                if (particle_counter >= numpart):
+                    break
                 if (pairDensity.flat[j] > random_numbers[j]):
                     indices = np.unravel_index(j, pairDensity.shape)
                     r       = pairProductionAnalysis.coord_r[indices[0]]*pairProductionAnalysis.UNIT_LENGTH
@@ -125,7 +129,7 @@ def main():
         of.write(str(px) + " " + str(py) + " " + str(pz) + " ")
 
         # Write initial time.
-        of.write(str(t[pid] + "\n"))
+        of.write(str(t[pid]) + "\n")
 
     # -- Stop timer.
     end_time = time.perf_counter()
