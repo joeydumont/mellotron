@@ -83,20 +83,19 @@ def main():
     maxIndices, maxDensities = pairProductionAnalysis.FindMaximumValues(pairProductionAnalysis.PairDensity)
     maxDensity               = np.amax(maxDensities)
 
+    # We now scale the number of particles per time slices w.r.t the relative strength of maxDensities.
+    maxDensities = maxDensities / np.sum(np.abs(maxDensities))
+    numpart_slices = maxDensities * numpart
+
     # We prepare the arrays that will hold the initial positions and time values.
     x = np.empty((numpart))
     y = np.empty((numpart))
     z = np.empty((numpart))
     t = np.empty((numpart))
 
+    for i in range(pairProductionAnalysis.size_time):
     particle_counter = 0
-    loop_counter = 0
-    while (particle_counter < numpart):
-        print("Loop count = {}".format(loop_counter))
-        loop_counter = loop_counter + 1
-        for i in range(pairProductionAnalysis.size_time):
-            if (particle_counter >= numpart):
-                break
+    while (particle_counter < numpart_slices[i]):
 
             # -- Uniform numbers for this temporal slice.
             random_numbers = np.random.uniform(size=pairProductionAnalysis.size_flat)
@@ -106,7 +105,7 @@ def main():
             print(pairDensity)
 
             for j in range(pairProductionAnalysis.size_flat):
-                if (particle_counter >= numpart):
+                if (particle_counter >= numpart_slices[i]):
                     break
                 if (pairDensity.flat[j] > random_numbers[j]):
                     indices = np.unravel_index(j, pairDensity.shape)
