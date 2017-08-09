@@ -94,8 +94,10 @@ def main():
     t = np.empty((numpart))
 
     for i in range(pairProductionAnalysis.size_time):
-    particle_counter = 0
-    while (particle_counter < numpart_slices[i]):
+        particle_counter = 0
+        loop_counter     = 0
+        loop_max         = 10*numpart
+        while (particle_counter < numpart_slices[i] and loop_counter < loop_max):
 
             # -- Uniform numbers for this temporal slice.
             random_numbers = np.random.uniform(size=pairProductionAnalysis.size_flat)
@@ -128,6 +130,7 @@ def main():
                     particle_counter    = particle_counter + 1
 
                     print("Allocated particle {} at x={}, y={}, z={} at t={}".format(particle_counter,x[particle_counter-1],y[particle_counter-1],z[particle_counter-1],t[particle_counter-1]))
+                loop_counter += 1
 
     px = py = pz = 0.0
 
