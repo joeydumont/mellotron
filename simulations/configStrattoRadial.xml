@@ -3,6 +3,7 @@
     <particle>
         <mass>1.0</mass>
         <Q>-1.0</Q>
+        <radiation_reaction>NoRR</radiation_reaction>
     </particle>
     <parabola>
         <r_min>0.0</r_min>
@@ -52,6 +53,7 @@
     <comments_and_units>
     <!-- mass: Particle mass in units of electron mass ex: 1.0 -->
     <!-- Q: Particle charge in units of electron charge ex: -1.0 -->
+    <!-- radiation_reation: Radiation reaction model. Must be listed in the RadiationReactionModel enum in MELLOTRON. -->
     <!-- r_min: Minimal radius of the parabola in metres (ex: 0.0). -->
     <!-- r_max: Maximum radius of the paraboal in metres (ex: 0.0875). -->
     <!-- th_min: Minimal angle of the parabola in degrees (ex: 0). -->

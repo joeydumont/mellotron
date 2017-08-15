@@ -166,6 +166,12 @@ target_link_libraries("IntegrationStrattoLinear.o"  Cubature)
 target_link_libraries("IntegrationStrattoLinear.o"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationStrattoLinear.o" RUNTIME DESTINATION bin)
 
+add_executable("IntegrationStrattoMosaic.o" "simulations/IntegrationStrattoMosaic.cpp")
+target_link_libraries("IntegrationStrattoMosaic.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoMosaic.o"  Cubature)
+target_link_libraries("IntegrationStrattoMosaic.o"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoMosaic.o" RUNTIME DESTINATION bin)
+
 add_executable("IntegrationStrattoRadial.o" "simulations/IntegrationStrattoRadial.cpp")
 target_link_libraries("IntegrationStrattoRadial.o" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoRadial.o"  Cubature)

@@ -28,7 +28,8 @@
         <gaussian_order>8</gaussian_order>
     </spectrum>
     <model>
-        <beam_width>0.075</beam_width>
+      <beam_width>0.075</beam_width>
+      <number_tesserae>8</number_tesserae>
     </model>
     <integration>
         <t_init>-1.0e-14</t_init>

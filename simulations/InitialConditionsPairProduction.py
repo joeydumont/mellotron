@@ -96,7 +96,7 @@ def main():
     for i in range(pairProductionAnalysis.size_time):
         particle_counter = 0
         loop_counter     = 0
-        loop_max         = 10*numpart
+        loop_max         = numpart
         while (particle_counter < numpart_slices[i] and loop_counter < loop_max):
 
             # -- Uniform numbers for this temporal slice.

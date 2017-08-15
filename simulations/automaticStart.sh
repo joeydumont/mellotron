@@ -42,6 +42,7 @@ done
 GENINIT="GenerateInitialConditions.py"
 INTEGSAL="IntegrationSalamin.o"
 INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
+INTEGSTRATTOMOS="IntegrationStrattoMosaic.o"
 INTEGSTRATTORAD="IntegrationStrattoRadial.o"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
 MANAGEOUT="manageOutputs.py"
@@ -49,6 +50,7 @@ PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
+cp $INTEGSTRATTOMOS ./$DIR
 cp $INTEGSTRATTORAD ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
@@ -62,7 +64,7 @@ if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
 else
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
-    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTORAD $COMPNORMCONST $MANAGEOUT
+    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTORAD $INTEGSTRATTOMOS $COMPNORMCONST $MANAGEOUT
     echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
@@ -89,6 +91,8 @@ if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
     INTEG=$INTEGSAL
 elif [ "$CONFIG" == "configStrattoLinear.xml" ]; then
     INTEG=$INTEGSTRATTOLIN
+elif [ "$CONFIG" == "configStrattoMosaic.xml" ]; then
+    INTEG=$INTEGSTRATTOMOS
 elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
     INTEG=$INTEGSTRATTORAD
 fi
@@ -105,7 +109,7 @@ echo "Done: calculate particles behavior."
 # -- Manage outputs
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"
 NUMBER=$(ls -d *.hdf5 | wc -l)
-python $MANAGEOUT --nParticles $NUMBER --directory ./
+python $MANAGEOUT --directory ./
 echo "Done: manage outputs."
 
 # -- Generate plots
@@ -113,6 +117,12 @@ echo -e " \e[32m--- Starting to produce the plots ---\e[39m"
 python $PRODUCEPLOTS --directory ./
 echo "Done: produce plots."
 
-# Clean dir
-rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT
+# -- Generate PDFs.
+echo -e " \e[32m--- Convert EPS plots to PDF ---\e[39m"
+for file in *.eps
+do
+    epstopdf $file
+done
+echo "Done: convert EPS files."
+
 exit 0
