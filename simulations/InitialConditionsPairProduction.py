@@ -86,6 +86,7 @@ def main():
     # We now scale the number of particles per time slices w.r.t the relative strength of maxDensities.
     maxDensities = maxDensities / np.sum(np.abs(maxDensities))
     numpart_slices = maxDensities * numpart
+    print(num_part)
 
     # We prepare the arrays that will hold the initial positions and time values.
     x = np.empty((numpart))
@@ -130,7 +131,7 @@ def main():
                     particle_counter    = particle_counter + 1
 
                     print("Allocated particle {} at x={}, y={}, z={} at t={}".format(particle_counter,x[particle_counter-1],y[particle_counter-1],z[particle_counter-1],t[particle_counter-1]))
-                loop_counter += 1
+                    loop_counter += 1
 
     px = py = pz = 0.0
 
