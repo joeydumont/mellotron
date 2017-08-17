@@ -40,13 +40,13 @@ INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
 MANAGEOUT="manageOutputs.py"
 PRODUCEPLOTS="producePlots.py"
-cp $GENINIT ./$DIR
-cp $INTEGSAL ./$DIR
-cp $INTEGSTRATTOLIN ./$DIR
-cp $COMPNORMCONST ./$DIR
-cp $MANAGEOUT ./$DIR
-cp $PRODUCEPLOTS ./$DIR
-cd ./$DIR
+cp $GENINIT $DIR
+cp $INTEGSAL $DIR
+cp $INTEGSTRATTOLIN $DIR
+cp $COMPNORMCONST $DIR
+cp $MANAGEOUT $DIR
+cp $PRODUCEPLOTS $DIR
+cd $DIR
 OUTINITCONDS="init_conds.txt"
 OUTNORMCONST="normalization_constant.txt"
 
@@ -55,7 +55,7 @@ if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
 else 
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
-    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT
+    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT $PRODUCEPLOTS
     echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
@@ -91,8 +91,7 @@ echo "Done: calculate particles behavior."
 
 # -- Manage outputs
 echo -e " \e[32m--- Starting to manage the outputs. ---\e[39m"
-NUMBER=$(ls -d *.hdf5 | wc -l)
-python $MANAGEOUT --nParticles $NUMBER --directory ./
+python $MANAGEOUT --directory ./
 echo "Done: manage outputs."
 
 # -- Generate plots
@@ -101,5 +100,5 @@ python $PRODUCEPLOTS --directory ./
 echo "Done: produce plots."
 
 # Clean dir
-rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT
+rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT $PRODUCEPLOTS
 exit 0
