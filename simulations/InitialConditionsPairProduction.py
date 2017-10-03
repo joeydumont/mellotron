@@ -16,6 +16,7 @@ from numpy import cos as cos
 from math import pow as pow
 import xml.etree.ElementTree as ET
 import time
+
 # -- Import user modules.
 sys.path.append("strattoanalysis/")
 import GenerateInitialConditions
@@ -85,30 +86,31 @@ def main():
 
     # We now scale the number of particles per time slices w.r.t the relative strength of maxDensities.
     maxDensities = maxDensities / np.sum(np.abs(maxDensities))
-    numpart_slices = maxDensities * numpart
-    print(num_part)
+    numpart_slices = np.ceil(maxDensities * numpart)
+    numpart_slices = numpart_slices.astype(int)
+    print(numpart_slices)
 
     # We prepare the arrays that will hold the initial positions and time values.
-    x = np.empty((numpart))
-    y = np.empty((numpart))
-    z = np.empty((numpart))
-    t = np.empty((numpart))
+    x = np.zeros((numpart))
+    y = np.zeros((numpart))
+    z = np.zeros((numpart))
+    t = np.zeros((numpart))
 
+    particle_counter = 0
     for i in range(pairProductionAnalysis.size_time):
-        particle_counter = 0
-        loop_counter     = 0
-        loop_max         = numpart
-        while (particle_counter < numpart_slices[i] and loop_counter < loop_max):
+        particle_counter_slice = 0
+        loop_counter           = 0
+        loop_max               = 10*numpart
+        while (not (particle_counter_slice >= numpart_slices[i]) and loop_counter < loop_max):
 
             # -- Uniform numbers for this temporal slice.
             random_numbers = np.random.uniform(size=pairProductionAnalysis.size_flat)
 
-            # -- Pair density for this slice.
-            pairDensity = pairProductionAnalysis.PairDensityTime(i)/maxDensity
-            print(pairDensity)
+            # -- Pair density for this slice. Scaled to be a "PDF".
+            pairDensity = pairProductionAnalysis.PairDensityTime(i) / np.sum(np.abs(pairProductionAnalysis.PairDensityTime(i)))
 
             for j in range(pairProductionAnalysis.size_flat):
-                if (particle_counter >= numpart_slices[i]):
+                if (particle_counter_slice >= numpart_slices[i]):
                     break
                 if (pairDensity.flat[j] > random_numbers[j]):
                     indices = np.unravel_index(j, pairDensity.shape)
@@ -122,13 +124,29 @@ def main():
                         theta   = pairProductionAnalysis.coord_theta[indices[1]]
                         z_si    = pairProductionAnalysis.coord_z[indices[2]]*pairProductionAnalysis.UNIT_LENGTH
 
-                    t_si = pairProductionAnalysis.time[i]*pairProductionAnalysis.UNIT_TIME
+                    t_si = pairProductionAnalysis.time[i]
 
-                    x[particle_counter] = r*np.cos(theta) * EL_UNITS_LENGTH
-                    y[particle_counter] = r*np.sin(theta) * EL_UNITS_LENGTH
-                    z[particle_counter] = z_si            * EL_UNITS_LENGTH
-                    t[particle_counter] = t_si            * EL_UNITS_TIME
-                    particle_counter    = particle_counter + 1
+                    x[particle_counter]     = r*np.cos(theta) * EL_UNITS_LENGTH
+                    y[particle_counter]     = r*np.sin(theta) * EL_UNITS_LENGTH
+                    z[particle_counter]     = z_si            * EL_UNITS_LENGTH
+                    t[particle_counter]     = t_si            * EL_UNITS_TIME
+                    particle_counter       += 1
+                    particle_counter_slice += 1
+
+                    px = py = pz = 0.0
+                    # Create file
+                    of = open("init_conds.txt",'w')
+                    for pid in range(numpart): # Loop on particle indices
+                        # Write positions
+                        of.write(str(x[pid]) + " " + str(y[pid]) + " " + str(z[pid]) + " ")
+                        # Write momenta
+                        of.write(str(px) + " " + str(py) + " " + str(pz) + " ")
+
+                        # Write initial time.
+                        of.write(str(t[pid]) + "\n")
+
+                    of.close()
+
 
                     print("Allocated particle {} at x={}, y={}, z={} at t={}".format(particle_counter,x[particle_counter-1],y[particle_counter-1],z[particle_counter-1],t[particle_counter-1]))
                     loop_counter += 1
@@ -147,6 +165,8 @@ def main():
 
         # Write initial time.
         of.write(str(t[pid]) + "\n")
+
+    of.close()
 
     # -- Stop timer.
     end_time = time.perf_counter()
