@@ -30,6 +30,7 @@ public:
 
     std::cout << "Norm factor: " << field.norm_factor << "  " <<  1.0/field.norm_factor << std::endl;
     std::cout << "Energy [in Mellotron Units]: " << energy << std::endl;
+    std::cout << "Unit intensity: " << electron_units.UNIT_E_INTENSITY << std::endl;
   }
 
 protected:
@@ -262,7 +263,7 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
-  printf("Running main() UnitTest-Particle.cpp.\n");
+  printf("Running main() UnitTest-SalaminTightlyFocused.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
   auto result =  RUN_ALL_TESTS();
   H5close();
