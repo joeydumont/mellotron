@@ -67,7 +67,7 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   {
     for (uint j=0; j<2*size_plot; j++)
     {
-      auto field_vector = field.ComputeFieldComponents(lambda/4.0,x_field[i],y_field[j],lambda/2.0);
+      auto field_vector = field.ComputeFieldComponents(0.0,x_field[i],y_field[j],lambda/1000.0);
       Ex(i,j) = field_vector[0];
       Ey(i,j) = field_vector[1];
       Ez(i,j) = field_vector[2];

@@ -28,9 +28,10 @@ filenameNoExt="${filename%.*}"
 
 # -- We compile the test.
 CXX_FLAGS="-Wall -std=c++14 -O3"
-g++ ${CXX_FLAGS}                          \
+mpic++ ${CXX_FLAGS}                       \
+      -DNDEBUG                            \
       -I ../include                       \
       -o ${filenameNoExt}.o               \
       ${filename}                         \
-      -lhdf5 -lgtest -lCubature -lcuba -larmadillo
+      -lhdf5 -lgtest -lCubature -lcuba -larmadillo -lMeshPI -lStrattoCalculator
 exit 0

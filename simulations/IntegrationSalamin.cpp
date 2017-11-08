@@ -24,7 +24,6 @@ using boost::math::relative_difference;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
-
 struct IntegrationSalaminConfig
 {
     double lam_;

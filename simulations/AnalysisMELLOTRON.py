@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
 	axTranverse = plt.subplot2grid((1,2), (0,0))
 
-	im = plt.scatter(initialX, initialY, c=finalGamma)
+	im = plt.scatter(initialX, initialY, c=finalGamma, norm=colors.LogNorm(),alpha=0.5)
 	axTranverse.set_aspect('equal')
 	axTranverse.set_xlabel('Initial $x$ position')
 	axTranverse.set_ylabel('Initial $y$ position')
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
 
 	axLongitudinal = plt.subplot2grid((1,2), (0,1))
-	im = plt.scatter(initialZ, initialY, c=finalGamma)
+	im = plt.scatter(initialZ, initialY, c=finalGamma,norm=colors.LogNorm(), alpha=0.5)
 	axLongitudinal.set_aspect('equal')
 	axLongitudinal.set_xlabel('Initial $z$ position')
 
@@ -97,8 +97,7 @@ if __name__ == "__main__":
 	efield_Ey   = globalModelFile["electric_field"][:,maxGammaIdx,1]
 	efield_Ez   = globalModelFile["electric_field"][:,maxGammaIdx,2]
 
-	print(np.nanmax(efield_Ex))
-	print(np.nanmax(efield_Ex**2+efield_Ey**2+efield_Ez**2))
+	print(np.amax(efield_Ex))
 
 	#print(efield_Ez)
 	#print(efield_Ey)
@@ -108,19 +107,23 @@ if __name__ == "__main__":
 
 	figElectricFieldMaxGamma = plt.figure(figsize=(4,3))
 	ax1 = figElectricFieldMaxGamma.add_subplot(111)
-	#plt.plot(times, efield_Ex)
-	#plt.plot(times, efield_Ey)
-	#plt.plot(times, efield_Ez)
-	plt.plot(times, efield_Ex**2+efield_Ey**2+efield_Ez**2, 'k--')
+	plt.plot(times, efield_Ex)
+	plt.plot(times, efield_Ey)
+	plt.plot(times, efield_Ez)
+	#plt.plot(times, efield_Ex**2+efield_Ey**2+efield_Ez**2, 'k--')
 
 	ax2 = ax1.twinx()
-	plt.plot(times, (4.00 * constants.physical_constants['atomic mass unit-electron volt relationship'][0])*(maxGammaTime-1))
+	plt.plot(times, (4.00 * constants.physical_constants['atomic mass unit-electron volt relationship'][0])*(maxGammaTime-1), 'k--')
 	#plt.plot(times,maxChi)
+
+	ax2.set_xlim((-150,150))
 
 	figHistogramFinalGamma = plt.figure(figsize=(4,3))
 	ax1 = figHistogramFinalGamma.add_subplot(111)
 
 	finalGammaSorted = np.sort(finalGamma)
+
+	print(finalGammaSorted)
 
 	clipIndex = -1
 	finalGammaHistogram = finalGammaSorted[0:clipIndex]
