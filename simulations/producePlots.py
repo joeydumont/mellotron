@@ -162,12 +162,12 @@ def createPolarGammaPlot(globalModelMomentums, globalModelGamma, nParticles, nTi
     ax3.grid(True)
     ax4.grid(True)
     ax1.scatter(theta, r)
-    ax1.set_rlim(0)
-    ax1.set_rscale('log')
+    #ax1.set_rlim(0)
+    #ax1.set_rscale('log')
     ax2.scatter(phi, r)
-    ax2.set_rlim(0)
-    ax2.set_rscale('log')
-    print(r)
+    #ax2.set_rlim(0)
+    #ax2.set_rscale('log')
+    #print(r)
 
     if ionmode:
         ax1.set_ylabel(r'$E_k$ [eV]', labelpad=30)
