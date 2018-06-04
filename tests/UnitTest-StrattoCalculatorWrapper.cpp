@@ -148,7 +148,7 @@ protected:
 TEST_F(StrattoCalculatorWrapperTest, Linear)
 {
   // Define the mesh of the plot.
-  uint size_plot = 25;
+  uint size_plot = 50;
   auto x_field = arma::linspace<arma::colvec>(-xmax,xmax, size_plot);
   auto y_field = arma::linspace<arma::colvec>(-xmax,xmax, 2*size_plot);
   arma::mat Ex(size_plot,2*size_plot);
@@ -163,7 +163,7 @@ TEST_F(StrattoCalculatorWrapperTest, Linear)
   {
     for (uint j=0; j<2*size_plot; j++)
     {
-      auto field_vector = field->ComputeFieldComponents(lambda_c/4.0,x_field[i],y_field[j],0.0);
+      auto field_vector = field->ComputeFieldComponents(0.0,x_field[i],y_field[j],0.0);
       Ex(i,j) = field_vector[0];
       Ey(i,j) = field_vector[1];
       Ez(i,j) = field_vector[2];
@@ -182,8 +182,8 @@ TEST_F(StrattoCalculatorWrapperTest, Linear)
   for (uint i=0; i<size_time; i++)
   {
     Ex_t(i,0) = t_field(i);
-    auto field_time = field->ComputeFieldComponents(t_field(i),0.0,0.0,0.0)
-    Ex_t(i,arma::span(1,3)) = ;
+    auto field_time = field->ComputeFieldComponents(t_field(i),0.0,0.0,0.0);
+    Ex_t(i,arma::span(1,3)) = arma::rowvec({field_time[0],field_time[1],field_time[2]});
   }
 
   // Output the data.

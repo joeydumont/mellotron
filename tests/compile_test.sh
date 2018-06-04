@@ -27,7 +27,7 @@ filename=`basename $1`
 filenameNoExt="${filename%.*}"
 
 # -- We compile the test.
-CXX_FLAGS="-Wall -std=c++14 -O3"
+CXX_FLAGS="-Wall -std=c++14 -O0"
 mpic++ ${CXX_FLAGS}                       \
       -DNDEBUG                            \
       -I ../include                       \
