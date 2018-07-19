@@ -27,15 +27,15 @@ public:
         double theta = std::atan2(y,x);
 
         // Compute cos and sin.
-        double c     = x/r;
-        double s     = y/r;
+        double c     = std::cos(theta);
+        double s     = std::sin(theta);
 
         std::array<double,6> cylField,cartField;
         cylField = field_rep.ComputeFieldInTime(t,r,theta,z,0);
 
         // Convert the cylindrical components to
         cartField[0] = c*cylField[0]-s*cylField[1];
-        cartField[1] = s*cylField[0]+c*cylField[2];
+        cartField[1] = s*cylField[0]+c*cylField[1];
         cartField[2] = cylField[2];
         cartField[3] = c*cylField[3]-s*cylField[4];
         cartField[4] = s*cylField[3]+c*cylField[4];

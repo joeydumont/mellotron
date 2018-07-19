@@ -43,7 +43,7 @@ void ComputeNormConstConfig::read(std::ifstream& file, ComputeNormConstConfig*& 
             config->L_ = v.second.get<double>("L");
         }
     }
-    
+
     if(config == nullptr)
     {
         throw std::runtime_error("Missing integration_salamin config.");

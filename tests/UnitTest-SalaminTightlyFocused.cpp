@@ -20,9 +20,9 @@ public:
   : lambda(800.0e-9)
   , omega_0(2.0*constants::math::pi*constants::physics::c/lambda)
   , electron_units(omega_0)
-  , w0(0.272*lambda/electron_units.UNIT_LENGTH)
+  , w0(0.2*lambda/electron_units.UNIT_LENGTH)
   , L(14.4*lambda/electron_units.UNIT_LENGTH)
-  , xmax(1.5*lambda/electron_units.UNIT_LENGTH)
+  , xmax(2.5e-6/electron_units.UNIT_LENGTH)
   , energy(13.0/electron_units.UNIT_ENERGY)
   , field(lambda/electron_units.UNIT_LENGTH,w0,L,energy)
   {
@@ -30,6 +30,7 @@ public:
 
     std::cout << "Norm factor: " << field.norm_factor << "  " <<  1.0/field.norm_factor << std::endl;
     std::cout << "Energy [in Mellotron Units]: " << energy << std::endl;
+    std::cout << "Unit intensity: " << electron_units.UNIT_E_INTENSITY << std::endl;
   }
 
 protected:
@@ -66,7 +67,7 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
   {
     for (uint j=0; j<2*size_plot; j++)
     {
-      auto field_vector = field.ComputeFieldComponents(lambda/4.0,x_field[i],y_field[j],lambda/2.0);
+      auto field_vector = field.ComputeFieldComponents(0.0,x_field[i],y_field[j],lambda/10.0);
       Ex(i,j) = field_vector[0];
       Ey(i,j) = field_vector[1];
       Ez(i,j) = field_vector[2];
@@ -97,12 +98,6 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
     }
   }
 
-  // Output the data.
-  x_field *= electron_units.UNIT_LENGTH;
-  y_field *= electron_units.UNIT_LENGTH;
-
-  x_field.save("x_field_salamin.txt", arma::raw_ascii);
-  y_field.save("y_field_salamin.txt", arma::raw_ascii);
   Ex.save("SalaminField_Ex.txt", arma::raw_ascii);
   Ey.save("SalaminField_Ey.txt", arma::raw_ascii);
   Ez.save("SalaminField_Ez.txt", arma::raw_ascii);
@@ -112,18 +107,48 @@ TEST_F(SalaminTightlyFocusedTest, Linear)
 
   // Compute intensity as a function of time.
   // I = 0.5c*epsilon_0*E^2.
-  uint time_steps = 300;
-  arma::vec intensityTimes  = arma::linspace<arma::vec>(-100e-15,100e-15,time_steps);
+  uint time_steps = 1024;
+  arma::vec intensityTimes  = arma::linspace<arma::vec>(-25e-15,25e-15,time_steps);
   arma::vec intensityValues(time_steps);
 
   for (uint i = 0; i < time_steps; i++)
   {
     auto field_vector  = field.ComputeFieldComponents(intensityTimes[i]*omega_0, 0.0,0.0,0.0);
     intensityValues[i] = 0.5*constants::physics::c*constants::physics::epsilon_0*std::pow(electron_units.UNIT_E_FIELD,2)*(field_vector[0]*field_vector[0]+field_vector[1]*field_vector[1]+field_vector[2]*field_vector[2])*1e-4;
+
+    for (uint k=0; k<size_plot; k++)
+    {
+      for (uint l=0; l<2*size_plot; l++)
+      {
+        field_vector  = field.ComputeFieldComponents(intensityTimes[i]*omega_0,x_field[k],y_field[l],lambda/10.0);
+        Ex(k,l) = field_vector[0];
+        Ey(k,l) = field_vector[1];
+        Ez(k,l) = field_vector[2];
+        Bx(k,l) = field_vector[3];
+        By(k,l) = field_vector[4];
+        Bz(k,l) = field_vector[5];
+      }
+    }
+
+  Ex.save(std::string("SalaminField_Ex_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+  Ey.save(std::string("SalaminField_Ey_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+  Ez.save(std::string("SalaminField_Ez_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+  Bx.save(std::string("SalaminField_Bx_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+  By.save(std::string("SalaminField_By_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+  Bz.save(std::string("SalaminField_Bz_t")+std::to_string(i)+std::string(".txt"), arma::raw_ascii);
+
   }
 
   intensityTimes.save("SalaminTimeIe.txt", arma::raw_ascii);
   intensityValues.save("SalaminTimeIe_time.txt", arma::raw_ascii);
+
+  // Output the data.
+  x_field *= electron_units.UNIT_LENGTH;
+  y_field *= electron_units.UNIT_LENGTH;
+
+  x_field.save("x_field_salamin.txt", arma::raw_ascii);
+  y_field.save("y_field_salamin.txt", arma::raw_ascii);
+
 }
 
 class SalaminTightlyFocusedNormalizationTest : public testing::Test
@@ -262,7 +287,7 @@ TEST_F(SalaminTightlyFocusedQEDTest, Linear)
 GTEST_API_ int main(int argc, char **argv)
 {
   H5open();
-  printf("Running main() UnitTest-Particle.cpp.\n");
+  printf("Running main() UnitTest-SalaminTightlyFocused.cpp.\n");
   testing::InitGoogleTest(&argc, argv);
   auto result =  RUN_ALL_TESTS();
   H5close();

@@ -96,9 +96,9 @@ echo "Done: manage outputs."
 
 # -- Generate plots
 echo -e " \e[32m--- Starting to produce the plots ---\e[39m"
-python $PRODUCEPLOTS --directory ./
+python $PRODUCEPLOTS --directory ./ --ion True --ionmass 4.0 --L 0.01
 echo "Done: produce plots."
 
 # Clean dir
-rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT $PRODUCEPLOTS
+#rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $COMPNORMCONST $MANAGEOUT $PRODUCEPLOTS
 exit 0

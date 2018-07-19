@@ -8,7 +8,7 @@ Particles trajectories can be computed for any charge/mass ratio.
 
 
 STARTING THE MELLOTRON FROM A LOCAL COMPUTER :
-1) Insure the .o are present in the simulations/ directory. 
+1) Insure the .o are present in the simulations/ directory.
 
 2) Write your simulation parameters in the configSalamin.xml/configStrattoLinear.xml file without changing the file's layout.
 
