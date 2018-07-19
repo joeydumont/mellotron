@@ -39,7 +39,7 @@ def writeAttribute3(of, n, nTimeSteps, nParticles, nameOfAttribute):
 
 def generateXMF(directory, nParticles, nTimeSteps):
     """
-    Creates the global.xdmf file and writes the timesteps list in it. 
+    Creates the global.xdmf file and writes the timesteps list in it.
     For each of the timesteps, this function writes the position in 3D and the attributes of the particle.
     """
     # Initialize xdmf file
@@ -193,7 +193,7 @@ def main():
         print("It seems like the folder you gave doesn\'t have hdf5 files in it.")
         sys.exit()
 
-    # Determine exactly how many timesteps there are.
+    # Determine exactly how many time steps there are.
     timesModelFile = hp.File(directory + timesModel, "r")
     timesModelGroup = timesModelFile.require_group(timesModel)
     timesModelTimes = timesModelGroup["times"]
@@ -205,7 +205,6 @@ def main():
 
     # -- times
     globalGroup.copy(timesModelTimes, "times", "times", False, False, False, False, False)
-
     # -- chi
     globalGroup.create_dataset("chi", (nTimeSteps, nParticles), dtype="f8")
     # -- gamma
@@ -237,8 +236,8 @@ def main():
         # -- We copy the data to groups in the global hdf5 file.
         LW_ModelGroup   = timesModelGroup["lienard-wiechert-fields"]
         globalLWGroup = globalGroup.create_group("lienard-wiechert-fields")
-        #LW_ModelGroup.copy("phi",   globalLWGroup)
-        #LW_ModelGroup.copy("theta", globalLWGroup)
+        LW_ModelGroup.copy("phi",   globalLWGroup)
+        LW_ModelGroup.copy("theta", globalLWGroup)
 
         # -- We now create the field datasets in the global file.
         globalLWGroup.create_dataset("electric_field", (nTimeSteps, LW_ModelGroup["electric_field"].shape[1], LW_ModelGroup["electric_field"].shape[2], 3), dtype=float, fillvalue=0.0)
