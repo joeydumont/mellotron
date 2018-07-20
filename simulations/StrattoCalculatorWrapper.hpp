@@ -7,15 +7,19 @@
  * --------------------------------------------------------------------------*/
 
 #include <armadillo>
-#include <mellotron>
+#include <meshpi>
 #include <strattocalculator>
+#include <mellotron>
+
+using namespace MeshPI;
+using namespace StrattoCalculator;
 
 template <class FieldRepresentation>
 class StrattoCalculatorWrapper
 {
 public:
     /// Sets the field representation.
-    StrattoCalculatorWrapper(StrattoCalculator::TemporalEMFieldMeshless<FieldRepresentation> & my_field_rep)
+    StrattoCalculatorWrapper(TemporalEMFieldMeshless<FieldRepresentation> & my_field_rep)
     : field_rep(my_field_rep)
     {}
 
@@ -45,5 +49,5 @@ public:
     }
 
 protected:
-    StrattoCalculator::TemporalEMFieldMeshless<FieldRepresentation>  &  field_rep;
+    TemporalEMFieldMeshless<FieldRepresentation>  &  field_rep;
 };
