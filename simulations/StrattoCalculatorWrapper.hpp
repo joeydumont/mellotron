@@ -6,6 +6,9 @@
  * StrattoCalculator from the MELLOTRON.                                      *
  * --------------------------------------------------------------------------*/
 
+#ifndef STRATTO_CALCULATOR_WRAPPER_HPP
+#define STRATTO_CALCULATOR_WRAPPER_HPP
+
 #include <armadillo>
 #include <meshpi>
 #include <strattocalculator>
@@ -51,3 +54,5 @@ public:
 protected:
     TemporalEMFieldMeshless<FieldRepresentation>  &  field_rep;
 };
+
+#endif // STRATTO_CALCULATOR_WRAPPER_HPP
