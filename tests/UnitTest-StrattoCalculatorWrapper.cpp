@@ -9,11 +9,11 @@
 
 #include <gtest/gtest.h>
 
+#include "../simulations/StrattoCalculatorWrapper.hpp"
 #include <armadillo>
 #include <mellotron>
 #include <meshpi>
 #include <strattocalculator>
-#include "../simulations/StrattoCalculatorWrapper.hpp"
 
 using namespace mellotron;
 using namespace MeshPI;
@@ -112,7 +112,7 @@ public:
     delete  domain_parabola;
     delete  mesh_parabola;
     delete  surface;
-    delete  spectrum_incident;
+    //delete  spectrum_incident;
     delete  beam;
     delete  incident_field;
     delete  integrator;
