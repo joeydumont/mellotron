@@ -19,7 +19,7 @@ set(LIBS ${LIBS} ${GTEST_LIBRARIES})
 # -- Output tests in directory
 add_executable("UnitTest-Particle" "UnitTest-Particle.cpp")
 target_link_libraries("UnitTest-Particle" ${LIBS})
-add_test(NAME "UnitTest-Particle" COMMAND "UnitTest-Particle.o")
+add_test(NAME "UnitTest-Particle" COMMAND "UnitTest-Particle")
 
 add_executable("UnitTest-eDipoles" "UnitTest-eDipoles.cpp")
 target_link_libraries("UnitTest-eDipoles" ${LIBS})

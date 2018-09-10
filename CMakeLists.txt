@@ -41,7 +41,7 @@ message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
 find_package(StrattoCalculator REQUIRED)
 include_directories(${strattocalculator_INCLUDE_DIR})
 set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
-
+message(STATUS "StrattoCalculator library: " ${STRATTOLIBS})
 # -- Required dependency: Boost.
 find_package(Boost 1.58.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
