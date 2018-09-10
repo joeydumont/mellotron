@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
     else
         t_init = init_conds[6];
 
-    arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+config->nsteps_*config->dt_,config->nsteps_); // Time vector
+    arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+config->nsteps_*dt,config->nsteps_); // Time vector
 
     // Set the initial conditions.
     particle.SetInitConditions(x,x_init,y_init,z_init,px_init,py_init,pz_init,times[0]);
