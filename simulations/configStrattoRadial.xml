@@ -37,7 +37,7 @@
     </integration>
     <generate_initial_conditions>
         <pz>5109989.461</pz>
-        <numpart>500</numpart>
+        <numpart>60</numpart>
         <sphere>
             <sphere_radius>2.24e-06</sphere_radius>
         </sphere>

@@ -5,3 +5,6 @@
 [submodule "external/Cuba"]
 	path = external/Cuba
 	url = https://github.com/valandil/Cuba
+[submodule "simulations/strattoanalysis"]
+	path = simulations/strattoanalysis
+	url = schwinger:/opt/stellar/strattoanalysis.git

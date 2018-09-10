@@ -1,16 +1,15 @@
 /*! ------------------------------------------------------------------------- *
- * \author Justine Pepin										              *
- * \since 2017-07-04                                                          *
+ * \author Joey Dumont      <joey.dumont@gmail.com>                           *
+ * \since 2017-08-07                                                          *
  *                                                                            *
  * Simulation program using the strattocalculator via the                     *
- * StrattoCalculatorWrapper.hpp.                        		              *
+ * StrattoCalculatorWrapper.hpp (mosaic fields).                              *
  * --------------------------------------------------------------------------*/
 
 #include <cmath>
 #include <meshpi>
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <boost/program_options.hpp>
 #include <boost/numeric/odeint.hpp>
 
@@ -26,7 +25,7 @@ namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
 // Structure in which we store all of the data we read in the config file.
-struct StrattoLinearConfig
+struct StrattoMosaicConfig
 {
     double r_min_;                // Minimum aperture
     double r_max_;                // Maximum aperture.
@@ -47,17 +46,17 @@ struct StrattoLinearConfig
     int num_components_;          // Number of spectral components to consider
     int gaussian_order_;          // Order of the super-gaussian spectrum
     double beam_width_;           // 1/e radius of the field
+    int    number_tesserae_;      // Number of segments in the mosaic.
     double mass_;                 // Particle mass
     double Q_;                    // Particle charge
-    std::string rad_react_;       // Radiation reaction model.
     double t_init_;               // Initial time in simulation
     double dt_;                   // Duration of a time step
     int nsteps_;                  // Number of time steps
-    void read(std::ifstream& file, StrattoLinearConfig*& config);
+    void read(std::ifstream& file, StrattoMosaicConfig*& config);
 };
 
 // Function used to read the data read from the config file.
-void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config)
+void StrattoMosaicConfig::read(std::ifstream& file, StrattoMosaicConfig*& config)
 {
     using boost::property_tree::ptree;
     ptree pt;
@@ -74,7 +73,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoMosaicConfig();
                 configIsEmpty = false;
             }
             hasFoundParabola = true;
@@ -94,7 +93,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoMosaicConfig();
                 configIsEmpty = false;
             }
             hasFoundSpectrum = true;
@@ -110,29 +109,29 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoMosaicConfig();
                 configIsEmpty = false;
             }
             hasFoundModel = true;
             config->beam_width_ = v.second.get<double>("beam_width");
+            config->number_tesserae_ = v.second.get<int>("number_tesserae");
         }
         if(v.first == "particle")
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoMosaicConfig();
                 configIsEmpty = false;
             }
             hasFoundParticle = true;
             config->mass_ = v.second.get<double>("mass");
             config->Q_ = v.second.get<double>("Q");
-            config->rad_react_ = v.second.get("radiation_reaction", "NoRR");
         }
         if(v.first == "integration")
         {
             if(configIsEmpty)
             {
-                config = new StrattoLinearConfig();
+                config = new StrattoMosaicConfig();
                 configIsEmpty = false;
             }
             hasFoundIntegration = true;
@@ -191,7 +190,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinear.xml");
+    conf_file.open("configStrattoMosaic.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -201,8 +200,8 @@ int main(int argc, char* argv[])
     }
 
     // Read config file.
-    StrattoLinearConfig* config = nullptr;
-    config->StrattoLinearConfig::read(conf_file, config);
+    StrattoMosaicConfig* config = nullptr;
+    config->StrattoMosaicConfig::read(conf_file, config);
 
     // Instantiate electron units object.
     mellotron::MellotronUnits electron_units
@@ -274,13 +273,14 @@ int main(int argc, char* argv[])
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
     TEM00Mode *beam = new TEM00Mode(spectrum_incident,config->beam_width_);
+    MosaicBeams<2>  *  mosaic = new MosaicBeams<2>(mesh_parabola,beam,config->number_tesserae_);
 
     // Evaluate the beam on the mirror.
-    SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1>(
+    SurfaceEMFieldManyStorage<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyStorage<SurfaceEMFieldGeneral,2,1>(
         mesh_parabola,
         spectrum_incident,
         surface,
-        beam
+        mosaic
     );
 
     // Declare the integrator and convert it to the form the MELLOTRON expects.
@@ -296,21 +296,7 @@ int main(int argc, char* argv[])
     config->dt_ = config->dt_ / electron_units.UNIT_TIME;
 
     // MELLOTRON
-    // Determine the radiation reaction model.
-    mellotron::RadiationReactionModel rr_model;
-    if (config->rad_react_ == std::string("NoRR"))
-        rr_model = mellotron::NoRR;
-
-    else if (config->rad_react_ == std::string("LandauLifshitz"))
-        rr_model = mellotron::LandauLifshitz;
-
-    else if (config->rad_react_ == std::string("LandauLifshitzQuantumCorrection"))
-        rr_model = mellotron::LandauLifshitzQuantumCorrection;
-
-    else
-        rr_model = mellotron::NoRR;
-
-    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units, rr_model);
+    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units);
     mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle_obs(particle,config->nsteps_);
 
     // Define the initial conditions.

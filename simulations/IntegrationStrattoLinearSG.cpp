@@ -25,6 +25,19 @@ using namespace StrattoCalculator;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
+/// Parse an array in ini_parser.
+/// http://stackoverflow.com/questions/4986052/boost-property-tree-working-with-simple-arrays-or-containers
+template <typename T>
+std::vector<T> to_array(const std::string &s)
+{
+  std::vector<T> result;
+  std::stringstream ss(s);
+  std::string item;
+  while(std::getline(ss,item, ','))
+    result.push_back(boost::lexical_cast<T>(item));
+  return result;
+}
+
 // Structure in which we store all of the data we read in the config file.
 struct StrattoLinearConfig
 {
@@ -47,6 +60,7 @@ struct StrattoLinearConfig
     int num_components_;          // Number of spectral components to consider
     int gaussian_order_;          // Order of the super-gaussian spectrum
     double beam_width_;           // 1/e radius of the field
+    std::vector<double> lg_coeffs_;// Coefficients of the Laguerre-Gauss expansion.
     double mass_;                 // Particle mass
     double Q_;                    // Particle charge
     std::string rad_react_;       // Radiation reaction model.
@@ -115,6 +129,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
             }
             hasFoundModel = true;
             config->beam_width_ = v.second.get<double>("beam_width");
+            config->lg_coeffs_  = to_array<double>(v.second.get<std::string>("lg_coeffs"));
         }
         if(v.first == "particle")
         {
@@ -273,7 +288,7 @@ int main(int argc, char* argv[])
 
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
-    TEM00Mode *beam = new TEM00Mode(spectrum_incident,config->beam_width_);
+    TEM00ModeParaxial *beam = new TEM00ModeParaxial(spectrum_incident,config->beam_width_,config->lg_coeffs_,true);
 
     // Evaluate the beam on the mirror.
     SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1>(

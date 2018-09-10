@@ -32,6 +32,7 @@ struct IntegrationSalaminConfig
     double energy_;
     double mass_;
     double Q_;
+    std::string rad_react_;       // Radiation reaction model.
     double t_init_;
     double dt_;
     int nsteps_;
@@ -74,6 +75,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             hasFoundParticle = true;
             config->mass_ = v.second.get<double>("mass");
             config->Q_ = v.second.get<double>("Q");
+            config->rad_react_ = v.second.get("radiation_reaction", "NoRR");
         }
     }
 
@@ -113,10 +115,17 @@ int main(int argc, char* argv[])
     config->IntegrationSalaminConfig::read(conf_file, config);
 
     // Control the number of components in initial conditions vector
+    bool IsConstantInitialTime = true;
     std::vector<double> init_conds;
     if (!vm["init_conds"].empty() && (init_conds = vm["init_conds"].as<std::vector<double> >()).size() == 6)
     {
         // Good to go
+        init_conds = vm["init_conds"].as<std::vector<double> >();
+    }
+    else if (!vm["init_conds"].empty() && (init_conds = vm["init_conds"].as<std::vector<double> >()).size() == 7)
+    {
+        // Varying initial time. Must read inital time from CL, not from XML file.
+        IsConstantInitialTime = false;
         init_conds = vm["init_conds"].as<std::vector<double> >();
     }
     else
@@ -142,7 +151,7 @@ int main(int argc, char* argv[])
     double L       = config->L_ * lam;
     double mass    = config->mass_;
     double Q       = config->Q_;
-    double t_init  = config->t_init_ / electron_units.UNIT_TIME ;
+    config->t_init_= config->t_init_ / electron_units.UNIT_TIME ;
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
     int nsteps     = config->nsteps_;
 
@@ -172,9 +181,23 @@ int main(int argc, char* argv[])
         throw std::runtime_error("Wrong value of the normalization constant.");
     }
 
+    // Determine the radiation reaction model.
+    mellotron::RadiationReactionModel rr_model;
+    if (config->rad_react_ == std::string("NoRR"))
+        rr_model = mellotron::NoRR;
+
+    else if (config->rad_react_ == std::string("LandauLifshitz"))
+        rr_model = mellotron::LandauLifshitz;
+
+    else if (config->rad_react_ == std::string("LandauLifshitzQuantumCorrection"))
+        rr_model = mellotron::LandauLifshitzQuantumCorrection;
+
+    else
+        rr_model = mellotron::NoRR;
+
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
-    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units);
+    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units,rr_model);
     mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,nsteps);
 
     // Define the initial conditions.
@@ -189,7 +212,14 @@ int main(int argc, char* argv[])
 
 
     // Times at which we output the data.
-    arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+nsteps*dt,nsteps); // Time vector
+    // Behaviour depends on where we read the initial time.
+    double t_init;
+    if (IsConstantInitialTime)
+        t_init = config->t_init_;
+    else
+        t_init = init_conds[6];
+
+    arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+config->nsteps_*dt,config->nsteps_); // Time vector
 
     // Set the initial conditions.
     particle.SetInitConditions(x,x_init,y_init,z_init,px_init,py_init,pz_init,times[0]);

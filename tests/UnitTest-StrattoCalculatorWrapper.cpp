@@ -9,11 +9,11 @@
 
 #include <gtest/gtest.h>
 
+#include "../simulations/StrattoCalculatorWrapper.hpp"
 #include <armadillo>
 #include <mellotron>
 #include <meshpi>
 #include <strattocalculator>
-#include "../simulations/StrattoCalculatorWrapper.hpp"
 
 using namespace mellotron;
 using namespace MeshPI;
@@ -35,7 +35,7 @@ public:
     std::array<double,2> min_parabola                      = {0.0,0.0};
     std::array<double,2> max_parabola                      = {0.0875/electron_units.UNIT_LENGTH,6.28318530718};
     std::array<unsigned int, 2> intervals_per_dim_parabola = {25,25};
-    coord_sys       = new CoordinateSystemModel<2,Cylindrical>(x12,space,qed_units);
+    coord_sys       = new CoordinateSystemModel<2,Cylindrical>(MeshPI::x12,MeshPI::space,MeshPI::qed_units);
     domain_parabola                       = new DomainSerial<2>(
                                                                 min_parabola,
                                                                 max_parabola,
@@ -48,7 +48,7 @@ public:
     mesh_parabola                                          = new SurfaceMesh<2>(
         domain_parabola,
         num_points_parabola,
-        MeshPI::gausslegendre_mesh,
+        linear_mesh,
         boundary
     );
 
@@ -56,8 +56,8 @@ public:
         mesh_parabola,
         focal_length
         );
-        surface->ComputeSurface();
-        surface->ComputeNormal();
+    surface->ComputeSurface();
+    surface->ComputeNormal();
 
     // Change spectrum parameters to appropriate units.
     double energy       = 13.0/electron_units.UNIT_ENERGY;

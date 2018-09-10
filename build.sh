@@ -61,7 +61,7 @@ if [ $# -gt 1 ]; then
     module load meshpi/1.1.0
     module load jsoncpp/1.6.2
     module load zernike/0.0.1
-    module load strattocalculator/3.0.2
+    module load strattocalculator/3.1.0
     module load armadillo
 
     export CMAKE_LIBRARY_PATH=$LIBRARY_PATH

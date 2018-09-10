@@ -27,11 +27,11 @@ filename=`basename $1`
 filenameNoExt="${filename%.*}"
 
 # -- We compile the test.
-CXX_FLAGS="-Wall -std=c++14 -O0"
+CXX_FLAGS="-Wall -std=c++14 -O1 -pg -g"
 mpic++ ${CXX_FLAGS}                       \
       -DNDEBUG                            \
       -I ../include                       \
-      -o ${filenameNoExt}.o               \
+      -o ${filenameNoExt}                 \
       ${filename}                         \
       -lhdf5 -lgtest -lCubature -lcuba -larmadillo -lMeshPI -lStrattoCalculator
 exit 0
