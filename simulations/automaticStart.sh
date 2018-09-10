@@ -40,11 +40,12 @@ done
 
 # Initialize the variables
 GENINIT="GenerateInitialConditions.py"
-INTEGSAL="IntegrationSalamin.o"
-INTEGSTRATTOLIN="IntegrationStrattoLinear.o"
-INTEGSTRATTOMOS="IntegrationStrattoMosaic.o"
-INTEGSTRATTORAD="IntegrationStrattoRadial.o"
-COMPNORMCONST="ComputeNormalizationConstantSalaminLinear.o"
+INTEGSAL="IntegrationSalamin"
+INTEGSTRATTOLIN="IntegrationStrattoLinear"
+INTEGSTRATTOMOS="IntegrationStrattoMosaic"
+INTEGSTRATTORAD="IntegrationStrattoRadial"
+INTEGSTRATTOLINSG="IntegrationStrattoLinearSG"
+COMPNORMCONST="ComputeNormalizationConstantSalaminLinear"
 MANAGEOUT="manageOutputs.py"
 PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
@@ -95,6 +96,8 @@ elif [ "$CONFIG" == "configStrattoMosaic.xml" ]; then
     INTEG=$INTEGSTRATTOMOS
 elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
     INTEG=$INTEGSTRATTORAD
+elif [ "$CONFIG" == "configStrattoLinearSG.xml" ]; then
+    INTEG=$INTEGSTRATTOLINSG
 fi
 
 # -- Calculate particles behavior
@@ -116,13 +119,5 @@ echo "Done: manage outputs."
 echo -e " \e[32m--- Starting to produce the plots ---\e[39m"
 python $PRODUCEPLOTS --directory ./
 echo "Done: produce plots."
-
-# -- Generate PDFs.
-echo -e " \e[32m--- Convert EPS plots to PDF ---\e[39m"
-for file in *.eps
-do
-    epstopdf $file
-done
-echo "Done: convert EPS files."
 
 exit 0
