@@ -1,9 +1,9 @@
 /*! ------------------------------------------------------------------------- *
- * \author Justine Pepin										              *
+ * \author Justine Pepin                                                      *
  * \since 2017-07-04                                                          *
  *                                                                            *
  * Simulation program using the strattocalculator via the                     *
- * StrattoCalculatorWrapper.hpp.                        		              *
+ * StrattoCalculatorWrapper.hpp.                                              *
  * --------------------------------------------------------------------------*/
 
 #include <cmath>
@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 #include <boost/program_options.hpp>
 #include <boost/numeric/odeint.hpp>
 
@@ -61,6 +62,8 @@ struct StrattoLinearConfig
     int gaussian_order_;          // Order of the super-gaussian spectrum
     double beam_width_;           // 1/e radius of the field
     std::vector<double> lg_coeffs_;// Coefficients of the Laguerre-Gauss expansion.
+    double zernike_rmax_;         // Radius of the Zernike polynomial pupil.
+    std::vector<double> zernike_coeffs_;// Coefficients of the Zernike polynomials.
     double mass_;                 // Particle mass
     double Q_;                    // Particle charge
     std::string rad_react_;       // Radiation reaction model.
@@ -130,6 +133,9 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
             hasFoundModel = true;
             config->beam_width_ = v.second.get<double>("beam_width");
             config->lg_coeffs_  = to_array<double>(v.second.get<std::string>("lg_coeffs"));
+
+            config->zernike_rmax_ = v.second.get<double>("zernike_rmax");
+            config->zernike_coeffs_= to_array<double>(v.second.get<std::string>("zernike_coeffs"));
         }
         if(v.first == "particle")
         {
@@ -206,7 +212,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinearSG.xml");
+    conf_file.open("configStrattoLinearSGZernike.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -289,6 +295,13 @@ int main(int argc, char* argv[])
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
     TEM00ModeParaxial *beam = new TEM00ModeParaxial(spectrum_incident,config->beam_width_,config->lg_coeffs_,true);
+
+    double zernike_rmax = config->zernike_rmax_ / GlobalConstant::QEDUnits::UNIT_LENGTH;
+    for (auto&& element : config->zernike_coeffs_)
+    {
+        element /= GlobalConstant::QEDUnits::UNIT_LENGTH;
+    }
+    AberratedBeams* zernike_beam = new AberratedBeams(beam,zernike_rmax,config->zernike_coeffs_);
 
     // Evaluate the beam on the mirror.
     SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1>(

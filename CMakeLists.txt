@@ -42,6 +42,13 @@ find_package(StrattoCalculator REQUIRED)
 include_directories(${strattocalculator_INCLUDE_DIR})
 set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
 message(STATUS "StrattoCalculator library: " ${STRATTOLIBS})
+
+# -- Required dependency: Zernike.
+find_package(Zernike REQUIRED)
+include_directories(${Zernike_INCLUDE_DIR})
+set (ZERNIKELIBS ${ZERNIKELIBS} ${Zernike_LIBRARY})
+message(STATUS "Zernike library: " ${ZERNIKELIBS})
+
 # -- Required dependency: Boost.
 find_package(Boost 1.58.0 COMPONENTS program_options REQUIRED )
 include_directories(${Boost_INCLUDE_DIRS})
@@ -183,3 +190,9 @@ target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${CUBALIBS} ${STRATTO
 target_link_libraries("IntegrationStrattoLinearSG"  Cubature)
 target_link_libraries("IntegrationStrattoLinearSG"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
+
+add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
+target_link_libraries("IntegrationStrattoLinearSGZernike" ${ZERNIKELIBS} ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoLinearSGZernike"  Cubature)
+target_link_libraries("IntegrationStrattoLinearSGZernike"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
