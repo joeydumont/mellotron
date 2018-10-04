@@ -173,6 +173,12 @@ target_link_libraries("IntegrationStrattoLinear"  Cubature)
 target_link_libraries("IntegrationStrattoLinear"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationStrattoLinear" RUNTIME DESTINATION bin)
 
+add_executable("IntegrationStrattoLinearZernike" "simulations/IntegrationStrattoLinearZernike.cpp")
+target_link_libraries("IntegrationStrattoLinearZernike" ${ZERNIKELIBS} ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoLinearZernike"  Cubature)
+target_link_libraries("IntegrationStrattoLinearZernike"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoLinearZernike" RUNTIME DESTINATION bin)
+
 add_executable("IntegrationStrattoMosaic" "simulations/IntegrationStrattoMosaic.cpp")
 target_link_libraries("IntegrationStrattoMosaic" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoMosaic"  Cubature)

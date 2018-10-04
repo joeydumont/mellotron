@@ -11,7 +11,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
 #include <boost/program_options.hpp>
 #include <boost/numeric/odeint.hpp>
 
@@ -25,19 +24,6 @@ using namespace MeshPI;
 using namespace StrattoCalculator;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
-
-/// Parse an array in ini_parser.
-/// http://stackoverflow.com/questions/4986052/boost-property-tree-working-with-simple-arrays-or-containers
-template <typename T>
-std::vector<T> to_array(const std::string &s)
-{
-  std::vector<T> result;
-  std::stringstream ss(s);
-  std::string item;
-  while(std::getline(ss,item, ','))
-    result.push_back(boost::lexical_cast<T>(item));
-  return result;
-}
 
 // Structure in which we store all of the data we read in the config file.
 struct StrattoLinearConfig
@@ -61,7 +47,6 @@ struct StrattoLinearConfig
     int num_components_;          // Number of spectral components to consider
     int gaussian_order_;          // Order of the super-gaussian spectrum
     double beam_width_;           // 1/e radius of the field
-    std::vector<double> lg_coeffs_;// Coefficients of the Laguerre-Gauss expansion.
     double zernike_rmax_;         // Radius of the Zernike polynomial pupil.
     std::vector<double> zernike_coeffs_;// Coefficients of the Zernike polynomials.
     double mass_;                 // Particle mass
@@ -132,10 +117,6 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
             }
             hasFoundModel = true;
             config->beam_width_ = v.second.get<double>("beam_width");
-            config->lg_coeffs_  = to_array<double>(v.second.get<std::string>("lg_coeffs"));
-
-            config->zernike_rmax_ = v.second.get<double>("zernike_rmax");
-            config->zernike_coeffs_= to_array<double>(v.second.get<std::string>("zernike_coeffs"));
         }
         if(v.first == "particle")
         {
@@ -212,7 +193,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinearSGZernike.xml");
+    conf_file.open("configStrattoLinear.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -294,12 +275,12 @@ int main(int argc, char* argv[])
 
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
-    TEM00ModeParaxial *beam = new TEM00ModeParaxial(spectrum_incident,config->beam_width_,config->lg_coeffs_,true);
+    TEM00Mode *beam = new TEM00Mode(spectrum_incident,config->beam_width_);
 
-    double zernike_rmax = config->zernike_rmax_ / GlobalConstant::QEDUnits::UNIT_LENGTH;
+    double zernike_rmax = config->zernike_rmax_ / electron_units.UNIT_LENGTH;
     for (auto&& element : config->zernike_coeffs_)
     {
-        element /= GlobalConstant::QEDUnits::UNIT_LENGTH;
+        element /= electron_units.UNIT_LENGTH;
     }
     AberratedBeams* zernike_beam = new AberratedBeams(beam,zernike_rmax,config->zernike_coeffs_);
 
