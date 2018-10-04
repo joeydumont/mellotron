@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinear.xml");
+    conf_file.open("configStrattoLinearZernike.xml");
     if(!conf_file.is_open())
     {
         std::cout

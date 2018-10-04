@@ -42,6 +42,7 @@ done
 GENINIT="GenerateInitialConditions.py"
 INTEGSAL="IntegrationSalamin"
 INTEGSTRATTOLIN="IntegrationStrattoLinear"
+INTEGSTRATTOLINZERNIKE="IntegrationStrattoLinearZernike"
 INTEGSTRATTOMOS="IntegrationStrattoMosaic"
 INTEGSTRATTORAD="IntegrationStrattoRadial"
 INTEGSTRATTOLINSG="IntegrationStrattoLinearSG"
@@ -52,6 +53,7 @@ PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
+cp $INTEGSTRATTOLINZERNIKE ./$DIR
 cp $INTEGSTRATTOMOS ./$DIR
 cp $INTEGSTRATTORAD ./$DIR
 cp $INTEGSTRATTOLINSG ./$DIR
@@ -69,7 +71,7 @@ if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
 else
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
-    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTORAD $INTEGSTRATTOMOS $INTEGSTRATTOLINSG $INTEGSTRATTOLINSGZERNIKE $COMPNORMCONST $MANAGEOUT
+    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTOLINZERNIKE $INTEGSTRATTORAD $INTEGSTRATTOMOS $INTEGSTRATTOLINSG $INTEGSTRATTOLINSGZERNIKE $COMPNORMCONST $MANAGEOUT
     echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
@@ -96,6 +98,8 @@ if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
     INTEG=$INTEGSAL
 elif [ "$CONFIG" == "configStrattoLinear.xml" ]; then
     INTEG=$INTEGSTRATTOLIN
+elif [ "$CONFIG" == "configStrattoLinearZernike.xml" ]; then
+    INTEG=$INTEGSTRATTOLINZERNIKE
 elif [ "$CONFIG" == "configStrattoMosaic.xml" ]; then
     INTEG=$INTEGSTRATTOMOS
 elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
