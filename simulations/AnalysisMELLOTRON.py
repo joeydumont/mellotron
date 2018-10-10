@@ -96,6 +96,28 @@ if __name__ == "__main__":
 	efield_Ex   = globalModelFile["electric_field"][:,maxGammaIdx,0]
 	efield_Ey   = globalModelFile["electric_field"][:,maxGammaIdx,1]
 	efield_Ez   = globalModelFile["electric_field"][:,maxGammaIdx,2]
+	p_x         = globalModelFile["momentum"][:,maxGammaIdx,0]
+	p_y         = globalModelFile["momentum"][:,maxGammaIdx,1]
+	p_z         = globalModelFile["momentum"][:,maxGammaIdx,2]
+
+	# -- Compute force on particle.
+	f_x = np.zeros_like(p_x)
+	f_y = np.zeros_like(p_y)
+	f_z = np.zeros_like(p_z)
+
+	for i in range(1,p_x.size-1):
+		f_x[i] = (p_x[i+1]-p_x[i-1])/(2*(times[1]-times[0]))
+		f_y[i] = (p_y[i+1]-p_y[i-1])/(2*(times[1]-times[0]))
+		f_z[i] = (p_z[i+1]-p_z[i-1])/(2*(times[1]-times[0]))
+
+	mag_force = 2*np.pi * constants.c / 800e-9 * constants.m_e * constants.c * np.sqrt(f_x**2+f_y**2+f_z**2)
+
+	plt.figure()
+	plt.plot(times*800e-9 / (2*np.pi * constants.c),mag_force/(7344*constants.m_e))
+	plt.gca().set_xlabel("Time")
+	plt.gca().set_ylabel("Acceleration (m/s^2)")
+	plt.savefig("ForceVSTime.pdf", bbox_inches='tight', dpi=500)
+
 
 	print(np.amax(efield_Ex))
 
