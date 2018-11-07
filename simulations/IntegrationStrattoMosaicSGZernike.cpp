@@ -134,7 +134,6 @@ void StrattoMosaicConfig::read(std::ifstream& file, StrattoMosaicConfig*& config
 
             else
                 config->hasChirp = false;
-
         }
         if(v.first == "model")
         {

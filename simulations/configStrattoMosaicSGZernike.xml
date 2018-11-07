@@ -14,9 +14,9 @@
         <boundary_min>false</boundary_min>
         <boundary_max>true</boundary_max>
         <intervals_r>50</intervals_r>
+
         <intervals_th>16</intervals_th>
         <num_points_r>5</num_points_r>
-        <num_points_th>5</num_points_th>
     </parabola>
     <spectrum>
         <energy>13.5</energy>
