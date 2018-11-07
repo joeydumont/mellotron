@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<config>
+    <particle>
+        <mass>1.0</mass>
+        <Q>-1.0</Q>
+        <radiation_reaction>NoRR</radiation_reaction>
+    </particle>
+    <parabola>
+        <r_min>0.0</r_min>
+        <r_max>0.0875</r_max>
+        <th_min>0</th_min>
+        <th_max>360</th_max>
+        <focal_length>0.04375</focal_length>
+        <boundary_min>false</boundary_min>
+        <boundary_max>true</boundary_max>
+        <intervals_r>50</intervals_r>
+        <intervals_th>50</intervals_th>
+        <num_points_r>5</num_points_r>
+        <num_points_th>5</num_points_th>
+    </parabola>
+    <spectrum>
+        <energy>13.5</energy>
+        <lambda_c>800.0e-9</lambda_c>
+        <lambda_min>720.0e-9</lambda_min>
+        <lambda_max>880.0e-9</lambda_max>
+        <delta_lambda>60.0e-9</delta_lambda>
+        <num_components>50</num_components>
+        <gaussian_order>8</gaussian_order>
+    </spectrum>
+    <model>
+      <beam_width>0.075</beam_width>
+      <lg_coeffs>1.98548171e+00,-1.91143649e+00,1.73031489e+00,-1.43416348e+00,1.06169493e+00,-6.81262445e-01,3.62308600e-01,-1.46213251e-01,3.38353778e-02,4.74452145e-03,-7.63501723e-03,2.15331528e-03,7.11755481e-04,-6.39423559e-04,4.97774581e-06,1.41351049e-04,-2.34888969e-05,-3.17167529e-05,7.93488502e-06,6.18496987e-06</lg_coeffs>
+      <zernike_rmax>0.085</zernike_rmax>
+      <zernike_coeffs>0.0,266.0e-9</zernike_coeffs>
+      <number_tesserae>8</number_tesserae>
+    </model>
+    <integration>
+        <t_init>-1.0e-14</t_init>
+        <dt>1.0e-16</dt>
+        <nsteps>200</nsteps>
+    </integration>
+    <generate_initial_conditions>
+        <pz>5109989.461</pz>
+        <numpart>60</numpart>
+        <sphere>
+            <sphere_radius>2.24e-06</sphere_radius>
+        </sphere>
+        <cylinder>
+            <base_radius>2.24e-06</base_radius>
+            <half_height>7e-06</half_height>
+        </cylinder>
+        <line>
+            <initial_z>-2.99792458e-6</initial_z>
+            <half_length>5e-07</half_length>
+        </line>
+    </generate_initial_conditions>
+    <comments_and_units>
+    <!-- mass: Particle mass in units of electron mass ex: 1.0 -->
+    <!-- Q: Particle charge in units of electron charge ex: -1.0 -->
+    <!-- radiation_reation: Radiation reaction model. Must be listed in the RadiationReactionModel enum in MELLOTRON. -->
+    <!-- r_min: Minimal radius of the parabola in metres (ex: 0.0). -->
+    <!-- r_max: Maximum radius of the paraboal in metres (ex: 0.0875). -->
+    <!-- th_min: Minimal angle of the parabola in degrees (ex: 0). -->
+    <!-- th_max: Maximum angle of the parabola in degrees (ex: 360). -->
+    <!-- focal_length: Focal length of the parabola in metres (ex: 0.04375). -->
+    <!-- boundary_min: Flag to evaluate the boundary integral at r_min ("true" or "false"). -->
+    <!-- boundary_max: Flag to evaluate the boundary integral at r_max ("true" or "false"). -->
+    <!-- intervals_r: Number of integration intervals in the r direction (ex: 200). -->
+    <!-- intervals_th: Number of integration intervals in the th direction (ex: 100). -->
+    <!-- num_points_r: Number of integration points in each r interval (ex: 5). -->
+    <!-- num_points_th: Number of integration points in each th interval (ex: 5). -->
+    <!-- energy: Energy in the incident beam in Joules (ex: 13.5). -->
+    <!-- lambda_c: Central wavelength of the spectrum in metres (ex: 800.0e-9). -->
+    <!-- lambda_min: Minimum wavelength of the spectrum in metres (ex: 720.0e-9). -->
+    <!-- lambda_max: Maximum wavelength of the spectrum in metres (ex: 880.0e-9). -->
+    <!-- delta_lambda: Full-width half-maximum of the spectrum in metres (ex: 60.0e-9). -->
+    <!-- num_components: Number of spectral components to consider (ex: 100). -->
+    <!-- gaussian_order: Order of the super-gaussian spectrum (ex: 8). -->
+    <!-- beam_width: 1/e radius of the field (ex: 0.075). -->
+    <!-- t_init: Initial time in simulation in seconds ex: -5.0e-12 -->
+    <!-- dt: Duration of a time step in seconds ex: 1e-13 -->
+    <!-- nsteps: Number of time steps ex: 100 -->
+    <!-- pz: Initial value of momentum in z in eV/c ex: 0.0 -->
+    <!-- numpart: Number of initial conditions ex: 10 -->
+    <!-- sphere_radius: Sphere radius in SI units (meters) ex: 1.0e-06 -->
+    <!-- base_radius: Base of the cylinder radius in SI units (meters) ex: 1.0e-06 -->
+    <!-- half_height: Half height of the cylinder in SI units (meters) ex: 5.0e-06 -->
+    <!-- initial_z: initial position in z axis of the particles in SI units (meters) ex: -3.0e-07 -->
+    <!-- half_length: Half length of the line in SI units (meters) ex: 3.0e-06 -->
+    </comments_and_units>
+</config>

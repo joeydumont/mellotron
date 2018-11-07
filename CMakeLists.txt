@@ -193,6 +193,18 @@ target_link_libraries("IntegrationStrattoMosaic"  Cubature)
 target_link_libraries("IntegrationStrattoMosaic"  Cuba)
 install(TARGETS "IntegrationStrattoMosaic" RUNTIME DESTINATION bin)
 
+add_executable("IntegrationStrattoMosaicSG" "simulations/IntegrationStrattoMosaicSG.cpp")
+target_link_libraries("IntegrationStrattoMosaicSG" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoMosaicSG"  Cubature)
+target_link_libraries("IntegrationStrattoMosaicSG"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoMosaicSG" RUNTIME DESTINATION bin)
+
+add_executable("IntegrationStrattoMosaicSGZernike" "simulations/IntegrationStrattoMosaicSGZernike.cpp")
+target_link_libraries("IntegrationStrattoMosaicSGZernike" ${ZERNIKELIBS} ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
+target_link_libraries("IntegrationStrattoMosaicSGZernike"  Cubature)
+target_link_libraries("IntegrationStrattoMosaicSGZernike"  ${cuba_dir}/libcuba.a)
+install(TARGETS "IntegrationStrattoMosaicSGZernike" RUNTIME DESTINATION bin)
+
 add_executable("IntegrationStrattoRadial" "simulations/IntegrationStrattoRadial.cpp")
 target_link_libraries("IntegrationStrattoRadial" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoRadial"  Cubature)
