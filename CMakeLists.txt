@@ -75,7 +75,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
 # -- Required dependency: cuba (MUST be in submodules, i.e. external/Cuba)
 include(ExternalProject)
 ExternalProject_Add(
-  projet_Cuba
+  project_Cuba
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
