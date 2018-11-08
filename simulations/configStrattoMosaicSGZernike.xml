@@ -14,7 +14,7 @@
         <boundary_min>false</boundary_min>
         <boundary_max>true</boundary_max>
         <intervals_r>50</intervals_r>
-        <intervals_th>50</intervals_th>
+        <intervals_th>16</intervals_th>
         <num_points_r>5</num_points_r>
         <num_points_th>5</num_points_th>
     </parabola>
@@ -26,6 +26,8 @@
         <delta_lambda>60.0e-9</delta_lambda>
         <num_components>50</num_components>
         <gaussian_order>8</gaussian_order>
+        <omega_c_chirp>10.0</omega_c_chirp>
+        <chirp_taylor_coefficients>0.0,1.0,2.0</chirp_taylor_coefficients>
     </spectrum>
     <model>
       <beam_width>0.075</beam_width>
