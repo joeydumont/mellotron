@@ -75,7 +75,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
 # -- Required dependency: cuba (MUST be in submodules, i.e. external/Cuba)
 include(ExternalProject)
 ExternalProject_Add(
-  libcuba.a
+  project_Cuba
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
   PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
@@ -83,9 +83,17 @@ ExternalProject_Add(
   BUILD_IN_SOURCE 1
 )
 
-ExternalProject_Get_Property(libcuba.a install_dir)
+
+ExternalProject_Get_Property(project_Cuba install_dir)
+add_library(Cuba STATIC IMPORTED)
+set_property(TARGET Cuba PROPERTY IMPORTED_LOCATION ${install_dir}/libcuba.a)
+add_dependencies(Cuba project_Cuba)
+
 set (cuba_dir ${install_dir})
-include_directories(${cuba_dir}/include)
+include_directories(${cuba_dir})
+
+
+
 
 # ----------------------------------------------------------------- #
 # --                    Compiler Configuration                   -- #
@@ -153,7 +161,7 @@ add_subdirectory(tests)
 add_executable("IntegrationSalamin" "simulations/IntegrationSalamin.cpp")
 target_link_libraries("IntegrationSalamin" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalamin" Cubature)
-target_link_libraries("IntegrationSalamin" ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationSalamin" Cuba)
 install(TARGETS "IntegrationSalamin" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationSalaminIonized" "simulations/IntegrationSalaminIonized.cpp")
@@ -164,41 +172,41 @@ install(TARGETS "IntegrationSalaminIonized" RUNTIME DESTINATION bin)
 add_executable("ComputeNormalizationConstantSalaminLinear" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
 target_link_libraries("ComputeNormalizationConstantSalaminLinear" ${LIBS} ${CUBALIBS})
 target_link_libraries("ComputeNormalizationConstantSalaminLinear"  Cubature)
-target_link_libraries("ComputeNormalizationConstantSalaminLinear"  ${cuba_dir}/libcuba.a)
+target_link_libraries("ComputeNormalizationConstantSalaminLinear"  Cuba)
 install(TARGETS "ComputeNormalizationConstantSalaminLinear" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinear" "simulations/IntegrationStrattoLinear.cpp")
 target_link_libraries("IntegrationStrattoLinear" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinear"  Cubature)
-target_link_libraries("IntegrationStrattoLinear"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoLinear"  Cuba)
 install(TARGETS "IntegrationStrattoLinear" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinearZernike" "simulations/IntegrationStrattoLinearZernike.cpp")
 target_link_libraries("IntegrationStrattoLinearZernike" ${ZERNIKELIBS} ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinearZernike"  Cubature)
-target_link_libraries("IntegrationStrattoLinearZernike"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoLinearZernike"  Cuba)
 install(TARGETS "IntegrationStrattoLinearZernike" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoMosaic" "simulations/IntegrationStrattoMosaic.cpp")
 target_link_libraries("IntegrationStrattoMosaic" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoMosaic"  Cubature)
-target_link_libraries("IntegrationStrattoMosaic"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoMosaic"  Cuba)
 install(TARGETS "IntegrationStrattoMosaic" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoRadial" "simulations/IntegrationStrattoRadial.cpp")
 target_link_libraries("IntegrationStrattoRadial" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoRadial"  Cubature)
-target_link_libraries("IntegrationStrattoRadial"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoRadial"  Cuba)
 install(TARGETS "IntegrationStrattoRadial" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinearSG" "simulations/IntegrationStrattoLinearSG.cpp")
 target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinearSG"  Cubature)
-target_link_libraries("IntegrationStrattoLinearSG"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoLinearSG"  Cuba)
 install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
 
 add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
 target_link_libraries("IntegrationStrattoLinearSGZernike" ${ZERNIKELIBS} ${LIBS} ${CUBALIBS} ${STRATTOLIBS})
 target_link_libraries("IntegrationStrattoLinearSGZernike"  Cubature)
-target_link_libraries("IntegrationStrattoLinearSGZernike"  ${cuba_dir}/libcuba.a)
+target_link_libraries("IntegrationStrattoLinearSGZernike"  Cuba)
 install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
