@@ -7,4 +7,4 @@
 	url = https://github.com/valandil/Cuba
 [submodule "simulations/strattoanalysis"]
 	path = simulations/strattoanalysis
-	url = schwinger.emt.inrs.ca:/opt/stellar/strattoanalysis.git
+	url = https://github.com/joeydumont/strattoanalysis.git
