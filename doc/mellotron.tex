@@ -306,8 +306,6 @@ Substituting this into the Landau-Lifshitz equation yields
 where $q_\text{el}$ is the charge of the particle in units of the electron charge.
 
 
-
-
 % In the implementation, we assume QED units. The equation thus reads
 %   \begin{equation}
 %     \dv{p^\mu}{s}=\frac{q}{e}\frac{m_e}{m}F^{\mu\nu}p_\nu
@@ -414,6 +412,31 @@ and $\theta_0=\arctan(p_x(0)/p_y(0))$. The position as a function of time
 		y(t)  &=  \frac{p_\perp}{\gamma m_\text{el}\Omega}\left(\sin(\Omega t+\theta_0)-\sin(\theta_0)\right)+y_0 \\
 		z(t)  &= \frac{p_z(0)}{\gamma m_\text{el}}t+z_0.
 	\end{align}
+
+\chapter{Documentation of Drivers}
+
+\section{Drivers based on the StrattoCalculator}
+
+\subsection{Chirp}
+
+Chirp is considered in the frequency domain, where it is simply given by
+a pure phase for each frequency component, and in turn for each component
+of the incident field:
+
+\begin{align}
+  \vb{E}(\vb{r},k) &\mapsto \vb{E}(\vb{r},k)e^{i\phi(\omega)} \\
+  \vb{B}(\vb{r},k) &\mapsto \vb{B}(\vb{r},k)e^{i\phi(\omega)}.
+\end{align}
+
+Since well-behaved beams have well-behaved spectral phases (most of the time),
+we expand $\phi(\omega)$ about some central frequency $\omega_c$ and express
+it as
+  \begin{equation}
+    \phi(\omega) = \sum_i \phi_i \frac{(\omega-\omega_c)^i}{i!}.
+  \end{equation}
+In the MELLOTRON drivers, we take as input $\omega_c$ and a vector of $\phi_i$
+in SI units. Note that the $\phi_n$ will have units of $[\text{second}]^n$.
+
 
 \appendix
 
