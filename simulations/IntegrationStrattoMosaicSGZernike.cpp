@@ -304,7 +304,6 @@ int main(int argc, char* argv[])
         spectrum_incident->SetPhase(i, -2.0*spectrum_incident->GetOmega(i)*config->focal_length_);
     }
 
-
     if (config->hasChirp)
     {
         double omega_c_chirp = config->omega_c_chirp_ * electron_units.UNIT_TIME;
@@ -320,14 +319,7 @@ int main(int argc, char* argv[])
                                             + config->chirp_taylor_coefficients_[i]*std::pow(spectrum_incident->GetOmega(i)-omega_c_chirp,i)/factorial);
             factorial *= (i+1);
         }
-
-        std::cout << "Chirp was added!";
     }
-
-    else
-        std::cout << "Chirp was not added."
-
-    std::endl;
 
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
