@@ -7,7 +7,7 @@ services:
 
 before_install:
   - docker pull fldc/artful
-  - docker run fldc/artful /bin/sh "apt-get install libhdf5-dev boost1.60 libgsl-dev libarmadillo-dev
+  - docker run fldc/artful /bin/sh "apt-get install libhdf5-dev libboost-all-dev libgsl-dev libarmadillo-dev
 
 compiler:
   - clang
