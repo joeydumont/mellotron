@@ -1,26 +1,20 @@
-dist: trusty
-sudo: false
+sudo: required
 
 language: cpp
 
-os: linux
+services:
+  - docker
 
-addons:
-  apt:
-    packages:
-    - hdf5
-    - boost1.60
-    - libgsl-dev
-    - libarmadillo-dev
+before_install:
+  - docker pull fldc/artful
+  - docker run fldc/artful /bin/sh "apt-get install libhdf5-dev boost1.60 libgsl-dev libarmadillo-dev
 
 compiler:
   - clang
   - gcc
 
 script:
-  - mkdir build
-  - cd build
-  - cmake -DWITH_COVERAGE=On ..
-  - make -j 2
+  - cmake  .
+  - make -j 4
   - make test
   - curl -s https://codecov.io/bash | bash -
