@@ -24,6 +24,19 @@ using namespace StrattoCalculator;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
+/// Parse an array in ini_parser.
+/// http://stackoverflow.com/questions/4986052/boost-property-tree-working-with-simple-arrays-or-containers
+template <typename T>
+std::vector<T> to_array(const std::string &s)
+{
+  std::vector<T> result;
+  std::stringstream ss(s);
+  std::string item;
+  while(std::getline(ss,item, ','))
+    result.push_back(boost::lexical_cast<T>(item));
+  return result;
+}
+
 // Structure in which we store all of the data we read in the config file.
 struct StrattoRadialConfig
 {

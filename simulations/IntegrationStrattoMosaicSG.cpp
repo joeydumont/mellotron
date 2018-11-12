@@ -62,7 +62,6 @@ struct StrattoMosaicConfig
     double omega_c_chirp_;         // Central frequency where we expand the spectral phase.
     std::vector<double> chirp_taylor_coefficients_;// Taylor coefficients of the phase (to model chirp).
     double beam_width_;           // 1/e radius of the field
-    double beam_width_;           // 1/e radius of the field
     std::vector<double> lg_coeffs_;// Coefficients of the Laguerre-Gauss expansion.
     int    number_tesserae_;      // Number of segments in the mosaic.
     double mass_;                 // Particle mass

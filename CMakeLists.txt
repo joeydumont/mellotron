@@ -167,6 +167,7 @@ install(TARGETS "IntegrationSalamin" RUNTIME DESTINATION bin)
 add_executable("IntegrationSalaminIonized" "simulations/IntegrationSalaminIonized.cpp")
 target_link_libraries("IntegrationSalaminIonized" ${LIBS} ${CUBALIBS})
 target_link_libraries("IntegrationSalaminIonized" Cubature)
+target_link_libraries("IntegrationSalaminIonized"  ${cuba_dir}/libcuba.a)
 install(TARGETS "IntegrationSalaminIonized" RUNTIME DESTINATION bin)
 
 add_executable("ComputeNormalizationConstantSalaminLinear" "simulations/ComputeNormalizationConstantSalaminLinear.cpp")
