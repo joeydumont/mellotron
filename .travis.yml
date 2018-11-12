@@ -9,7 +9,7 @@ before_install:
   - docker build -t joeydumont/bionic .
   - docker run -itd --name build joeydumont/bionic
   - docker exec build apt-get install -y --force-yes libhdf5-dev libboost-dev libgsl-dev libarmadillo-dev
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then docker exec build git fetch origin +refs/pull/${TRAVIS_PULL_REQUEST}/merge:; docker exec build git checkout -qF FETCH_HEAD; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then docker exec build git fetch origin +refs/pull/${TRAVIS_PULL_REQUEST}/merge:; docker exec build git checkout -qf FETCH_HEAD; fi'
 
 compiler:
   - gcc
