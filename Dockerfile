@@ -12,7 +12,7 @@ RUN apt-get clean
 WORKDIR "/usr/src/googletest"
 RUN mkdir build
 RUN cd build
-RUN cmake -G ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON
+RUN cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON
 RUN cmake --build .
 RUN cmake --build . --target install
 
