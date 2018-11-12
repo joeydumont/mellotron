@@ -50,19 +50,16 @@ set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 # -- Required dependency: MeshPI.
 find_package(MeshPI)
-include_directories(${meshpi_INCLUDE_DIR})
 set (MESHPILIBS ${LIBS} ${meshpi_LIBRARY})
 message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
 
 # -- Required dependency: StrattoCalculator.
 find_package(StrattoCalculator)
-include_directories(${strattocalculator_INCLUDE_DIR})
 set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
 message(STATUS "StrattoCalculator library: " ${STRATTOLIBS})
 
 # -- Required dependency: Zernike.
 find_package(Zernike)
-include_directories(${Zernike_INCLUDE_DIR})
 set (ZERNIKELIBS ${ZERNIKELIBS} ${Zernike_LIBRARY})
 message(STATUS "Zernike library: " ${ZERNIKELIBS})
 
@@ -71,12 +68,14 @@ find_package(MPI COMPONENTS CXX)
 set(MPILIBS ${LIBS} ${MPI_LIBRARIES})
 
 set (BUILD_STRATTO_DRIVERS False)
-if ( (${meshpi_FOUND} STREQUAL "TRUE") AND (${strattocalculator_FOUND} STREQUAL "TRUE"  AND (${Zernike_FOUND} STREQUAL "TRUE" AND (${MPI_FOUND} STREQUAL "TRUE"))
+if ( (${meshpi_FOUND} STREQUAL "TRUE") AND (${strattocalculator_FOUND} STREQUAL "TRUE")  AND (${Zernike_FOUND} STREQUAL "TRUE") AND (${MPI_FOUND} STREQUAL "TRUE"))
   message(STATUS "Found the StrattoCalculator deps: building the related drivers.")
+  include_directories(${meshpi_INCLUDE_DIR})
+  include_directories(${strattocalculator_INCLUDE_DIR})
+  include_directories(${Zernike_INCLUDE_DIR})
   set(BUILD_STRATTO_DRIVERS True)
   set(STRATTODEPS ${MESHPILIBS} ${STRATTOLIBS} ${ZERNIKELIBS} ${MPILIBS})
 endif()
-
 
 # -------------------------- In-tree dependencies --------------------------- #
 # -- Required dependency: Cubature.
