@@ -11,3 +11,4 @@ RUN apt-get clean
 # Clone the repo.
 RUN git clone https://github.com/joeydumont/mellotron joeydumont/mellotron
 WORKDIR "joeydumont/mellotron"
+RUN git submodule update --init --recursive
