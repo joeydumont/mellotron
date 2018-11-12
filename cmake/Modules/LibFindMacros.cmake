@@ -215,7 +215,7 @@ function (libfind_process PREFIX)
       set (${PREFIX}_LIBRARIES ${libs} PARENT_SCOPE)
       set (${PREFIX}_FOUND TRUE PARENT_SCOPE)
     endif()
-    return()    
+    return()
   endif()
 
   # Format messages for debug info and the type of error
