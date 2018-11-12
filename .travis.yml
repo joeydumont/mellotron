@@ -8,10 +8,9 @@ services:
 before_install:
   - docker pull fldc/artful
   - docker run -itd --name build fldc/artful
-  - docker run fldc/artful /bin/sh "apt-get install libhdf5-dev libboost-all-dev libgsl-dev libarmadillo-dev"
+  - docker exec build apt-get install libhdf5-dev libboost-all-dev libgsl-dev libarmadillo-dev
 
 compiler:
-  - clang
   - gcc
 
 script:
@@ -21,4 +20,4 @@ script:
   - docker exec build curl -s https://codecov.io/bash | bash -
 
 git:
-  - submodules: false
+  submodules: false
