@@ -7,7 +7,7 @@ services:
 
 before_install:
   - docker build -t joeydumont/bionic .
-  - docker run -itd --name build ubuntu:bionic
+  - docker run -itd --name build joeydumont/bionic
   - docker exec build apt-get install -y --force-yes libhdf5-dev libboost-dev libgsl-dev libarmadillo-dev
 
 compiler:
