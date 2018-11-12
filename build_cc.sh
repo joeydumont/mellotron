@@ -52,14 +52,13 @@ module load muparser
 module load fftw-mpi
 module load gtest
 module load armadillo
-module load zernike
 module load strattocalculator
 module load gsl
 
 export CMAKE_LIBRARY_PATH=$LIBRARY_PATH
 export CMAKE_INCLUDE_PATH=$INCLUDE_PATH
 
-CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/home/maclean_group/software/mellotron/1.1.0"
+CMAKE_FLAGS="${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=${PROJECT_DIR}/software/mellotron/1.1.0"
 
 cmake ${CMAKE_FLAGS} ..
 
