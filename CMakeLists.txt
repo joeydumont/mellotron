@@ -71,7 +71,7 @@ find_package(MPI COMPONENTS CXX)
 set(MPILIBS ${LIBS} ${MPI_LIBRARIES})
 
 set (BUILD_STRATTO_DRIVERS False)
-if (${meshpi_FOUND} AND ${strattocalculator_FOUND} AND ${Zernike_FOUND} AND ${MPI_FOUND})
+if ( (${meshpi_FOUND} STREQUAL "TRUE") AND (${strattocalculator_FOUND} STREQUAL "TRUE"  AND (${Zernike_FOUND} STREQUAL "TRUE" AND (${MPI_FOUND} STREQUAL "TRUE"))
   message(STATUS "Found the StrattoCalculator deps: building the related drivers.")
   set(BUILD_STRATTO_DRIVERS True)
   set(STRATTODEPS ${MESHPILIBS} ${STRATTOLIBS} ${ZERNIKELIBS} ${MPILIBS})
