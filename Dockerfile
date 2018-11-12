@@ -11,7 +11,7 @@ RUN apt-get clean
 # Compile gtest as a shared library.
 WORKDIR "/usr/src/googletest"
 RUN mkdir build
-RUN cd build
+WORKDIR "/usr/src/googletest/build"
 RUN cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON
 RUN cmake --build .
 RUN cmake --build . --target install
