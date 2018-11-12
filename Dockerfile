@@ -7,3 +7,7 @@ RUN apt-get update
 RUN apt-get install -y --force-yes build-essential wget git cmake clang
 RUN apt-get install -y --force-yes libhdf5-dev libboost-dev libgsl-dev libarmadillo-dev
 RUN apt-get clean
+
+# Clone the repo.
+RUN git clone https://github.com/joeydumont/mellotron joeydumont/mellotron
+WORKDIR "joeydumont/mellotron"
