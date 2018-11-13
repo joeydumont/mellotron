@@ -4,7 +4,7 @@ MAINTAINER joeydumont "https://github.com/joeydumont"
 
 # Install packages for building ruby
 RUN apt-get update
-RUN apt-get install -y --force-yes apt-utils build-essential wget git cmake clang ninja-build
+RUN apt-get install -y --force-yes apt-utils build-essential wget git cmake clang ninja-build curl
 RUN apt-get install -y --force-yes libhdf5-dev libboost-all-dev libgsl-dev libarmadillo-dev libgtest-dev
 RUN apt-get clean
 

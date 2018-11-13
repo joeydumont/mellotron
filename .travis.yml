@@ -19,5 +19,8 @@ script:
   - docker exec build make -j 4
   - travis_wait docker exec build make test
 
+after_success:
+  - docker exec -i build bash < (curl -s https://codecov.io/bash)
+
 git:
   submodules: false
