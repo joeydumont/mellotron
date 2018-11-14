@@ -24,4 +24,4 @@ module load strattocalculator
 module load gsl
 
 # -- We run the program.
-srun <executable_in_path> <figure_out_what_to_put_here>
+<executable_in_path> ~~x~~ ~~y~~ ~~z~~ ~~p_x~~ ~~p_y~~ ~~p_z~~
