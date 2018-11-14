@@ -24,6 +24,19 @@ using namespace StrattoCalculator;
 namespace po = boost::program_options;
 namespace odeint = boost::numeric::odeint;
 
+/// Parse an array in ini_parser.
+/// http://stackoverflow.com/questions/4986052/boost-property-tree-working-with-simple-arrays-or-containers
+template <typename T>
+std::vector<T> to_array(const std::string &s)
+{
+  std::vector<T> result;
+  std::stringstream ss(s);
+  std::string item;
+  while(std::getline(ss,item, ','))
+    result.push_back(boost::lexical_cast<T>(item));
+  return result;
+}
+
 // Structure in which we store all of the data we read in the config file.
 struct StrattoMosaicConfig
 {
@@ -45,6 +58,9 @@ struct StrattoMosaicConfig
     double delta_lambda_;         // Full-width half-maximum of the spectrum
     int num_components_;          // Number of spectral components to consider
     int gaussian_order_;          // Order of the super-gaussian spectrum
+    bool   hasChirp;              // Determines if the config file has chirp info.
+    double omega_c_chirp_;         // Central frequency where we expand the spectral phase.
+    std::vector<double> chirp_taylor_coefficients_;// Taylor coefficients of the phase (to model chirp).
     double beam_width_;           // 1/e radius of the field
     int    number_tesserae_;      // Number of segments in the mosaic.
     double mass_;                 // Particle mass
@@ -104,7 +120,20 @@ void StrattoMosaicConfig::read(std::ifstream& file, StrattoMosaicConfig*& config
             config->delta_lambda_ = v.second.get<double>("delta_lambda");
             config->num_components_ = v.second.get<int>("num_components");
             config->gaussian_order_ = v.second.get<int>("gaussian_order");
+
+
+            // Check that the config file contains chirp information.
+            if (boost::optional<double> omega_c_chirp_opt = v.second.get<double>("omega_c_chirp"))
+            {
+                config->hasChirp = true;
+                config->omega_c_chirp_ = *omega_c_chirp_opt;
+                config->chirp_taylor_coefficients_ = to_array<double>(v.second.get<std::string>("chirp_taylor_coefficients"));
+            }
+
+            else
+                config->hasChirp = false;
         }
+
         if(v.first == "model")
         {
             if(configIsEmpty)
@@ -268,6 +297,23 @@ int main(int argc, char* argv[])
     for (unsigned int i=0; i<config->num_components_;i++)
     {
         spectrum_incident->SetPhase(i, -2.0*spectrum_incident->GetOmega(i)*config->focal_length_);
+    }
+
+    if (config->hasChirp)
+    {
+        double omega_c_chirp = config->omega_c_chirp_ * electron_units.UNIT_TIME;
+        for (int i=0; i<config->chirp_taylor_coefficients_.size(); i++)
+        {
+            config->chirp_taylor_coefficients_[i] /= std::pow(electron_units.UNIT_TIME,i);
+        }
+
+        int factorial = 1;
+        for (int i=0; i<config->num_components_; i++)
+        {
+            spectrum_incident->SetPhase(i, spectrum_incident->GetPhase(i)
+                                            + config->chirp_taylor_coefficients_[i]*std::pow(spectrum_incident->GetOmega(i)-omega_c_chirp,i)/factorial);
+            factorial *= (i+1);
+        }
     }
 
     // Create the beam model.
