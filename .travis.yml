@@ -1,0 +1,23 @@
+sudo: required
+
+language: cpp
+
+services:
+  - docker
+
+before_install:
+  - docker build -t joeydumont/bionic .
+  - docker run -itd --name build joeydumont/bionic
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then docker exec build git fetch origin +refs/pull/${TRAVIS_PULL_REQUEST}/merge:; docker exec build git checkout -qf FETCH_HEAD; fi'
+
+compiler:
+  - gcc
+  - clang
+
+script:
+  - docker exec build cmake .
+  - docker exec build make -j 4
+  - travis_wait docker exec build make test
+
+git:
+  submodules: false
