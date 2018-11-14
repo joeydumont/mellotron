@@ -195,7 +195,7 @@ if (BUILD_STRATTO_DRIVERS)
   add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
   target_link_libraries("IntegrationStrattoLinearSGZernike" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
-
+  
   add_executable("IntegrationStrattoLinearZernike" "simulations/IntegrationStrattoLinearZernike.cpp")
   target_link_libraries("IntegrationStrattoLinearZernike" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinearZernike" RUNTIME DESTINATION bin)
