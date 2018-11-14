@@ -188,6 +188,14 @@ if (BUILD_STRATTO_DRIVERS)
   target_link_libraries("IntegrationStrattoLinear" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinear" RUNTIME DESTINATION bin)
 
+  add_executable("IntegrationStrattoLinearSG" "simulations/IntegrationStrattoLinearSG.cpp")
+  target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
+
+  add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
+  target_link_libraries("IntegrationStrattoLinearSGZernike" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
+
   add_executable("IntegrationStrattoLinearZernike" "simulations/IntegrationStrattoLinearZernike.cpp")
   target_link_libraries("IntegrationStrattoLinearZernike" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinearZernike" RUNTIME DESTINATION bin)
@@ -196,16 +204,16 @@ if (BUILD_STRATTO_DRIVERS)
   target_link_libraries("IntegrationStrattoMosaic" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoMosaic" RUNTIME DESTINATION bin)
 
+  add_executable("IntegrationStrattoMosaicSG" "simulations/IntegrationStrattoMosaicSG.cpp")
+  target_link_libraries("IntegrationStrattoMosaicSG" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoMosaicSG" RUNTIME DESTINATION bin)
+
+  add_executable("IntegrationStrattoMosaicSGZernike" "simulations/IntegrationStrattoMosaicSGZernike.cpp")
+  target_link_libraries("IntegrationStrattoMosaicSGZernike" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoMosaicSGZernike" RUNTIME DESTINATION bin)
+
   add_executable("IntegrationStrattoRadial" "simulations/IntegrationStrattoRadial.cpp")
   target_link_libraries("IntegrationStrattoRadial" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoRadial" RUNTIME DESTINATION bin)
-
-  add_executable("IntegrationStrattoLinearSG" "simulations/IntegrationStrattoLinearSG.cpp")
-  target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${STRATTODEPS})
-  install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
-
-  add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
-  target_link_libraries("IntegrationStrattoLinearSGZernike" ${LIBS} ${STRATTODEPS})
-  install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
 
 endif()
