@@ -41,7 +41,6 @@ if [ $# -gt 0 ]; then
   fi
 fi
 
-
 PROJECT_DIR=~/projects/rrg-maclean-ab/maclean_group/
 module use ${PROJECT_DIR}/modules
 module load openmpi
