@@ -41,23 +41,28 @@ done
 # Initialize the variables
 GENINIT="GenerateInitialConditions.py"
 INTEGSAL="IntegrationSalamin"
+INTEGSALION="IntegrationSalaminIonized"
 INTEGSTRATTOLIN="IntegrationStrattoLinear"
-INTEGSTRATTOLINZERNIKE="IntegrationStrattoLinearZernike"
-INTEGSTRATTOMOS="IntegrationStrattoMosaic"
-INTEGSTRATTORAD="IntegrationStrattoRadial"
 INTEGSTRATTOLINSG="IntegrationStrattoLinearSG"
 INTEGSTRATTOLINSGZERNIKE="IntegrationStrattoLinearSGZernike"
+INTEGSTRATTOLINZERNIKE="IntegrationStrattoLinearZernike"
+INTEGSTRATTOMOS="IntegrationStrattoMosaic"
+INTEGSTRATTOMOSSG="IntegrationStrattoMosaicSG"
+INTEGSTRATTOMOSSGZERNIKE="IntegrationStrattoMosaicSGZernike"
+INTEGSTRATTORAD="IntegrationStrattoRadial"
 COMPNORMCONST="ComputeNormalizationConstantSalaminLinear"
 MANAGEOUT="manageOutputs.py"
 PRODUCEPLOTS="producePlots.py"
 cp $GENINIT ./$DIR
 cp $INTEGSAL ./$DIR
 cp $INTEGSTRATTOLIN ./$DIR
-cp $INTEGSTRATTOLINZERNIKE ./$DIR
-cp $INTEGSTRATTOMOS ./$DIR
-cp $INTEGSTRATTORAD ./$DIR
 cp $INTEGSTRATTOLINSG ./$DIR
 cp $INTEGSTRATTOLINSGZERNIKE ./$DIR
+cp $INTEGSTRATTOLINZERNIKE ./$DIR
+cp $INTEGSTRATTOMOS ./$DIR
+cp $INTEGSTRATTOMOSSG ./$DIR
+cp $INTEGSTRATTOMOSSGZERNIKE ./$DIR
+cp $INTEGSTRATTORAD ./$DIR
 cp $COMPNORMCONST ./$DIR
 cp $MANAGEOUT ./$DIR
 cp $PRODUCEPLOTS ./$DIR
@@ -71,7 +76,6 @@ if [ -f  ./$CONFIG ]; then
     echo -e " \e[32m--- Config file has been found. ---\e[39m"
 else
     echo -e " \e[32m--- missing config.xml file. ---\e[39m"
-    rm $GENINIT $INTEGSAL $INTEGSTRATTOLIN $INTEGSTRATTOLINZERNIKE $INTEGSTRATTORAD $INTEGSTRATTOMOS $INTEGSTRATTOLINSG $INTEGSTRATTOLINSGZERNIKE $COMPNORMCONST $MANAGEOUT
     echo "Mellotron can not be run. Exiting. "
     exit 0
 fi
@@ -86,7 +90,7 @@ else
 fi
 
 CONFIGDEFAULT="configSalamin.xml"
-if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
+if [ "$CONFIG" == "$CONFIGDEFAULT" ] || [ "$CONFIG" == "configSalaminIonized.xml" ]; then
     # Compute normalization constant
     if [ -f  ./$OUTNORMCONST ]; then
         echo -e " \e[32m--- Normalization constant has been found. ---\e[39m"
@@ -95,19 +99,27 @@ if [ "$CONFIG" == "$CONFIGDEFAULT" ]; then
         ./$COMPNORMCONST
         echo "Done: compute normalization constant."
     fi
+
+if [ "$CONFIG" == "$CONFIGDEFAULTG" ]
     INTEG=$INTEGSAL
+elif [ "$CONFIG" == "configSalaminIonized.xml" ]; then
+    INTEG=$INTEGSALION
 elif [ "$CONFIG" == "configStrattoLinear.xml" ]; then
     INTEG=$INTEGSTRATTOLIN
-elif [ "$CONFIG" == "configStrattoLinearZernike.xml" ]; then
-    INTEG=$INTEGSTRATTOLINZERNIKE
-elif [ "$CONFIG" == "configStrattoMosaic.xml" ]; then
-    INTEG=$INTEGSTRATTOMOS
-elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
-    INTEG=$INTEGSTRATTORAD
 elif [ "$CONFIG" == "configStrattoLinearSG.xml" ]; then
     INTEG=$INTEGSTRATTOLINSG
 elif [ "$CONFIG" == "configStrattoLinearSGZernike.xml" ]; then
     INTEG=$INTEGSTRATTOLINSGZERNIKE
+elif [ "$CONFIG" == "configStrattoLinearZernike.xml" ]; then
+    INTEG=$INTEGSTRATTOLINZERNIKE
+elif [ "$CONFIG" == "configStrattoMosaic.xml" ]; then
+    INTEG=$INTEGSTRATTOMOS
+elif [ "$CONFIG" == "configStrattoMosaicSG.xml" ]; then
+    INTEG=$INTEGSTRATTOMOSSG
+elif [ "$CONFIG" == "configStrattoMosaicSGZernike.xml" ]; then
+    INTEG=$INTEGSTRATTOMOSSGZERNIKE
+elif [ "$CONFIG" == "configStrattoRadial.xml" ]; then
+    INTEG=$INTEGSTRATTORAD
 fi
 
 # -- Calculate particles behavior
