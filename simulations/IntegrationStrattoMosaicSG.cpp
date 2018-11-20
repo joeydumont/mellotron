@@ -123,7 +123,7 @@ void StrattoMosaicConfig::read(std::ifstream& file, StrattoMosaicConfig*& config
             config->gaussian_order_ = v.second.get<int>("gaussian_order");
 
             // Check that the config file contains chirp information.
-            if (boost::optional<double> omega_c_chirp_opt = v.second.get<double>("omega_c_chirp"))
+            if (boost::optional<double> omega_c_chirp_opt = v.second.get_optional<double>("omega_c_chirp"))
             {
                 config->hasChirp = true;
                 config->omega_c_chirp_ = *omega_c_chirp_opt;

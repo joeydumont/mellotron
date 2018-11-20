@@ -50,7 +50,7 @@ set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 # -- Required dependency: MeshPI.
 find_package(MeshPI)
-set (MESHPILIBS ${LIBS} ${meshpi_LIBRARY})
+set (MESHPILIBS ${meshpi_LIBRARY})
 message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
 
 # -- Required dependency: StrattoCalculator.

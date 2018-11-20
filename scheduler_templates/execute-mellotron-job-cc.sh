@@ -22,6 +22,7 @@ module load gtest
 module load armadillo
 module load strattocalculator
 module load gsl
+module load mellotron
 
 # -- We run the program.
-<executable_in_path> ~~x~~ ~~y~~ ~~z~~ ~~p_x~~ ~~p_y~~ ~~p_z~~
+<executable_in_path> --init_conds ~~x~~ ~~y~~ ~~z~~ ~~p_x~~ ~~p_y~~ ~~p_z~~
