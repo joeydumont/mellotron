@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.1)
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX /usr)
 endif()
-LIST (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
+LIST (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 MESSAGE( STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # -- Required dependency: HDF5.
@@ -50,45 +50,46 @@ set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 # -- Required dependency: MeshPI.
 find_package(MeshPI)
-set (MESHPILIBS ${LIBS} ${meshpi_LIBRARY})
+set (MESHPILIBS ${meshpi_LIBRARY})
 message(STATUS "MeshPI library: " ${meshpi_LIBRARIES})
 
 # -- Required dependency: StrattoCalculator.
 find_package(StrattoCalculator)
-set (STRATTOLIBS ${STRATTOLIBS} ${strattocalculator_LIBRARIES})
+set (STRATTOLIBS ${strattocalculator_LIBRARIES})
 message(STATUS "StrattoCalculator library: " ${STRATTOLIBS})
 
 # -- Required dependency: Zernike.
 find_package(Zernike)
-set (ZERNIKELIBS ${ZERNIKELIBS} ${Zernike_LIBRARY})
+set (ZERNIKELIBS ${Zernike_LIBRARY})
 message(STATUS "Zernike library: " ${ZERNIKELIBS})
 
 # -- Required dependency: MPI
-find_package(MPI COMPONENTS CXX)
-set(MPILIBS ${LIBS} ${MPI_LIBRARIES})
+find_package(MPI)
 
 set (BUILD_STRATTO_DRIVERS False)
-if ( (${meshpi_FOUND} STREQUAL "TRUE") AND (${strattocalculator_FOUND} STREQUAL "TRUE")  AND (${Zernike_FOUND} STREQUAL "TRUE") AND (${MPI_FOUND} STREQUAL "TRUE"))
+if ( (${meshpi_FOUND} STREQUAL "TRUE") AND (${strattocalculator_FOUND} STREQUAL "TRUE")  AND (${Zernike_FOUND} STREQUAL "TRUE") AND ( ${MPI_CXX_FOUND} STREQUAL "TRUE") )
   message(STATUS "Found the StrattoCalculator deps: building the related drivers.")
+  include_directories(${MPI_CXX_INCLUDE_DIRS})
   include_directories(${meshpi_INCLUDE_DIR})
   include_directories(${strattocalculator_INCLUDE_DIR})
   include_directories(${Zernike_INCLUDE_DIR})
+  set(LIBS ${LIBS} ${MPI_CXX_LIBRARIES})
   set(BUILD_STRATTO_DRIVERS True)
   set(STRATTODEPS ${MESHPILIBS} ${STRATTOLIBS} ${ZERNIKELIBS} ${MPILIBS})
 endif()
 
 # -------------------------- In-tree dependencies --------------------------- #
 # -- Required dependency: Cubature.
-add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/)
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/external/Cubature/include)
+add_subdirectory (${CMAKE_SOURCE_DIR}/external/Cubature/)
+include_directories (${CMAKE_SOURCE_DIR}/external/Cubature/include)
 
 # -- Required dependency: cuba (MUST be in submodules, i.e. external/Cuba)
 include(ExternalProject)
 ExternalProject_Add(
   project_Cuba
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
-  PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/external/Cuba
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/Cuba
+  CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/external/Cuba/configure --prefix=${CMAKE_SOURCE_DIR}/external/Cuba
+  PREFIX ${CMAKE_SOURCE_DIR}/external/Cuba
   BUILD_COMMAND make
   BUILD_IN_SOURCE 1
 )
@@ -151,7 +152,7 @@ endif()
 # --                  Compilation Instructions                   -- #
 # ----------------------------------------------------------------- #
 # -- Included files
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories (${CMAKE_SOURCE_DIR}/include)
 
 # -- Install mellotron headers
 install (DIRECTORY include/          DESTINATION include)
@@ -188,6 +189,14 @@ if (BUILD_STRATTO_DRIVERS)
   target_link_libraries("IntegrationStrattoLinear" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinear" RUNTIME DESTINATION bin)
 
+  add_executable("IntegrationStrattoLinearSG" "simulations/IntegrationStrattoLinearSG.cpp")
+  target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
+
+  add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
+  target_link_libraries("IntegrationStrattoLinearSGZernike" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
+
   add_executable("IntegrationStrattoLinearZernike" "simulations/IntegrationStrattoLinearZernike.cpp")
   target_link_libraries("IntegrationStrattoLinearZernike" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoLinearZernike" RUNTIME DESTINATION bin)
@@ -196,16 +205,16 @@ if (BUILD_STRATTO_DRIVERS)
   target_link_libraries("IntegrationStrattoMosaic" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoMosaic" RUNTIME DESTINATION bin)
 
+  add_executable("IntegrationStrattoMosaicSG" "simulations/IntegrationStrattoMosaicSG.cpp")
+  target_link_libraries("IntegrationStrattoMosaicSG" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoMosaicSG" RUNTIME DESTINATION bin)
+
+  add_executable("IntegrationStrattoMosaicSGZernike" "simulations/IntegrationStrattoMosaicSGZernike.cpp")
+  target_link_libraries("IntegrationStrattoMosaicSGZernike" ${LIBS} ${STRATTODEPS})
+  install(TARGETS "IntegrationStrattoMosaicSGZernike" RUNTIME DESTINATION bin)
+
   add_executable("IntegrationStrattoRadial" "simulations/IntegrationStrattoRadial.cpp")
   target_link_libraries("IntegrationStrattoRadial" ${LIBS} ${STRATTODEPS})
   install(TARGETS "IntegrationStrattoRadial" RUNTIME DESTINATION bin)
-
-  add_executable("IntegrationStrattoLinearSG" "simulations/IntegrationStrattoLinearSG.cpp")
-  target_link_libraries("IntegrationStrattoLinearSG" ${LIBS} ${STRATTODEPS})
-  install(TARGETS "IntegrationStrattoLinearSG" RUNTIME DESTINATION bin)
-
-  add_executable("IntegrationStrattoLinearSGZernike" "simulations/IntegrationStrattoLinearSGZernike.cpp")
-  target_link_libraries("IntegrationStrattoLinearSGZernike" ${LIBS} ${STRATTODEPS})
-  install(TARGETS "IntegrationStrattoLinearSGZernike" RUNTIME DESTINATION bin)
 
 endif()

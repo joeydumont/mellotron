@@ -36,7 +36,6 @@ target_link_libraries("UnitTest-SalaminTightlyFocused" Cubature)
 target_link_libraries("UnitTest-SalaminTightlyFocused" Cuba)
 add_test(NAME "UnitTest-SalaminTightlyFocused" COMMAND "UnitTest-SalaminTightlyFocused" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/")
 
-
 if (BUILD_STRATTO_DRIVERS)
   add_executable("UnitTest-StrattoCalculatorWrapper" "UnitTest-StrattoCalculatorWrapper.cpp")
   target_link_libraries("UnitTest-StrattoCalculatorWrapper" ${LIBS} ${STRATTODEPS})
