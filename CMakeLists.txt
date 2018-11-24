@@ -218,3 +218,11 @@ if (BUILD_STRATTO_DRIVERS)
   install(TARGETS "IntegrationStrattoRadial" RUNTIME DESTINATION bin)
 
 endif()
+
+# ----------------------------------------------------------------- #
+# --                     modulefile template                     -- #
+# ----------------------------------------------------------------- #
+
+# -- Configure module file for CC clusters.
+configure_file(module_templates/cc_module_template.in
+               modules/${mellotron_VERSION_MAJOR}.${mellotron_VERSION_MINOR}.${mellotron_VERSION_RELEASE})
