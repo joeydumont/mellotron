@@ -14,7 +14,7 @@
         <boundary_min>false</boundary_min>
         <boundary_max>true</boundary_max>
         <intervals_r>50</intervals_r>
-        <intervals_th>50</intervals_th>
+        <intervals_th>16</intervals_th>
         <num_points_r>5</num_points_r>
         <num_points_th>5</num_points_th>
     </parabola>
@@ -26,9 +26,15 @@
         <delta_lambda>60.0e-9</delta_lambda>
         <num_components>50</num_components>
         <gaussian_order>8</gaussian_order>
+        <omega_c_chirp>10.0</omega_c_chirp>
+        <chirp_taylor_coefficients>0.0,1.0,2.0</chirp_taylor_coefficients>
     </spectrum>
     <model>
-        <beam_width>0.075</beam_width>
+      <beam_width>0.075</beam_width>
+      <lg_coeffs>1.98548171e+00,-1.91143649e+00,1.73031489e+00,-1.43416348e+00,1.06169493e+00,-6.81262445e-01,3.62308600e-01,-1.46213251e-01,3.38353778e-02,4.74452145e-03,-7.63501723e-03,2.15331528e-03,7.11755481e-04,-6.39423559e-04,4.97774581e-06,1.41351049e-04,-2.34888969e-05,-3.17167529e-05,7.93488502e-06,6.18496987e-06</lg_coeffs>
+      <zernike_rmax>0.085</zernike_rmax>
+      <zernike_coeffs>0.0,266.0e-9</zernike_coeffs>
+      <number_tesserae>8</number_tesserae>
     </model>
     <integration>
         <t_init>-1.0e-14</t_init>
@@ -37,7 +43,7 @@
     </integration>
     <generate_initial_conditions>
         <pz>5109989.461</pz>
-        <numpart>500</numpart>
+        <numpart>60</numpart>
         <sphere>
             <sphere_radius>2.24e-06</sphere_radius>
         </sphere>

@@ -1,0 +1,30 @@
+# --------------------------------------------------------------------------- #
+# Author:          Joey Dumont                <joey.dumont@gmail.com>         #
+# Date created:    Nov. 14th, 2018                                            #
+# Description:     BQsubmit file.                                             #
+# License:         CC0                                                        #
+#                  <https://creativecommons.org/publicdomain/zero/1.0>        #
+# --------------------------------------------------------------------------- #
+
+# -- Name of the batch (can't have whitespace between = and name).
+batchName      =<name_of_batch>
+
+# -- BQTools options.
+concurrentJobs = 800
+command        = bash execute-mellotron-job-cc.sh
+paramSymLinks  = 0
+
+# -- Files to be copied, linked or modified.
+templateFiles  = execute-mellotron-job-cc.sh
+copyFiles      = <config_file>
+
+# -- Resources (must be on one line).
+submitOptions  = "--account=rrg-maclean-ab --time=24:00:00 --nodes=1 --ntasks-per-node=24 --mem=31744M --job-name=<job_name>-%j --mail-user=<email_address> --mail-type=ALL,TIME_LIMIT,TIME_LIMIT_90,ARRAY_TASKS"
+
+# -- Load from files. "::: col1 :::+ col2 :::+ col3 <...>" to avoid Cartesian products of columns.
+keysList       = "x y z p_x p_y p_z"
+valuesList     ="::: $(awk '{ print $1 }' init_conds.txt) :::+ $(awk '{ print $2 }' init_conds.txt) :::+ $(awk '{ print $3 }' init_conds.txt) :::+ $(awk '{ print $4 }' init_conds.txt) :::+ $(awk '{ print $5 }' init_conds.txt) :::+ $(awk '{ print $6 }' init_conds.txt)"
+
+# -- Parallelize serial jobs.
+microJobs = 24
+concurrentMicroJobs = 24

@@ -1,0 +1,44 @@
+#%Module1.0
+
+# --------------------------------------------------------------------------- #
+# Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
+# Date:         2017-11-23                                                    #
+# Description:  Module file for the MELLOTRON v@mellotron_VERSION_MAJOR@.@mellotron_VERSION_MINOR@.@mellotron_VERSION_RELEASE@.                         #
+# License:      CC0 - Public Domain                                           #
+#                                                                             #
+# This module loads the MELLOTRON, and sets the proper environment            #
+# variables.                                                                  #
+# --------------------------------------------------------------------------- #
+
+# -- Help message for module help.
+proc ModulesHelp { } {
+        puts stderr "\tAdds MELLOTRON environment variables."
+}
+
+# -- Other information for module.
+module-whatis "(Name___________) MELLOTRON"
+module-whatis "(Version________) @mellotron_VERSION_MAJOR@.@mellotron_VERSION_MINOR@.@mellotron_VERSION_RELEASE@"
+module-whatis "(Authorship_____) Joey Dumont, Denis Gagnon, Justine Pepin"
+
+# -- Environment variables.
+prereq                              openmpi
+prereq                              hdf5-mpi
+prereq                              meshpi
+prereq                              boost-mpi
+prereq                              muparser
+prereq                              fftw-mpi
+prereq                              gtest
+prereq                              armadillo
+prereq                              strattocalculator
+prereq                              gsl
+
+set             HOME                $::env(HOME)
+set             root                $HOME/projects/rrg-maclean-ab/maclean_group/software/mellotron/@mellotron_VERSION_MAJOR@.@mellotron_VERSION_MINOR@.@mellotron_VERSION_RELEASE@
+prepend-path    PATH                $root/bin
+prepend-path    LIBRARY_PATH        $root/lib
+prepend-path    LD_LIBRARY_PATH     $root/lib
+prepend-path    INCLUDE_PATH        $root/include
+prepend-path    C_INCLUDE_PATH      $root/include
+prepend-path    CXX_INCLUDE_PATH    $root/include
+prepend-path    CPP_INCLUDE_PATH    $root/include
+prepend-path    CPLUS_INCLUDE_PATH  $root/include

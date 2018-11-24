@@ -3,6 +3,7 @@
     <particle>
         <mass>1.0</mass>
         <Q>-1.0</Q>
+        <radiation_reaction>NoRR</radiation_reaction>
     </particle>
     <integration_salamin>
         <lambda>8.0e-7</lambda>
@@ -31,6 +32,7 @@
     <comments_and_units>
     <!-- mass: Particle mass in units of electron mass ex: 1.0 -->
     <!-- Q: Particle charge in units of electron charge ex: -1.0 -->
+    <!-- radiation_reation: Radiation reaction model. Must be listed in the RadiationReactionModel enum in MELLOTRON. -->
     <!-- lambda: Wavelength of the beam in SI units (meters) ex: 800.0e-9 -->
     <!-- w0: Beam waist as a multiple of lambda ex: 0.8 -->
     <!-- L: Axial length as a multiple of lambda ex: 0.7 -->

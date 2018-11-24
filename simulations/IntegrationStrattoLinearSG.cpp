@@ -63,6 +63,7 @@ struct StrattoLinearConfig
     double omega_c_chirp_;         // Central frequency where we expand the spectral phase.
     std::vector<double> chirp_taylor_coefficients_;// Taylor coefficients of the phase (to model chirp).
     double beam_width_;           // 1/e radius of the field
+    std::vector<double> lg_coeffs_;// Coefficients of the Laguerre-Gauss expansion.
     double mass_;                 // Particle mass
     double Q_;                    // Particle charge
     std::string rad_react_;       // Radiation reaction model.
@@ -142,6 +143,7 @@ void StrattoLinearConfig::read(std::ifstream& file, StrattoLinearConfig*& config
             }
             hasFoundModel = true;
             config->beam_width_ = v.second.get<double>("beam_width");
+            config->lg_coeffs_  = to_array<double>(v.second.get<std::string>("lg_coeffs"));
         }
         if(v.first == "particle")
         {
@@ -218,7 +220,7 @@ int main(int argc, char* argv[])
 
     // Open config file.
     std::ifstream conf_file;
-    conf_file.open("configStrattoLinear.xml");
+    conf_file.open("configStrattoLinearSG.xml");
     if(!conf_file.is_open())
     {
         std::cout
@@ -317,7 +319,7 @@ int main(int argc, char* argv[])
 
     // Create the beam model.
     config->beam_width_ = config->beam_width_/electron_units.UNIT_LENGTH;
-    TEM00Mode *beam = new TEM00Mode(spectrum_incident,config->beam_width_);
+    TEM00ModeParaxial *beam = new TEM00ModeParaxial(spectrum_incident,config->beam_width_,config->lg_coeffs_,true);
 
     // Evaluate the beam on the mirror.
     SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1> *incident_field = new SurfaceEMFieldManyOnTheFly<SurfaceEMFieldGeneral,2,1>(

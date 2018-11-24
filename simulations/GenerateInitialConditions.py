@@ -96,7 +96,7 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
-    # Choosen shape for the simulation
+    # Chosen shape for the simulation
     shape = args.shape
     configFile = args.config
 
@@ -161,7 +161,7 @@ def main():
         sys.exit()
 
     # Momentum values for px and py
-    px = 0.0 
+    px = 0.0
     py = 0.0
     # Momentum value for pz in electronic units (converted from eV/c)
     pz = pz / (codata.value('electron mass energy equivalent in MeV') * 1e6) # Denominator is electron mass in eV/c^2

@@ -4,6 +4,9 @@ import h5py as hp
 import sys as sys
 
 def writeAttribute1(of, n, nTimeSteps, nParticles,nameOfAttribute):
+    """
+    Writes into the global.xdmf file an attribute that only has one dimension such as chi or gamma.
+    """
     of.write('<Attribute Name="' + str(nameOfAttribute) + '" Center="Node">\n')
     of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nParticles) + '">\n')
     of.write('<DataItem Dimensions="3 2" NumberType="Int">\n')
@@ -18,6 +21,9 @@ def writeAttribute1(of, n, nTimeSteps, nParticles,nameOfAttribute):
     of.write('</Attribute>\n')
 
 def writeAttribute3(of, n, nTimeSteps, nParticles, nameOfAttribute):
+    """
+    Writes into the global.xdmf file an attribute that only has one dimension such as the electric field or the magnetic field.
+    """
     of.write('<Attribute Name="' + str(nameOfAttribute) + '" Center="Node">\n')
     of.write('<DataItem Format="HDF" ItemType="HyperSlab" Dimensions="1 ' + str(nParticles) + ' 3">\n')
     of.write('<DataItem Dimensions="3 3" NumberType="Int">\n')
@@ -32,6 +38,10 @@ def writeAttribute3(of, n, nTimeSteps, nParticles, nameOfAttribute):
     of.write('</Attribute>\n')
 
 def generateXMF(directory, nParticles, nTimeSteps):
+    """
+    Creates the global.xdmf file and writes the timesteps list in it.
+    For each of the timesteps, this function writes the position in 3D and the attributes of the particle.
+    """
     # Initialize xdmf file
     of = open(directory + 'global.xdmf','w')
     of.write('<?xml version="1.0" ?>\n')
@@ -95,6 +105,11 @@ def generateXMF(directory, nParticles, nTimeSteps):
 
 
 def addToGlobal(directory, partialfile, globalGroup, nTimeSteps, n):
+    """
+    Reads the chi, gamma, magnetic, electric, momentum and position values
+    from the single particle HDF5 output and accumulates the data in the
+    global file.
+    """
     # Fill the particle dimension in global hdf5 file
     partialFile = hp.File(directory + partialfile, "r")
     partialGroup = partialFile.require_group(partialfile)
@@ -145,7 +160,7 @@ def accumulateLWInGlobal(directory, partialfile, globalGroup, nTimeSteps):
 def main():
     """
     Manage the .hdf5 output files to create a global .hdf5 file complemented
-    with a .xmf file to be read in Paraview.
+    with a .xdmf file to be read in Paraview.
 
     Author: Justine Pepin <justine.pepin@emt.inrs.ca>
     """
@@ -178,7 +193,7 @@ def main():
         print("It seems like the folder you gave doesn\'t have hdf5 files in it.")
         sys.exit()
 
-    # Determine exactly how many timesteps there are.
+    # Determine exactly how many time steps there are.
     timesModelFile = hp.File(directory + timesModel, "r")
     timesModelGroup = timesModelFile.require_group(timesModel)
     timesModelTimes = timesModelGroup["times"]
@@ -190,7 +205,6 @@ def main():
 
     # -- times
     globalGroup.copy(timesModelTimes, "times", "times", False, False, False, False, False)
-
     # -- chi
     globalGroup.create_dataset("chi", (nTimeSteps, nParticles), dtype="f8")
     # -- gamma
@@ -222,8 +236,8 @@ def main():
         # -- We copy the data to groups in the global hdf5 file.
         LW_ModelGroup   = timesModelGroup["lienard-wiechert-fields"]
         globalLWGroup = globalGroup.create_group("lienard-wiechert-fields")
-        #LW_ModelGroup.copy("phi",   globalLWGroup)
-        #LW_ModelGroup.copy("theta", globalLWGroup)
+        LW_ModelGroup.copy("phi",   globalLWGroup)
+        LW_ModelGroup.copy("theta", globalLWGroup)
 
         # -- We now create the field datasets in the global file.
         globalLWGroup.create_dataset("electric_field", (nTimeSteps, LW_ModelGroup["electric_field"].shape[1], LW_ModelGroup["electric_field"].shape[2], 3), dtype=float, fillvalue=0.0)
