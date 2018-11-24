@@ -12,12 +12,13 @@
 #                                                                             #
 # --------------------------------------------------------------------------- #
 
-# -- Really simple script to isolate the version number from the CMakeLists.txt.
 function ParseVersion() {
     # $1 is the version number to parse (major, minor, or release)
     # $2 is the path of the CMakeLists.txt to parse.
-    VERSION=$(cat $2 | grep $1)
-    VERSION=$(echo $VERSION | cut -c$((${#VERSION}-1)))
+    # -- The regex to use is this: /(?<=VERSION_MAJOR\s)\d+(?=[\s)])/.
+    # -- Now try to fucking implement this in bash.
+    # -- I DARE YOU, I DOUBLE DARE YOU!
+    VERSION=$(cat $2 | grep -oP "(?<=$1\s)\d+(?=[\s)])")
 
     echo $VERSION
     return 0;
@@ -28,7 +29,6 @@ VERSION_MINOR=$(ParseVersion mellotron_VERSION_MINOR CMakeLists.txt)
 VERSION_RELEASE=$(ParseVersion mellotron_VERSION_RELEASE CMakeLists.txt)
 
 echo "We are at MELLOTRON version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_RELEASE}"
-
 
 # Check the number of arguments.
 if [ $# -gt 2 ]; then
