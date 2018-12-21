@@ -17,6 +17,11 @@ include_directories(${GTEST_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${GTEST_LIBRARIES})
 
 # -- Output tests in directory
+add_executable("UnitTest-Envelope" "UnitTest-Envelope.cpp")
+target_link_libraries("UnitTest-Envelope" ${LIBS})
+add_test(NAME "UnitTest-Envelope" COMMAND "UnitTest-Envelope")
+
+
 add_executable("UnitTest-Particle" "UnitTest-Particle.cpp")
 target_link_libraries("UnitTest-Particle" ${LIBS})
 add_test(NAME "UnitTest-Particle" COMMAND "UnitTest-Particle")
