@@ -39,6 +39,7 @@ struct IntegrationSalaminConfig
     unsigned int nsteps_;
     double threshold_;
     void read(std::ifstream& file, IntegrationSalaminConfig*& config);
+    std::string envelope_;
 };
 
 void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfig*& config)
@@ -67,6 +68,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->dt_ = v.second.get<double>("dt");
             config->nsteps_ = v.second.get<unsigned int>("nsteps");
             config->threshold_ = v.second.get<double>("threshold");
+            config->envelope_ = v.second.get("envelope", "NoEnvelope");
 
         }
         if(v.first == "particle")
@@ -179,9 +181,20 @@ int main(int argc, char* argv[])
         throw std::runtime_error("Wrong value of the normalization constant.");
     }
 
+    // Create envelope
+    mellotron::Envelope* envelope;
+    if (config->envelope_ == std::string("NoEnvelope"))
+        envelope = new mellotron::NoEnvelope();
+
+    else if (config->envelope_ == std::string("EnvelopeHann"))
+        envelope = new mellotron::EnvelopeHann(t_init,config->nsteps_*dt);
+
+    else
+        envelope = new mellotron::NoEnvelope();
+
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
-    mellotron::ParticleIonized<mellotron::SalaminTightlyFocusedLinear>  particle(Q,mass,field,electron_units,threshold);
+    mellotron::ParticleIonized<mellotron::SalaminTightlyFocusedLinear>  particle(Q,mass,field,electron_units,threshold,*envelope);
     mellotron::ParticleObserverIonized<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle);
 
     // Define the initial conditions.
@@ -214,7 +227,7 @@ int main(int argc, char* argv[])
 
     particle_obs.OutputData();
 
-
+    delete envelope;
     delete config;
     return 0;
 

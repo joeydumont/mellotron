@@ -64,7 +64,7 @@ public:
   : charge(2.0)
   , mass(3.0)
   , electron_units(1.0)
-  , electron(charge,mass,field,electron_units)
+  , electron(charge,mass,field,electron_units,envelope)
   , electron_obs(electron)
   {}
 
@@ -73,6 +73,7 @@ public:
 
   ConstantField                                     field;
   MellotronUnits                                    electron_units;
+  NoEnvelope                                        envelope;
   Particle<ConstantField>                           electron;
   ParticleObserver<ConstantField>                   electron_obs;
 
@@ -217,9 +218,9 @@ public:
   : charge(2.0)
   , mass(3.0)
   , electron_units(1.0)
-  , electron(charge,mass,field,electron_units,0.0)
+  , electron(charge,mass,field,electron_units,0.0,envelope)
   , electron_obs(electron)
-  , electron_below(charge,mass,field,electron_units,10000.0)
+  , electron_below(charge,mass,field,electron_units,10000.0,envelope)
   , electron_obs_below(electron_below)
   {}
 
@@ -228,6 +229,7 @@ public:
 
   ConstantField                                     field;
   MellotronUnits                                    electron_units;
+  NoEnvelope                                        envelope;
   ParticleIonized<ConstantField>                    electron;
   ParticleObserverIonized<ConstantField>            electron_obs;
   ParticleIonized<ConstantField>                    electron_below;

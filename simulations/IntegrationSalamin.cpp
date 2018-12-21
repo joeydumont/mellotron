@@ -37,6 +37,7 @@ struct IntegrationSalaminConfig
     double dt_;
     int nsteps_;
     void read(std::ifstream& file, IntegrationSalaminConfig*& config);
+    std::string envelope_;
 };
 
 void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfig*& config)
@@ -64,6 +65,7 @@ void IntegrationSalaminConfig::read(std::ifstream& file, IntegrationSalaminConfi
             config->t_init_ = v.second.get<double>("t_init");
             config->dt_ = v.second.get<double>("dt");
             config->nsteps_ = v.second.get<int>("nsteps");
+            config->envelope_ = v.second.get("envelope", "NoEnvelope");
         }
         if(v.first == "particle")
         {
@@ -155,6 +157,14 @@ int main(int argc, char* argv[])
     double dt      = config->dt_ / electron_units.UNIT_TIME ;
     int nsteps     = config->nsteps_;
 
+    // Initial time
+    // Behaviour depends on where we read the initial time.
+    double t_init;
+    if (IsConstantInitialTime)
+        t_init = config->t_init_;
+    else
+        t_init = init_conds[6];
+
     // We verify that the normalization constant was calculated for the same
     // (lambda,w0,L) tuple.
     std::ifstream norm_constant_file;
@@ -195,9 +205,20 @@ int main(int argc, char* argv[])
     else
         rr_model = mellotron::NoRR;
 
+    // Create envelope
+    mellotron::Envelope* envelope;
+    if (config->envelope_ == std::string("NoEnvelope"))
+        envelope = new mellotron::NoEnvelope();
+
+    else if (config->envelope_ == std::string("EnvelopeHann"))
+        envelope = new mellotron::EnvelopeHann(t_init,config->nsteps_*dt);
+
+    else
+        envelope = new mellotron::NoEnvelope();
+
     // Create field object
     mellotron::SalaminTightlyFocusedLinear                              field(lam,w0,L,norm_constant,energy);
-    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units,rr_model);
+    mellotron::Particle<mellotron::SalaminTightlyFocusedLinear>         particle(Q,mass,field,electron_units,*envelope,rr_model);
     mellotron::ParticleObserver<mellotron::SalaminTightlyFocusedLinear> particle_obs(particle,nsteps);
 
     // Define the initial conditions.
@@ -212,13 +233,6 @@ int main(int argc, char* argv[])
 
 
     // Times at which we output the data.
-    // Behaviour depends on where we read the initial time.
-    double t_init;
-    if (IsConstantInitialTime)
-        t_init = config->t_init_;
-    else
-        t_init = init_conds[6];
-
     arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+config->nsteps_*dt,config->nsteps_); // Time vector
 
     // Set the initial conditions.
@@ -237,7 +251,7 @@ int main(int argc, char* argv[])
 
     particle_obs.OutputData();
 
-
+    delete envelope;
     delete config;
     return 0;
 

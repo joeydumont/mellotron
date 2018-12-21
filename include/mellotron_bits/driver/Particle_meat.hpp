@@ -9,11 +9,13 @@ Particle<FieldModel>::Particle(const double                     my_charge,
                                const double                     my_mass,
                                      FieldModel              &  my_field_model,
                                      MellotronUnits          &  my_units,
+                                     Envelope                &  my_envelope,
                                const RadiationReactionModel     my_radiation_reaction)
 : charge(my_charge)
 , mass(my_mass)
 , field_model(my_field_model)
 , unit_system(my_units)
+, envelope(my_envelope)
 , radiation_reaction(my_radiation_reaction)
 {}
 
@@ -27,10 +29,12 @@ Particle<FieldModel>::ComputeFieldTensor(const double t,
 {
   std::array<double,6> field = this->field_model.ComputeFieldComponents(t,x,y,z);
 
+  double value_envelope = envelope.Value(t);
+
   for (uint i=0; i<3; i++)
   {
-    this->electric_field(i) = field[i];
-    this->magnetic_field(i) = field[i+3];
+    this->electric_field(i) = field[i]*value_envelope;
+    this->magnetic_field(i) = field[i+3]*value_envelope;
   }
 }
 
@@ -130,8 +134,9 @@ ParticleIonized<FieldModel>::ParticleIonized(const double                     my
                                                    FieldModel              &  my_field_model,
                                                    MellotronUnits          &  my_units,
                                                    double                     my_field_threshold,
+                                                   Envelope                &  my_envelope,
                                              const RadiationReactionModel     my_radiation_reaction)
-: Particle<FieldModel>(my_charge,my_mass,my_field_model,my_units,my_radiation_reaction)
+: Particle<FieldModel>(my_charge,my_mass,my_field_model,my_units,my_envelope,my_radiation_reaction)
 , field_threshold(my_field_threshold)
 , ApplyLorentzForce(false)
 {}

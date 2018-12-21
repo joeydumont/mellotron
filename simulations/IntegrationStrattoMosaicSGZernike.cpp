@@ -72,6 +72,7 @@ struct StrattoMosaicConfig
     double dt_;                   // Duration of a time step
     int nsteps_;                  // Number of time steps
     void read(std::ifstream& file, StrattoMosaicConfig*& config);
+    std::string envelope_;
 };
 
 // Function used to read the data read from the config file.
@@ -171,6 +172,7 @@ void StrattoMosaicConfig::read(std::ifstream& file, StrattoMosaicConfig*& config
             config->t_init_ = v.second.get<double>("t_init");
             config->dt_ = v.second.get<double>("dt");
             config->nsteps_ = v.second.get<int>("nsteps");
+            config->envelope_ = v.second.get("envelope", "NoEnvelope");
         }
     }
 
@@ -352,8 +354,27 @@ int main(int argc, char* argv[])
     config->t_init_ = config->t_init_ / electron_units.UNIT_TIME;
     config->dt_ = config->dt_ / electron_units.UNIT_TIME;
 
+    // Initial time
+    // Behaviour depends on where we read the initial time.
+    double t_init;
+    if (IsConstantInitialTime)
+        t_init = config->t_init_;
+    else
+        t_init = init_conds[6];
+
+    // Create envelope
+    mellotron::Envelope* envelope;
+    if (config->envelope_ == std::string("NoEnvelope"))
+        envelope = new mellotron::NoEnvelope();
+
+    else if (config->envelope_ == std::string("EnvelopeHann"))
+        envelope = new mellotron::EnvelopeHann(t_init,config->nsteps_*config->dt_);
+
+    else
+        envelope = new mellotron::NoEnvelope();
+
     // MELLOTRON
-    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units);
+    mellotron::Particle<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle(config->Q_,config->mass_,*wrapper,electron_units,*envelope);
     mellotron::ParticleObserver<StrattoCalculatorWrapper<StrattonChuIntegrator::MeshlessAxialSurfGenField>> particle_obs(particle,config->nsteps_);
 
     // Define the initial conditions.
@@ -367,13 +388,6 @@ int main(int argc, char* argv[])
     double pz_init = init_conds[5];
 
     // Times at which we output the data.
-    // Behaviour depends on where we read the initial time.
-    double t_init;
-    if (IsConstantInitialTime)
-        t_init = config->t_init_;
-    else
-        t_init = init_conds[6];
-
     arma::colvec times = arma::linspace<arma::colvec>(t_init,t_init+config->nsteps_*config->dt_,config->nsteps_); // Time vector
 
     // Set the initial conditions.
@@ -393,6 +407,7 @@ int main(int argc, char* argv[])
     particle_obs.OutputData();
 
 
+    delete envelope;
     delete config;
     return 0;
 
