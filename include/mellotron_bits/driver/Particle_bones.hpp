@@ -4,6 +4,8 @@
 #include <armadillo>
 #include <cmath>
 
+#include "mellotron_bits/driver/Envelope_bones.hpp"
+
 namespace mellotron {
 
 /// enum to choose the radiation reaction model.
@@ -31,6 +33,7 @@ public:
            const double                    my_mass,
                  FieldModel             &  my_field_model,
                  MellotronUnits         &  my_units,
+                 Envelope               &  my_envelope,
            const RadiationReactionModel    my_radiation_reaction = NoRR);
 
   /// Computation of the field tensor at a given point in space-time.
@@ -69,10 +72,12 @@ protected:
 
 
         MellotronUnits           &  unit_system;           ///< Contains information about the unit system used. Useful for RR.
+        Envelope                 &  envelope;              ///< Object that contains the electromagnetic field envelope
   const RadiationReactionModel      radiation_reaction;    ///< Determines the model of radiation reaction we employ, if at all.
 
         double                      chi_sq;                ///< Lorentz invariant along the trajectory, squared.
         double                      chi;                   ///< Lorentz invariant along the trajectory.
+
 };
 
 /*!
@@ -103,6 +108,7 @@ public:
                         FieldModel              &  my_field_model,
                         MellotronUnits          &  my_units,
                         double                     my_field_threshold,
+                        Envelope                &  my_envelope,
                   const RadiationReactionModel     my_radiation_reaction = NoRR);
 
   /// Accessor function to check whether the particle has been "ionized".

@@ -65,7 +65,7 @@ public:
   , number_points_theta(50)
   , number_points_phi(50)
   , electron_units(1.0)
-  , electron(charge,mass,field,electron_units)
+  , electron(charge,mass,field,electron_units,envelope)
   , electron_obs(electron,radius,number_points_theta,number_points_phi,100)
   {}
 
@@ -77,6 +77,7 @@ public:
 
   ConstantField                                     field;
   MellotronUnits                                    electron_units;
+  NoEnvelope                                        envelope;
   Particle<ConstantField>                           electron;
   ParticleObserverLienardWiechert<ConstantField>    electron_obs;
 
