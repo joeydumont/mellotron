@@ -41,7 +41,8 @@ if __name__ == "__main__":
 	                    help="Target directory containing a .hdf5 file.")
 	parser.add_argument("--file", type=str,   default="global.hdf5",
 	                    help=".hdf5 file with 1 particle to generate the trajectory plot with.")
-
+	parser.add_argument("--particlemass", type=float,   default=4.0, help="Ion mass in atomic mass units (u)")
+	parser.add_argument("--lowenergycutoff", type=float,   default=0.0, help="Energy cutoff for direction plot (eV)")
 	# -- Parse arguments
 	args = parser.parse_args()
 
@@ -54,22 +55,25 @@ if __name__ == "__main__":
 	hdf5File = args.file
 	#globalModel = findFileInDir(directory, hdf5File)
 	globalModelFile = hp.File(directory + hdf5File, "r")
+	
+	particleMass    = args.particlemass
+	lowEnergyCutoff = args.lowenergycutoff
 
 	# -- Plot the particles in the their initial position, and colour them according
-	# -- to their final gamma values.
+	# -- to their final kinetic energy.
 	initialX   = globalModelFile["/position"][0,:,0]
 	initialY   = globalModelFile["/position"][0,:,1]
 	initialZ   = globalModelFile["/position"][0,:,2]
 	finalGamma = globalModelFile["/gamma"][-1,:]
 
-	finalGamma = (4.00 * constants.physical_constants['atomic mass unit-electron volt relationship'][0]) * (finalGamma - 1.0)
+	finalKinetic = (particleMass * constants.physical_constants['atomic mass unit-electron volt relationship'][0]) * (finalGamma - 1.0)
 
-	figInitialConditionsGamma = plt.figure(figsize=(8,4))
-	figInitialConditionsGamma.subplots_adjust(hspace=0.3,wspace=0.3)
+	figInitialConditionsKinetic = plt.figure(figsize=(8,4))
+	figInitialConditionsKinetic.subplots_adjust(hspace=0.3,wspace=0.3)
 
 	axTranverse = plt.subplot2grid((1,2), (0,0))
 
-	im = plt.scatter(initialX, initialY, c=finalGamma, norm=colors.LogNorm(),alpha=0.5)
+	im = plt.scatter(initialX, initialY, c=finalKinetic, norm=colors.LogNorm(),alpha=0.5)
 	axTranverse.set_aspect('equal')
 	axTranverse.set_xlabel('Initial $x$ position')
 	axTranverse.set_ylabel('Initial $y$ position')
@@ -87,8 +91,45 @@ if __name__ == "__main__":
 	divider = make_axes_locatable(axLongitudinal)
 	cax = divider.append_axes("right", size="5%", pad=0.1)
 	cbar = plt.colorbar(im, cax=cax)
+	
+	# -- Plot the final direction of particles, and colour them according
+	# -- to their final kinetic energy.
+	p_x_final         = globalModelFile["momentum"][-1,:,0]
+	p_y_final         = globalModelFile["momentum"][-1,:,1]
+	p_z_final         = globalModelFile["momentum"][-1,:,2]
+	
+	pr = np.sqrt(p_x_final*p_x_final + p_y_final*p_y_final + p_z_final*p_z_final)
+	phi   = np.degrees(np.arctan2(p_y_final,p_x_final))
+	theta = np.degrees(np.arccos(p_z_final/pr))
 
-	# -- Find the particle with the largest final gamma and plot its electric field.
+	figDirectionKinetic = plt.figure(figsize=(10,5))
+	#figDirectionKinetic.subplots_adjust(hspace=0.3,wspace=0.3)
+
+	axDirection = plt.gca()
+	
+	phiReduced   = []
+	thetaReduced = []
+	kinReduced   = []
+	for i in range(len(p_x_final)):
+		if finalKinetic[i] >= lowEnergyCutoff:
+			phiReduced.append(phi[i])
+			thetaReduced.append(theta[i])
+			kinReduced.append(finalKinetic[i])
+			
+	im = plt.scatter(phiReduced, thetaReduced, c=kinReduced, norm=colors.LogNorm(),alpha=0.5, s=6)
+			
+	axDirection.set_aspect('equal')
+	axDirection.set_xlabel('$\phi$ (degrees)')
+	axDirection.set_ylabel('$\\theta$ (degrees)')
+	axDirection.xaxis.set_ticks([-180, -90, 0, 90, 180])
+	axDirection.yaxis.set_ticks([0, 45, 90, 135, 180])
+
+	divider = make_axes_locatable(axDirection)
+	cax = divider.append_axes("right", size="5%", pad=0.1)
+	cbar = plt.colorbar(im, cax=cax)
+
+
+	# -- Find the particle with the largest final kinetic energy and plot its electric field.
 	times       = globalModelFile["/times"][:]
 	maxGammaIdx = np.argmax(globalModelFile["/gamma"][-1,:])
 	maxChi      = globalModelFile["/chi"][:,maxGammaIdx]
@@ -135,24 +176,27 @@ if __name__ == "__main__":
 	#plt.plot(times, efield_Ex**2+efield_Ey**2+efield_Ez**2, 'k--')
 
 	ax2 = ax1.twinx()
-	plt.plot(times, (4.00 * constants.physical_constants['atomic mass unit-electron volt relationship'][0])*(maxGammaTime-1), 'k--')
+	plt.plot(times, (particleMass * constants.physical_constants['atomic mass unit-electron volt relationship'][0])*(maxGammaTime-1), 'k--')
 	#plt.plot(times,maxChi)
 
 	ax2.set_xlim((-150,150))
 
-	figHistogramFinalGamma = plt.figure(figsize=(4,3))
-	ax1 = figHistogramFinalGamma.add_subplot(111)
+	figHistogramFinalKinetic = plt.figure(figsize=(4,3))
+	ax1 = figHistogramFinalKinetic.add_subplot(111)
 
-	finalGammaSorted = np.sort(finalGamma)
+	finalKineticSorted = np.sort(finalKinetic)
 
-	print(finalGammaSorted)
+	print(finalKineticSorted)
 
 	clipIndex = -1
-	finalGammaHistogram = finalGammaSorted[0:clipIndex]
+	finalKineticHistogram = finalKineticSorted[0:clipIndex]
 
-	plt.hist(finalGammaHistogram,
-					 bins = 10 ** np.linspace(np.log10(finalGammaHistogram.min()), np.log10(finalGammaHistogram.max()), int(np.ceil(1.5*np.sqrt(finalGammaHistogram.size))) ))
+	plt.hist(finalKineticHistogram,
+					 bins = 10 ** np.linspace(np.log10(finalKineticHistogram.min()), np.log10(finalKineticHistogram.max()), int(np.ceil(1.5*np.sqrt(finalKineticHistogram.size))) ))
 	ax1.set_xscale('log')
+	ax1.set_xlabel('Kinetic energy (eV)')
+	ax1.set_ylabel('Number of particles')
+	
 
 	plt.show()
 
